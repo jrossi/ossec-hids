@@ -20,5 +20,5 @@ sha2speed: sha2.o sha2speed.c
 clean:
 		rm  *.o sha2 sha2speed
 
-check:
+check: sha2 
 		perl sha2test.pl
