@@ -7,6 +7,7 @@ env:
 - DB=none OSSEC_TYPE=all GEOIP=no
 - DB=none OSSEC_TYPE=agent GEOIP=no
 - DB=none OSSEC_TYPE=windows_agent GEOIP=no
+- DB=none OSSEC_TYPE=server GEOIP=no
 
 
 
@@ -25,6 +26,7 @@ before_script:
 
 script:
 - ( cd src && sudo make $OSSEC_TYPE )
+- if [[ "$OSSEC_TYPE" == "server" ]]; then ( cp contrib/ossec-testing && python runtests.py ); fi
 
 before_deploy:
 - mkdir travis-builds
