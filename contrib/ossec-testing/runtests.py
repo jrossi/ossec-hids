@@ -12,6 +12,8 @@ class OssecTester(object):
         self._base_dir = "/var/ossec/"
         self._ossec_path = "/var/ossec/bin/"
         self._test_path = "./tests" 
+        self._failure = False
+        self._error_log = ""
 
     def buildCmd(self, rule, alert, decoder):
         cmd = ['%s/ossec-logtest'%(self._ossec_path),] 
@@ -21,7 +23,7 @@ class OssecTester(object):
         return cmd
 
     def runTest(self, log, rule, alert, decoder, section, name, negate=False):
-        print self.buildCmd(rule, alert, decoder)
+        #print self.buildCmd(rule, alert, decoder)
         p = subprocess.Popen(self.buildCmd(rule, alert, decoder),
                 stdout=subprocess.PIPE,
                 stderr=subprocess.STDOUT,
@@ -29,6 +31,7 @@ class OssecTester(object):
                 shell=False)
         std_out = p.communicate(log)[0]
         if (p.returncode != 0 and not negate) or (p.returncode == 0 and negate):
+            self._failure = True
             print "" 
             print "-" * 60
             print "Failed: Exit code = %s"%(p.returncode) 
@@ -69,10 +72,12 @@ class OssecTester(object):
                                 neg = False 
                             self.runTest(value, rule, alert, decoder, t, name, negate=neg)
                 print ""
+        if self._failure: return 1
+        else: return 0
 
 if __name__ == "__main__":
     OT = OssecTester()
-    OT.run() 
+    sys.exit(OT.run()) 
 
 
 
