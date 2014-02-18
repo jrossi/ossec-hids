@@ -26,7 +26,7 @@ before_script:
 
 script:
 - ( cd src && sudo make $OSSEC_TYPE )
-- if [[ "$OSSEC_TYPE" == "server" ]]; then ( cp contrib/ossec-testing && python runtests.py ); fi
+- if [[ "$OSSEC_TYPE" == "server" ]]; then ( cd contrib/ossec-testing && python runtests.py ); fi
 
 before_deploy:
 - mkdir travis-builds
