@@ -5,13 +5,14 @@ notifications:
     - "chat.freenode.net#ossec-dev"
 
 env:
-#- DB=mysql OSSEC_TYPE=all GEOIP=yes
-- DB=mysql OSSEC_TYPE=all GEOIP=no
-#- DB=none OSSEC_TYPE=all GEOIP=yes
-- DB=none OSSEC_TYPE=all GEOIP=no
-- DB=none OSSEC_TYPE=agent GEOIP=no
-- DB=none OSSEC_TYPE=windows_agent GEOIP=no
-- DB=none OSSEC_TYPE=server GEOIP=no
+
+
+- DB=no  TYPE=server GEOIP=no
+- DB=no  TYPE=server GEOIP=yes
+- DB=yes TYPE=server GEOIP=no
+- DB=yes TYPE=server GEOIP=yes
+- DB=no  TYPE=agent  GEOIP=no
+- DB=no  TYPE=windows_agent  GEOIP=no
 
 
 
@@ -29,8 +30,12 @@ before_script:
 
 
 script:
-- ( cd src && sudo make $OSSEC_TYPE )
+- if [[ "$OSSEC_TYPE" == "server" ]]; then ( cd src && make all ); fi
+- if [[ "$OSSEC_TYPE" == "server" ]]; then ( cd src && sudo make server ); fi
 - if [[ "$OSSEC_TYPE" == "server" ]]; then ( cd contrib/ossec-testing && sudo python runtests.py ); fi
+- if [[ "$OSSEC_TYPE" == "windows_agent" ]]; then ( cd src && make windows_agent ); fi
+- if [[ "$OSSEC_TYPE" == "agent" ]]; then ( cd src && make all ); fi
+- if [[ "$OSSEC_TYPE" == "agent" ]]; then ( cd src && sudo make agent ); fi
 
 before_deploy:
 - mkdir travis-builds
