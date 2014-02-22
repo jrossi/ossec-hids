@@ -25,15 +25,12 @@ int os_check_restart_syscheck()
     /* If the restart is not present, return 0.
      */
 
-    if(isChroot())
-    {
+    if(isChroot()) {
         if(stat(SYSCHECK_RESTART, &restart_status) == -1)
             return(0);
 
         unlink(SYSCHECK_RESTART);
-    }
-    else
-    {
+    } else {
         if(stat(SYSCHECK_RESTART_PATH, &restart_status) == -1)
             return(0);
 
@@ -54,8 +51,7 @@ int os_set_restart_syscheck()
     FILE *fp;
 
     fp = fopen(SYSCHECK_RESTART, "w");
-    if(!fp)
-    {
+    if(!fp) {
         merror(FOPEN_ERROR, __local_name, SYSCHECK_RESTART);
         return(0);
     }
@@ -86,8 +82,7 @@ char* os_read_agent_name()
         fp = fopen(AGENT_INFO_FILEP, "r");
 
     /* We give 1 second for the file to be created... */
-    if(!fp)
-    {
+    if(!fp) {
         sleep(1);
 
         if(isChroot())
@@ -96,8 +91,7 @@ char* os_read_agent_name()
             fp = fopen(AGENT_INFO_FILEP, "r");
     }
 
-    if(!fp)
-    {
+    if(!fp) {
         debug1(FOPEN_ERROR, __local_name, AGENT_INFO_FILE);
         return(NULL);
     }
@@ -106,8 +100,7 @@ char* os_read_agent_name()
 
 
     /* Getting name */
-    if(fgets(buf, 1024, fp))
-    {
+    if(fgets(buf, 1024, fp)) {
         char *ret = NULL;
         os_strdup(buf, ret);
         fclose(fp);
@@ -135,8 +128,7 @@ char *os_read_agent_ip()
     debug2("%s: calling os_read_agent_ip().", ARGV0);
 
     fp = fopen(AGENT_INFO_FILE, "r");
-    if(!fp)
-    {
+    if(!fp) {
         merror(FOPEN_ERROR, __local_name, AGENT_INFO_FILE);
         return(NULL);
     }
@@ -145,8 +137,7 @@ char *os_read_agent_ip()
 
 
     /* Getting IP */
-    if(fgets(buf, 1024, fp) && fgets(buf, 1024, fp))
-    {
+    if(fgets(buf, 1024, fp) && fgets(buf, 1024, fp)) {
         char *ret = NULL;
         os_strdup(buf, ret);
         fclose(fp);
@@ -172,8 +163,7 @@ char *os_read_agent_id()
     debug2("%s: calling os_read_agent_id().", ARGV0);
 
     fp = fopen(AGENT_INFO_FILE, "r");
-    if(!fp)
-    {
+    if(!fp) {
         merror(FOPEN_ERROR, __local_name, AGENT_INFO_FILE);
         return(NULL);
     }
@@ -182,8 +172,7 @@ char *os_read_agent_id()
 
 
     /* Getting id */
-    if(fgets(buf, 1024, fp) && fgets(buf, 1024, fp) && fgets(buf, 1024, fp))
-    {
+    if(fgets(buf, 1024, fp) && fgets(buf, 1024, fp) && fgets(buf, 1024, fp)) {
         char *ret = NULL;
         os_strdup(buf, ret);
         fclose(fp);
@@ -222,8 +211,7 @@ char* os_read_agent_profile()
     else
         fp = fopen(AGENT_INFO_FILEP, "r");
 
-    if(!fp)
-    {
+    if(!fp) {
         debug2("%s: Failed to open file. Errno=%d.", ARGV0, errno);
         merror(FOPEN_ERROR, __local_name, AGENT_INFO_FILE);
         return(NULL);
@@ -234,8 +222,7 @@ char* os_read_agent_profile()
 
     /* Getting profile */
     if(fgets(buf, 1024, fp) && fgets(buf, 1024, fp) &&
-       fgets(buf, 1024, fp) && fgets(buf, 1024, fp))
-    {
+            fgets(buf, 1024, fp) && fgets(buf, 1024, fp)) {
         char *ret = NULL;
 
         /* Trim the /n and/or /r at the end of the string */
@@ -266,8 +253,7 @@ int os_write_agent_info(char *agent_name, char *agent_ip,
     FILE *fp;
 
     fp = fopen(AGENT_INFO_FILE, "w");
-    if(!fp)
-    {
+    if(!fp) {
         merror(FOPEN_ERROR, __local_name, AGENT_INFO_FILE);
         return(0);
     }

@@ -23,8 +23,7 @@ void free_agents(char **agent_list)
     if(!agent_list)
         return;
 
-    for(i = 0;;i++)
-    {
+    for(i = 0;; i++) {
         if(agent_list[i] == NULL)
             break;
 
@@ -51,8 +50,7 @@ int _do_print_attrs_syscheck(char *prev_attrs, char *attrs, int csv_output,
 
 
     /* a deleted file has no attributes */
-    if(strcmp(attrs, "-1") == 0)
-    {
+    if(strcmp(attrs, "-1") == 0) {
         printf("File deleted.\n");
         return(0);
     }
@@ -72,12 +70,9 @@ int _do_print_attrs_syscheck(char *prev_attrs, char *attrs, int csv_output,
     p_md5 = md5;
     p_sha1 = sha1;
 
-    if(prev_attrs && (strcmp(prev_attrs, "-1") == 0))
-    {
+    if(prev_attrs && (strcmp(prev_attrs, "-1") == 0)) {
         printf("File restored. ");
-    }
-    else if(prev_attrs)
-    {
+    } else if(prev_attrs) {
         printf("File changed. ");
         p_size = prev_attrs;
         sk_strchr(p_size, ':', p_perm);
@@ -85,39 +80,32 @@ int _do_print_attrs_syscheck(char *prev_attrs, char *attrs, int csv_output,
         sk_strchr(p_uid, ':', p_gid);
         sk_strchr(p_gid, ':', p_md5);
         sk_strchr(p_md5, ':', p_sha1);
-    }
-    else
-    {
+    } else {
         printf("File added to the database. ");
     }
 
 
     /* Fixing number of changes. */
-    if(prev_attrs && !number_of_changes)
-    {
+    if(prev_attrs && !number_of_changes) {
         number_of_changes = 1;
     }
 
 
-    if(number_of_changes)
-    {
-        switch(number_of_changes)
-        {
-            case 1:
-                printf("- 1st time modified.\n");
-                break;
-            case 2:
-                printf("- 2nd time modified.\n");
-                break;
-            case 3:
-                printf("- 3rd time modified.\n");
-                break;
-            default:
-                printf("- Being ignored (3 or more changes).\n");
+    if(number_of_changes) {
+        switch(number_of_changes) {
+        case 1:
+            printf("- 1st time modified.\n");
+            break;
+        case 2:
+            printf("- 2nd time modified.\n");
+            break;
+        case 3:
+            printf("- 3rd time modified.\n");
+            break;
+        default:
+            printf("- Being ignored (3 or more changes).\n");
         }
-    }
-    else
-    {
+    } else {
         printf("\n");
     }
 
@@ -148,11 +136,10 @@ int _do_print_attrs_syscheck(char *prev_attrs, char *attrs, int csv_output,
 
     printf("Integrity checking values:\n");
     printf("   Size:%s%s\n", (strcmp(size,p_size) == 0)? " ": " >", size);
-    if(!is_win)
-    {
-      printf("   Perm:%s%s\n", (strcmp(perm,p_perm) == 0)? " ": " >", perm_str);
-      printf("   Uid: %s%s\n", (strcmp(uid,p_uid) == 0)? " ": " >", uid);
-      printf("   Gid: %s%s\n", (strcmp(gid,p_gid) == 0)? " ": " >", gid);
+    if(!is_win) {
+        printf("   Perm:%s%s\n", (strcmp(perm,p_perm) == 0)? " ": " >", perm_str);
+        printf("   Uid: %s%s\n", (strcmp(uid,p_uid) == 0)? " ": " >", uid);
+        printf("   Gid: %s%s\n", (strcmp(gid,p_gid) == 0)? " ": " >", gid);
     }
     printf("   Md5: %s%s\n", (strcmp(md5,p_md5) == 0)? " ": " >", md5);
     printf("   Sha1:%s%s\n", (strcmp(sha1,p_sha1) == 0)? " ": " >", sha1);
@@ -190,8 +177,7 @@ int _do_print_file_syscheck(FILE *fp, char *fname,
 
 
     /* If the compilation failed, we don't need to free anything */
-    if(!OSMatch_Compile(fname, &reg, 0))
-    {
+    if(!OSMatch_Compile(fname, &reg, 0)) {
         printf("\n** ERROR: Invalid file name: '%s'\n", fname);
         return(0);
     }
@@ -199,25 +185,21 @@ int _do_print_file_syscheck(FILE *fp, char *fname,
 
     /* Creating list with files. */
     files_list = OSStore_Create();
-    if(!files_list)
-    {
+    if(!files_list) {
         OSMatch_FreePattern(&reg);
         return(0);
     }
 
 
     /* Getting initial position. */
-    if(fgetpos(fp, &init_pos) != 0)
-    {
+    if(fgetpos(fp, &init_pos) != 0) {
         printf("\n** ERROR: fgetpos failed.\n");
         return(0);
     }
 
 
-    while(fgets(buf, OS_MAXSTR, fp) != NULL)
-    {
-        if(buf[0] == '!' || buf[0] == '#' || buf[0] == '+')
-        {
+    while(fgets(buf, OS_MAXSTR, fp) != NULL) {
+        if(buf[0] == '!' || buf[0] == '#' || buf[0] == '+') {
             int number_changes = 0;
             time_t change_time = 0;
             char *changed_file_name;
@@ -225,8 +207,7 @@ int _do_print_file_syscheck(FILE *fp, char *fname,
             char *prev_attrs;
 
 
-            if(strlen(buf) < 16)
-            {
+            if(strlen(buf) < 16) {
                 fgetpos(fp, &init_pos);
                 continue;
             }
@@ -236,23 +217,18 @@ int _do_print_file_syscheck(FILE *fp, char *fname,
 
 
             /* with update counter, we only modify the last entry. */
-            if(update_counter && buf[0] == '#')
-            {
+            if(update_counter && buf[0] == '#') {
                 fgetpos(fp, &init_pos);
                 continue;
             }
 
 
             /* Checking number of changes. */
-            if(buf[1] == '!')
-            {
+            if(buf[1] == '!') {
                 number_changes = 2;
-                if(buf[2] == '!')
-                {
+                if(buf[2] == '!') {
                     number_changes = 3;
-                }
-                else if(buf[2] == '?')
-                {
+                } else if(buf[2] == '?') {
                     number_changes = 4;
                 }
             }
@@ -261,8 +237,7 @@ int _do_print_file_syscheck(FILE *fp, char *fname,
 
 
             changed_file_name = strchr(changed_attrs, '!');
-            if(!changed_file_name)
-            {
+            if(!changed_file_name) {
                 fgetpos(fp, &init_pos);
                 continue;
             }
@@ -279,8 +254,7 @@ int _do_print_file_syscheck(FILE *fp, char *fname,
 
             /* Checking if the name should be printed. */
             if(!OSMatch_Execute(changed_file_name, strlen(changed_file_name),
-                                &reg))
-            {
+                                &reg)) {
                 fgetpos(fp, &init_pos);
                 continue;
             }
@@ -290,31 +264,25 @@ int _do_print_file_syscheck(FILE *fp, char *fname,
 
 
             /* Reset the values. */
-            if(update_counter)
-            {
-                if(fsetpos(fp, &init_pos) != 0)
-                {
+            if(update_counter) {
+                if(fsetpos(fp, &init_pos) != 0) {
                     printf("\n** ERROR: fsetpos failed (unable to update "
                            "counter).\n");
                     return(0);
                 }
 
-                if(update_counter == 2)
-                {
-                    if(fprintf(fp, "!!?") <= 0)
-                    {
+                if(update_counter == 2) {
+                    if(fprintf(fp, "!!?") <= 0) {
                         printf("\n** ERROR: fputs failed (unable to update "
-                                "counter).\n");
+                               "counter).\n");
                         return(0);
                     }
                 }
 
-                else
-                {
-                    if(fprintf(fp, "!++") <= 0)
-                    {
+                else {
+                    if(fprintf(fp, "!++") <= 0) {
                         printf("\n** ERROR: fputs failed (unable to update "
-                                "counter).\n");
+                               "counter).\n");
                         return(0);
                     }
                 }
@@ -330,15 +298,14 @@ int _do_print_file_syscheck(FILE *fp, char *fname,
 
             if(!csv_output)
                 printf("\n%s,%d - %s\n", read_day, number_changes,
-                                       changed_file_name);
+                       changed_file_name);
             else
                 printf("%s,%s,%d\n", read_day, changed_file_name,
-                                     number_changes);
+                       number_changes);
 
 
             prev_attrs = OSStore_Get(files_list, changed_file_name);
-            if(prev_attrs)
-            {
+            if(prev_attrs) {
                 char *new_attrs;
                 os_strdup(changed_attrs, new_attrs);
                 _do_print_attrs_syscheck(prev_attrs, changed_attrs,
@@ -348,9 +315,7 @@ int _do_print_file_syscheck(FILE *fp, char *fname,
 
                 free(files_list->cur_node->data);
                 files_list->cur_node->data = new_attrs;
-            }
-            else
-            {
+            } else {
                 char *new_name;
                 char *new_attrs;
 
@@ -367,8 +332,7 @@ int _do_print_file_syscheck(FILE *fp, char *fname,
         }
     }
 
-    if(!f_found)
-    {
+    if(!f_found) {
         printf("\n** No entries found.\n");
     }
     OSMatch_FreePattern(&reg);
@@ -393,10 +357,8 @@ int _do_print_syscheck(FILE *fp, int all_files, int csv_output)
     saved_read_day[0] = '\0';
     saved_read_day[24] = '\0';
 
-    while(fgets(buf, OS_MAXSTR, fp) != NULL)
-    {
-        if(buf[0] == '!' || buf[0] == '#')
-        {
+    while(fgets(buf, OS_MAXSTR, fp) != NULL) {
+        if(buf[0] == '!' || buf[0] == '#') {
             int number_changes = 0;
             time_t change_time = 0;
             char *changed_file_name;
@@ -410,15 +372,11 @@ int _do_print_syscheck(FILE *fp, int all_files, int csv_output)
 
 
             /* Checking number of changes. */
-            if(buf[1] == '!')
-            {
+            if(buf[1] == '!') {
                 number_changes = 2;
-                if(buf[2] == '!')
-                {
+                if(buf[2] == '!') {
                     number_changes = 3;
-                }
-                else if(buf[2] == '?')
-                {
+                } else if(buf[2] == '?') {
                     number_changes = 4;
                 }
             }
@@ -441,8 +399,7 @@ int _do_print_syscheck(FILE *fp, int all_files, int csv_output)
 
             tm_time = localtime(&change_time);
             strftime(read_day, 23, "%Y %h %d", tm_time);
-            if(strcmp(read_day, saved_read_day) != 0)
-            {
+            if(strcmp(read_day, saved_read_day) != 0) {
                 if(!csv_output)
                     printf("\nChanges for %s:\n", read_day);
                 strncpy(saved_read_day, read_day, 23);
@@ -451,15 +408,14 @@ int _do_print_syscheck(FILE *fp, int all_files, int csv_output)
 
             if(!csv_output)
                 printf("%s,%d - %s\n", read_day, number_changes,
-                                       changed_file_name);
+                       changed_file_name);
             else
                 printf("%s,%s,%d\n", read_day, changed_file_name,
-                                     number_changes);
+                       number_changes);
         }
     }
 
-    if(!f_found && !csv_output)
-    {
+    if(!f_found && !csv_output) {
         printf("\n** No entries found.\n");
     }
 
@@ -477,54 +433,46 @@ int print_syscheck(char *sk_name, char *sk_ip, char *fname, int print_registry,
     tmp_file[512] = '\0';
 
 
-    if(sk_name == NULL)
-    {
+    if(sk_name == NULL) {
         /* Printing database */
         snprintf(tmp_file, 512, "%s/syscheck",
-                SYSCHECK_DIR);
+                 SYSCHECK_DIR);
 
         fp = fopen(tmp_file, "r+");
     }
 
-    else if(sk_ip == NULL)
-    {
+    else if(sk_ip == NULL) {
         /* Printing database */
         snprintf(tmp_file, 512, "%s/%s->syscheck",SYSCHECK_DIR, sk_name);
 
         fp = fopen(tmp_file, "r+");
     }
 
-    else if(!print_registry)
-    {
+    else if(!print_registry) {
         /* Printing database */
         snprintf(tmp_file, 512, "%s/(%s) %s->syscheck",
-                SYSCHECK_DIR,
-                sk_name,
-                sk_ip);
+                 SYSCHECK_DIR,
+                 sk_name,
+                 sk_ip);
 
         fp = fopen(tmp_file, "r+");
     }
 
-    else
-    {
+    else {
         /* Printing database for the windows registry. */
         snprintf(tmp_file, 512, "%s/(%s) %s->syscheck-registry",
-                SYSCHECK_DIR,
-                sk_name,
-                sk_ip);
+                 SYSCHECK_DIR,
+                 sk_name,
+                 sk_ip);
 
         fp = fopen(tmp_file, "r+");
     }
 
 
-    if(fp)
-    {
-        if(!fname)
-        {
+    if(fp) {
+        if(!fname) {
             _do_print_syscheck(fp, all_files, csv_output);
-        }
-        else
-        {
+        } else {
             _do_print_file_syscheck(fp, fname, update_counter, csv_output);
         }
         fclose(fp);
@@ -540,11 +488,9 @@ int _do_get_rootcheckscan(FILE *fp)
     char *tmp_str;
     char buf[OS_MAXSTR + 1];
 
-    while(fgets(buf, OS_MAXSTR, fp) != NULL)
-    {
+    while(fgets(buf, OS_MAXSTR, fp) != NULL) {
         tmp_str = strstr(buf, "Starting rootcheck scan");
-        if(tmp_str)
-        {
+        if(tmp_str) {
             time_t s_time = 0;
             tmp_str = buf + 1;
 
@@ -584,12 +530,14 @@ int _do_print_rootcheck(FILE *fp, int resolved, int time_last_scan,
                            "Ending rootcheck scan",
                            "Starting syscheck scan",
                            "Ending syscheck scan",
-                           NULL};
+                           NULL
+                          };
 
     char *(ns_events[]) = {"Application Found:",
                            "Windows Audit:",
                            "Windows Malware:",
-                           NULL};
+                           NULL
+                          };
 
 
     buf[OS_MAXSTR] = '\0';
@@ -601,24 +549,20 @@ int _do_print_rootcheck(FILE *fp, int resolved, int time_last_scan,
     fseek(fp, 0, SEEK_SET);
 
 
-    if(!csv_output)
-    {
-        if(show_last)
-        {
+    if(!csv_output) {
+        if(show_last) {
             tm_time = localtime((time_t *)&time_last_scan);
             strftime(read_day, 23, "%Y %h %d %T", tm_time);
 
             printf("\nLast scan: %s\n\n", read_day);
-        }
-        else if(resolved)
+        } else if(resolved)
             printf("\nResolved events: \n\n");
         else
             printf("\nOutstanding events: \n\n");
     }
 
 
-    while(fgets(buf, OS_MAXSTR, fp) != NULL)
-    {
+    while(fgets(buf, OS_MAXSTR, fp) != NULL) {
         /* Removing first ! */
         tmp_str = buf + 1;
         s_time = (time_t)atoi(tmp_str);
@@ -648,17 +592,12 @@ int _do_print_rootcheck(FILE *fp, int resolved, int time_last_scan,
 
 
         /* Checking for resolved. */
-        if(time_last_scan > (s_time + 86400))
-        {
-            if(!resolved)
-            {
+        if(time_last_scan > (s_time + 86400)) {
+            if(!resolved) {
                 continue;
             }
-        }
-        else
-        {
-            if(resolved)
-            {
+        } else {
+            if(resolved) {
                 continue;
             }
         }
@@ -666,8 +605,7 @@ int _do_print_rootcheck(FILE *fp, int resolved, int time_last_scan,
 
         /* Checking events to ignore. */
         i = 0;
-        while(ig_events[i])
-        {
+        while(ig_events[i]) {
             if(strncmp(tmp_str, ig_events[i], strlen(ig_events[i]) -1) == 0)
                 break;
             i++;
@@ -678,8 +616,7 @@ int _do_print_rootcheck(FILE *fp, int resolved, int time_last_scan,
 
         /* Checking events that are not system audit. */
         i = 0;
-        while(ns_events[i])
-        {
+        while(ns_events[i]) {
             if(strncmp(tmp_str, ns_events[i], strlen(ns_events[i]) -1) == 0)
                 break;
             i++;
@@ -692,26 +629,20 @@ int _do_print_rootcheck(FILE *fp, int resolved, int time_last_scan,
         strftime(old_day, 23, "%Y %h %d %T", tm_time);
 
 
-        if(!csv_output)
-        {
+        if(!csv_output) {
             if(!show_last)
                 printf("%s (first time detected: %s)\n", read_day, old_day);
 
-            if(ns_events[i])
-            {
+            if(ns_events[i]) {
                 printf("%s\n\n", tmp_str);
-            }
-            else
-            {
+            } else {
                 printf("System Audit: %s\n\n", tmp_str);
             }
-        }
-        else
-        {
+        } else {
             printf("%s,%s,%s,%s%s\n", resolved == 0?"outstanding":"resolved",
-                                       read_day, old_day,
-                                       ns_events[i] != NULL?"":"System Audit: ",
-                                       tmp_str);
+                   read_day, old_day,
+                   ns_events[i] != NULL?"":"System Audit: ",
+                   tmp_str);
         }
 
 
@@ -719,8 +650,7 @@ int _do_print_rootcheck(FILE *fp, int resolved, int time_last_scan,
         f_found++;
     }
 
-    if(!f_found && !csv_output)
-    {
+    if(!f_found && !csv_output) {
         printf("** No entries found.\n");
     }
 
@@ -740,49 +670,38 @@ int print_rootcheck(char *sk_name, char *sk_ip, char *fname, int resolved,
     tmp_file[512] = '\0';
 
 
-    if(sk_name == NULL)
-    {
+    if(sk_name == NULL) {
         /* Printing database */
         snprintf(tmp_file, 512, "%s/rootcheck",
-                ROOTCHECK_DIR);
+                 ROOTCHECK_DIR);
 
         fp = fopen(tmp_file, "r+");
     }
 
-    else
-    {
+    else {
         /* Printing database */
         snprintf(tmp_file, 512, "%s/(%s) %s->rootcheck",
-                ROOTCHECK_DIR,
-                sk_name,
-                sk_ip);
+                 ROOTCHECK_DIR,
+                 sk_name,
+                 sk_ip);
 
         fp = fopen(tmp_file, "r+");
     }
 
 
-    if(fp)
-    {
+    if(fp) {
         /* Getting last time of scan. */
         ltime = _do_get_rootcheckscan(fp);
-        if(!fname)
-        {
-            if(resolved == 1)
-            {
+        if(!fname) {
+            if(resolved == 1) {
                 _do_print_rootcheck(fp, 1, ltime, csv_output, 0);
-            }
-            else if(resolved == 2)
-            {
+            } else if(resolved == 2) {
                 _do_print_rootcheck(fp, 0, ltime, csv_output, show_last);
-            }
-            else
-            {
+            } else {
                 _do_print_rootcheck(fp, 1, ltime, csv_output, 0);
                 _do_print_rootcheck(fp, 0, ltime, csv_output, show_last);
             }
-        }
-        else
-        {
+        } else {
         }
         fclose(fp);
     }
@@ -803,9 +722,9 @@ int delete_syscheck(char *sk_name, char *sk_ip, int full_delete)
 
     /* Deleting related files */
     snprintf(tmp_file, 512, "%s/(%s) %s->syscheck",
-            SYSCHECK_DIR,
-            sk_name,
-            sk_ip);
+             SYSCHECK_DIR,
+             sk_name,
+             sk_ip);
 
     fp = fopen(tmp_file, "w");
     if(fp)
@@ -817,9 +736,9 @@ int delete_syscheck(char *sk_name, char *sk_ip, int full_delete)
 
     /* Deleting cpt files */
     snprintf(tmp_file, 512, "%s/.(%s) %s->syscheck.cpt",
-            SYSCHECK_DIR,
-            sk_name,
-            sk_ip);
+             SYSCHECK_DIR,
+             sk_name,
+             sk_ip);
 
     fp = fopen(tmp_file, "w");
     if(fp)
@@ -829,9 +748,9 @@ int delete_syscheck(char *sk_name, char *sk_ip, int full_delete)
 
     /* Deleting registry entries */
     snprintf(tmp_file, 512, "%s/(%s) %s->syscheck-registry",
-            SYSCHECK_DIR,
-            sk_name,
-            sk_ip);
+             SYSCHECK_DIR,
+             sk_name,
+             sk_ip);
 
     fp = fopen(tmp_file, "w");
     if(fp)
@@ -842,9 +761,9 @@ int delete_syscheck(char *sk_name, char *sk_ip, int full_delete)
 
     /* Deleting cpt files */
     snprintf(tmp_file, 512, "%s/.(%s) %s->syscheck-registry.cpt",
-            SYSCHECK_DIR,
-            sk_name,
-            sk_ip);
+             SYSCHECK_DIR,
+             sk_name,
+             sk_ip);
 
     fp = fopen(tmp_file, "w");
     if(fp)
@@ -866,9 +785,9 @@ int delete_rootcheck(char *sk_name, char *sk_ip, int full_delete)
 
     /* Deleting related files */
     snprintf(tmp_file, 512, "%s/(%s) %s->rootcheck",
-            ROOTCHECK_DIR,
-            sk_name,
-            sk_ip);
+             ROOTCHECK_DIR,
+             sk_name,
+             sk_ip);
 
     fp = fopen(tmp_file, "w");
     if(fp)
@@ -924,12 +843,9 @@ char *print_agent_status(int status)
 {
     char *status_str = "Never connected";
 
-    if(status == GA_STATUS_ACTIVE)
-    {
+    if(status == GA_STATUS_ACTIVE) {
         status_str = "Active";
-    }
-    else if(status == GA_STATUS_NACTIVE)
-    {
+    } else if(status == GA_STATUS_NACTIVE) {
         status_str = "Disconnected";
     }
 
@@ -953,39 +869,32 @@ int send_msg_to_agent(int msocket, char *msg, char *agt_id, char *exec)
     agt_msg[OS_SIZE_1024] = '\0';
 
 
-    if(!exec)
-    {
+    if(!exec) {
         snprintf(agt_msg, OS_SIZE_1024,
-                "%s %c%c%c %s %s",
-                "(msg_to_agent) []",
-                (agt_id == NULL)?ALL_AGENTS_C:NONE_C,
-                NO_AR_C,
-                (agt_id != NULL)?SPECIFIC_AGENT_C:NONE_C,
-                agt_id != NULL? agt_id: "(null)",
-                msg);
-    }
-    else
-    {
+                 "%s %c%c%c %s %s",
+                 "(msg_to_agent) []",
+                 (agt_id == NULL)?ALL_AGENTS_C:NONE_C,
+                 NO_AR_C,
+                 (agt_id != NULL)?SPECIFIC_AGENT_C:NONE_C,
+                 agt_id != NULL? agt_id: "(null)",
+                 msg);
+    } else {
         snprintf(agt_msg, OS_SIZE_1024,
-                "%s %c%c%c %s %s - %s (from_the_server) (no_rule_id)",
-                "(msg_to_agent) []",
-                (agt_id == NULL)?ALL_AGENTS_C:NONE_C,
-                NONE_C,
-                (agt_id != NULL)?SPECIFIC_AGENT_C:NONE_C,
-                agt_id != NULL? agt_id: "(null)",
-                msg, exec);
+                 "%s %c%c%c %s %s - %s (from_the_server) (no_rule_id)",
+                 "(msg_to_agent) []",
+                 (agt_id == NULL)?ALL_AGENTS_C:NONE_C,
+                 NONE_C,
+                 (agt_id != NULL)?SPECIFIC_AGENT_C:NONE_C,
+                 agt_id != NULL? agt_id: "(null)",
+                 msg, exec);
 
     }
 
 
-    if((rc = OS_SendUnix(msocket, agt_msg, 0)) < 0)
-    {
-        if(rc == OS_SOCKBUSY)
-        {
+    if((rc = OS_SendUnix(msocket, agt_msg, 0)) < 0) {
+        if(rc == OS_SOCKBUSY) {
             merror("%s: ERROR: Remoted socket busy.", __local_name);
-        }
-        else
-        {
+        } else {
             merror("%s: ERROR: Remoted socket error.", __local_name);
         }
         merror("%s: Error communicating with remoted queue (%d).",
@@ -1007,8 +916,7 @@ int connect_to_remoted()
 {
     int arq = -1;
 
-    if((arq = StartMQ(ARQUEUE, WRITE)) < 0)
-    {
+    if((arq = StartMQ(ARQUEUE, WRITE)) < 0) {
         merror(ARQ_ERROR, __local_name);
         return(-1);
     }
@@ -1028,22 +936,18 @@ int _get_time_rkscan(char *agent_name, char *agent_ip, agent_info *agt_info)
 
 
     /* Agent name of null, means it is the server info. */
-    if(agent_name == NULL)
-    {
+    if(agent_name == NULL) {
         snprintf(buf, 1024, "%s/rootcheck",
-                      ROOTCHECK_DIR);
-    }
-    else
-    {
+                 ROOTCHECK_DIR);
+    } else {
         snprintf(buf, 1024, "%s/(%s) %s->rootcheck",
-                      ROOTCHECK_DIR, agent_name, agent_ip);
+                 ROOTCHECK_DIR, agent_name, agent_ip);
     }
 
 
     /* If file is not there, set to unknown. */
     fp = fopen(buf, "r");
-    if(!fp)
-    {
+    if(!fp) {
         os_strdup("Unknown", agt_info->rootcheck_time);
         os_strdup("Unknown", agt_info->rootcheck_endtime);
         os_strdup("Unknown", agt_info->syscheck_time);
@@ -1052,8 +956,7 @@ int _get_time_rkscan(char *agent_name, char *agent_ip, agent_info *agt_info)
     }
 
 
-    while(fgets(buf, 1024, fp) != NULL)
-    {
+    while(fgets(buf, 1024, fp) != NULL) {
         char *tmp_str = NULL;
 
         /* Removing new line. */
@@ -1063,8 +966,7 @@ int _get_time_rkscan(char *agent_name, char *agent_ip, agent_info *agt_info)
 
 
         tmp_str = strstr(buf, "Starting syscheck scan");
-        if(tmp_str)
-        {
+        if(tmp_str) {
             time_t s_time = 0;
             tmp_str = buf + 1;
 
@@ -1081,8 +983,7 @@ int _get_time_rkscan(char *agent_name, char *agent_ip, agent_info *agt_info)
         }
 
         tmp_str = strstr(buf, "Ending syscheck scan");
-        if(tmp_str)
-        {
+        if(tmp_str) {
             time_t s_time = 0;
             tmp_str = buf + 1;
 
@@ -1100,8 +1001,7 @@ int _get_time_rkscan(char *agent_name, char *agent_ip, agent_info *agt_info)
 
 
         tmp_str = strstr(buf, "Starting rootcheck scan");
-        if(tmp_str)
-        {
+        if(tmp_str) {
             time_t s_time = 0;
             tmp_str = buf + 1;
 
@@ -1118,8 +1018,7 @@ int _get_time_rkscan(char *agent_name, char *agent_ip, agent_info *agt_info)
         }
 
         tmp_str = strstr(buf, "Ending rootcheck scan");
-        if(tmp_str)
-        {
+        if(tmp_str) {
             time_t s_time = 0;
             tmp_str = buf + 1;
 
@@ -1161,14 +1060,12 @@ char *_get_agent_keepalive(char *agent_name, char *agent_ip)
 
 
     /* No keep alive for the server. */
-    if(!agent_name)
-    {
+    if(!agent_name) {
         return(strdup("Not available"));
     }
 
     snprintf(buf, 1024, "%s/%s-%s", AGENTINFO_DIR, agent_name, agent_ip);
-    if(stat(buf, &file_status) < 0)
-    {
+    if(stat(buf, &file_status) < 0) {
         return(strdup("Unknown"));
     }
 
@@ -1186,8 +1083,7 @@ int _get_agent_os(char *agent_name, char *agent_ip, agent_info *agt_info)
 
 
     /* Getting server info. */
-    if(!agent_name)
-    {
+    if(!agent_name) {
         char *ossec_version = NULL;
         agt_info->os = getuname();
         os_strdup(__ossec_name " " __version, agt_info->version);
@@ -1200,14 +1096,12 @@ int _get_agent_os(char *agent_name, char *agent_ip, agent_info *agt_info)
 
 
         ossec_version = strstr(agt_info->os, " - ");
-        if(ossec_version)
-        {
+        if(ossec_version) {
             *ossec_version = '\0';
         }
 
 
-        if(strlen(agt_info->os) > 55)
-        {
+        if(strlen(agt_info->os) > 55) {
             agt_info->os[52] = '.';
             agt_info->os[53] = '.';
             agt_info->os[54] = '\0';
@@ -1220,16 +1114,14 @@ int _get_agent_os(char *agent_name, char *agent_ip, agent_info *agt_info)
 
     snprintf(buf, 1024, "%s/%s-%s", AGENTINFO_DIR, agent_name, agent_ip);
     fp = fopen(buf, "r");
-    if(!fp)
-    {
+    if(!fp) {
         os_strdup("Unknown", agt_info->os);
         os_strdup("Unknown", agt_info->version);
         return(0);
     }
 
 
-    if(fgets(buf, 1024, fp))
-    {
+    if(fgets(buf, 1024, fp)) {
         char *ossec_version = NULL;
 
         /* Removing new line. */
@@ -1239,8 +1131,7 @@ int _get_agent_os(char *agent_name, char *agent_ip, agent_info *agt_info)
 
 
         ossec_version = strstr(buf, " - ");
-        if(ossec_version)
-        {
+        if(ossec_version) {
             *ossec_version = '\0';
             ossec_version += 3;
 
@@ -1249,8 +1140,7 @@ int _get_agent_os(char *agent_name, char *agent_ip, agent_info *agt_info)
         }
 
 
-        if(strlen(buf) > 55)
-        {
+        if(strlen(buf) > 55) {
             buf[52] = '.';
             buf[53] = '.';
             buf[54] = '\0';
@@ -1287,8 +1177,7 @@ agent_info *get_agent_info(char *agent_name, char *agent_ip)
 
 
     /* Removing the  "/", since it is not present on the file. */
-    if((agent_ip_pt = strchr(agent_ip, '/')))
-    {
+    if((agent_ip_pt = strchr(agent_ip, '/'))) {
         *agent_ip_pt = '\0';
     }
 
@@ -1321,8 +1210,7 @@ agent_info *get_agent_info(char *agent_name, char *agent_ip)
 
 
     /* Setting back the ip address. */
-    if(agent_ip_pt)
-    {
+    if(agent_ip_pt) {
         *agent_ip_pt = '/';
     }
 
@@ -1346,15 +1234,13 @@ int get_agent_status(char *agent_name, char *agent_ip)
 
 
     /* Server info. */
-    if(agent_name == NULL)
-    {
+    if(agent_name == NULL) {
         return(GA_STATUS_ACTIVE);
     }
 
 
     /* Removing the  "/", since it is not present on the file. */
-    if((agent_ip_pt = strchr(agent_ip, '/')))
-    {
+    if((agent_ip_pt = strchr(agent_ip, '/'))) {
         *agent_ip_pt = '\0';
     }
 
@@ -1362,20 +1248,17 @@ int get_agent_status(char *agent_name, char *agent_ip)
 
 
     /* Setting back the ip address. */
-    if(agent_ip_pt)
-    {
+    if(agent_ip_pt) {
         *agent_ip_pt = '/';
     }
 
 
-    if(stat(tmp_file, &file_status) < 0)
-    {
+    if(stat(tmp_file, &file_status) < 0) {
         return(GA_STATUS_INV);
     }
 
 
-    if(file_status.st_mtime > (time(0) - (3*NOTIFY_TIME + 30)))
-    {
+    if(file_status.st_mtime > (time(0) - (3*NOTIFY_TIME + 30))) {
         return(GA_STATUS_ACTIVE);
     }
 
@@ -1397,70 +1280,60 @@ char **get_agents(int flag)
 
     /* Opening the directory given */
     dp = opendir(AGENTINFO_DIR);
-    if(!dp)
-    {
+    if(!dp) {
         merror("%s: Error opening directory: '%s': %s ",
-                __local_name,
-                AGENTINFO_DIR,
-                strerror(errno));
+               __local_name,
+               AGENTINFO_DIR,
+               strerror(errno));
         return(NULL);
     }
 
 
     /* Reading directory */
-    while((entry = readdir(dp)) != NULL)
-    {
+    while((entry = readdir(dp)) != NULL) {
         int status = 0;
         char tmp_file[513];
         tmp_file[512] = '\0';
 
         /* Just ignore . and ..  */
         if((strcmp(entry->d_name,".") == 0) ||
-           (strcmp(entry->d_name,"..") == 0))
+                (strcmp(entry->d_name,"..") == 0))
             continue;
 
         snprintf(tmp_file, 512, "%s/%s", AGENTINFO_DIR, entry->d_name);
 
 
-        if(flag != GA_ALL)
-        {
+        if(flag != GA_ALL) {
             struct stat file_status;
 
             if(stat(tmp_file, &file_status) < 0)
                 continue;
 
-            if(file_status.st_mtime > (time(0) - (3*NOTIFY_TIME + 30)))
-            {
+            if(file_status.st_mtime > (time(0) - (3*NOTIFY_TIME + 30))) {
                 status = 1;
                 if(flag == GA_NOTACTIVE)
                     continue;
-            }
-            else
-            {
+            } else {
                 if(flag == GA_ACTIVE)
                     continue;
             }
         }
 
         f_files = (char **)realloc(f_files, (f_size +2) * sizeof(char *));
-        if(!f_files)
-        {
+        if(!f_files) {
             ErrorExit(MEM_ERROR, __local_name);
         }
 
 
         /* Adding agent entry */
-        if(flag == GA_ALL_WSTATUS)
-        {
-           char agt_stat[512];
+        if(flag == GA_ALL_WSTATUS) {
+            char agt_stat[512];
 
-           snprintf(agt_stat, sizeof(agt_stat) -1, "%s %s",
-                    entry->d_name, status == 1?"active":"disconnected");
+            snprintf(agt_stat, sizeof(agt_stat) -1, "%s %s",
+                     entry->d_name, status == 1?"active":"disconnected");
 
-           os_strdup(agt_stat, f_files[f_size]);
-        }
-        else
-        {
+            os_strdup(agt_stat, f_files[f_size]);
+        } else {
             os_strdup(entry->d_name, f_files[f_size]);
         }
 

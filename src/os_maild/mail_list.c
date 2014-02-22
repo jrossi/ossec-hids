@@ -54,8 +54,7 @@ MailNode *OS_PopLastMail()
 
     oldlast = lastnode;
 
-    if(lastnode == NULL)
-    {
+    if(lastnode == NULL) {
         n_node = NULL;
         return(NULL);
     }
@@ -105,13 +104,11 @@ void OS_AddMailtoList(MailMsg *ml)
 {
     MailNode *tmp_node = n_node;
 
-    if(tmp_node)
-    {
+    if(tmp_node) {
         MailNode *new_node;
         new_node = (MailNode *)calloc(1,sizeof(MailNode));
 
-        if(new_node == NULL)
-        {
+        if(new_node == NULL) {
             ErrorExit(MEM_ERROR,ARGV0);
         }
 
@@ -131,8 +128,7 @@ void OS_AddMailtoList(MailMsg *ml)
         _memoryused++;
 
         /* Need to remove the last node */
-        if(_memoryused > _memorymaxsize)
-        {
+        if(_memoryused > _memorymaxsize) {
             MailNode *oldlast;
 
             oldlast = lastnode;
@@ -145,12 +141,10 @@ void OS_AddMailtoList(MailMsg *ml)
         }
     }
 
-    else
-    {
+    else {
         /* Adding first node */
         n_node = (MailNode *)calloc(1,sizeof(MailNode));
-        if(n_node == NULL)
-        {
+        if(n_node == NULL) {
             ErrorExit(MEM_ERROR,ARGV0);
         }
 

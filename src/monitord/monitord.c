@@ -22,7 +22,7 @@ void Monitord()
     time_t tm;
     struct tm *p;
 
-    int today = 0;		
+    int today = 0;
     int thismonth = 0;
     int thisyear = 0;
 
@@ -36,7 +36,7 @@ void Monitord()
 
     /* Getting currently time before starting */
     tm = time(NULL);
-    p = localtime(&tm);	
+    p = localtime(&tm);
 
     today = p->tm_mday;
     thismonth = p->tm_mon;
@@ -47,8 +47,7 @@ void Monitord()
     /* Connecting to the message queue
      * Exit if it fails.
      */
-    if((mond.a_queue = StartMQ(DEFAULTQUEUE,WRITE)) < 0)
-    {
+    if((mond.a_queue = StartMQ(DEFAULTQUEUE,WRITE)) < 0) {
         ErrorExit(QUEUE_FATAL, ARGV0, DEFAULTQUEUE);
     }
 
@@ -56,28 +55,24 @@ void Monitord()
     /* Sending startup message */
     snprintf(str, OS_SIZE_1024 -1, OS_AD_STARTED);
     if(SendMSG(mond.a_queue, str, ARGV0,
-                       LOCALFILE_MQ) < 0)
-    {
+               LOCALFILE_MQ) < 0) {
         merror(QUEUE_SEND, ARGV0);
     }
 
 
     /* Main monitor loop */
-    while(1)
-    {
+    while(1) {
         tm = time(NULL);
         p = localtime(&tm);
 
 
         /* Checking unavailable agents */
-        if(mond.monitor_agents)
-        {
+        if(mond.monitor_agents) {
             monitor_agents();
         }
 
         /* Day changed, deal with log files */
-        if(today != p->tm_mday)
-        {
+        if(today != p->tm_mday) {
             /* Generate reports. */
             generate_reports(today, thismonth, thisyear, p);
 

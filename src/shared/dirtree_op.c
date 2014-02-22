@@ -28,8 +28,7 @@ OSDirTree *OSDirTree_Create()
     OSDirTree *my_tree;
 
     my_tree = calloc(1, sizeof(OSDirTree));
-    if(!my_tree)
-    {
+    if(!my_tree) {
         return(NULL);
     }
 
@@ -65,18 +64,15 @@ OSDirTree *_OSTreeNode_Add(OSDirTree *tree, char *str,
 
     /* Looking for a next entry */
     tmp_str = strchr(str, sep);
-    if(tmp_str)
-    {
+    if(tmp_str) {
         *tmp_str = '\0';
     }
 
 
     /* Creating new tree */
-    if(!tree)
-    {
+    if(!tree) {
         tree = calloc(1, sizeof(OSDirTree));
-        if(!tree)
-        {
+        if(!tree) {
             return(NULL);
         }
 
@@ -88,13 +84,10 @@ OSDirTree *_OSTreeNode_Add(OSDirTree *tree, char *str,
     curnode = tree->first_node;
 
     /* Looping on all nodes */
-    while(curnode)
-    {
-        if(strcmp(curnode->value, str) == 0)
-        {
+    while(curnode) {
+        if(strcmp(curnode->value, str) == 0) {
             /* If we have other elements, keep going */
-            if(tmp_str)
-            {
+            if(tmp_str) {
                 curnode->child = _OSTreeNode_Add(curnode->child,
                                                  tmp_str +1, data, sep);
             }
@@ -105,19 +98,15 @@ OSDirTree *_OSTreeNode_Add(OSDirTree *tree, char *str,
 
 
     /* Add a new entry, if not found. */
-    if(!curnode)
-    {
+    if(!curnode) {
         os_calloc(1, sizeof(OSTreeNode), newnode);
         //printf("XXXX Adding node: %s\n", str);
 
 
-        if(!tree->first_node && !tree->last_node)
-        {
+        if(!tree->first_node && !tree->last_node) {
             tree->last_node = newnode;
             tree->first_node = newnode;
-        }
-        else
-        {
+        } else {
             tree->last_node->next = newnode;
         }
 
@@ -127,15 +116,13 @@ OSDirTree *_OSTreeNode_Add(OSDirTree *tree, char *str,
 
 
         /* If we have other elements, keep going */
-        if(tmp_str)
-        {
+        if(tmp_str) {
             newnode->child = _OSTreeNode_Add(newnode->child,
-                    tmp_str +1, data, sep);
+                                             tmp_str +1, data, sep);
             newnode->data = NULL;
         }
         /* Otherwise, set the data in here */
-        else
-        {
+        else {
             newnode->data = data;
             newnode->child = NULL;
         }
@@ -143,8 +130,7 @@ OSDirTree *_OSTreeNode_Add(OSDirTree *tree, char *str,
 
 
     /* Fixing the string back */
-    if(tmp_str)
-    {
+    if(tmp_str) {
         *tmp_str = sep;
     }
 
@@ -173,20 +159,16 @@ void OSDirTree_AddToTree(OSDirTree *tree, char *str, void *data, char sep)
 
     /* First character doesn't count as a separator */
     tmp_str = strchr(str +1, sep);
-    if(tmp_str)
-    {
+    if(tmp_str) {
         *tmp_str = '\0';
     }
 
 
     curnode = tree->first_node;
-    while(curnode)
-    {
-        if(strcmp(str, curnode->value) == 0)
-        {
+    while(curnode) {
+        if(strcmp(str, curnode->value) == 0) {
             /* If we have other elements, keep going */
-            if(tmp_str)
-            {
+            if(tmp_str) {
                 curnode->child = _OSTreeNode_Add(curnode->child,
                                                  tmp_str +1, data, sep);
             }
@@ -198,18 +180,14 @@ void OSDirTree_AddToTree(OSDirTree *tree, char *str, void *data, char sep)
 
 
     /* If we didn't find an entry, create one. */
-    if(!curnode)
-    {
+    if(!curnode) {
         os_calloc(1, sizeof(OSTreeNode), newnode);
         printf("XX Adding MAIN node: %s\n", str);
 
-        if(!tree->first_node && !tree->last_node)
-        {
+        if(!tree->first_node && !tree->last_node) {
             tree->last_node = newnode;
             tree->first_node = newnode;
-        }
-        else
-        {
+        } else {
             printf("XXX last new node: %s\n", tree->last_node->value);
             tree->last_node->next = newnode;
             tree->last_node = newnode;
@@ -220,23 +198,20 @@ void OSDirTree_AddToTree(OSDirTree *tree, char *str, void *data, char sep)
 
 
         /* If we have other elements, keep going */
-        if(tmp_str)
-        {
+        if(tmp_str) {
             newnode->child = _OSTreeNode_Add(newnode->child,
                                              tmp_str +1, data, sep);
             newnode->data = NULL;
         }
         /* Otherwise, set the data in here */
-        else
-        {
+        else {
             newnode->data = data;
             newnode->child = NULL;
         }
     }
 
     /* Fixing the string back */
-    if(tmp_str)
-    {
+    if(tmp_str) {
         *tmp_str = sep;
     }
 
@@ -254,8 +229,7 @@ void *OSDirTree_SearchTree(OSDirTree *tree, char *str, char sep)
 
     /* First character doesn't count as a separator */
     tmp_str = strchr(str +1, sep);
-    if(tmp_str)
-    {
+    if(tmp_str) {
         *tmp_str = '\0';
     }
 
@@ -263,20 +237,15 @@ void *OSDirTree_SearchTree(OSDirTree *tree, char *str, char sep)
 
     /* If our tree is not empty, look for the main entry */
     curnode = tree->first_node;
-    while(curnode)
-    {
+    while(curnode) {
         printf("comparing: '%s' and '%s'\n", str, curnode->value);
-        if(strcmp(str, curnode->value) == 0)
-        {
+        if(strcmp(str, curnode->value) == 0) {
             printf("found node: %s\n", str);
 
             /* If we have other elements, keep going */
-            if(tmp_str)
-            {
+            if(tmp_str) {
                 ret = OSDirTree_SearchTree(curnode->child, tmp_str +1, sep);
-            }
-            else
-            {
+            } else {
                 ret = curnode->data;
             }
             break;
@@ -287,8 +256,7 @@ void *OSDirTree_SearchTree(OSDirTree *tree, char *str, char sep)
 
 
     /* Fixing the string back */
-    if(tmp_str)
-    {
+    if(tmp_str) {
         *tmp_str = sep;
     }
 

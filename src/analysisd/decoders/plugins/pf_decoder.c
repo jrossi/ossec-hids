@@ -51,15 +51,13 @@ void *PF_Decoder_Exec(Eventinfo *lf)
 
 
     /* Didn't match */
-    if(!tmp_str)
-    {
+    if(!tmp_str) {
         return(NULL);
     }
 
     /* Going to the action entry */
     tmp_str++;
-    if(*tmp_str != ' ')
-    {
+    if(*tmp_str != ' ') {
         return(NULL);
     }
     tmp_str++;
@@ -69,16 +67,11 @@ void *PF_Decoder_Exec(Eventinfo *lf)
 
 
     /* Getting action */
-    if(*tmp_str == 'p')
-    {
+    if(*tmp_str == 'p') {
         os_strdup("pass", lf->action);
-    }
-    else if(*tmp_str == 'b')
-    {
+    } else if(*tmp_str == 'b') {
         os_strdup("block", lf->action);
-    }
-    else
-    {
+    } else {
         /* Unknown action */
         return(NULL);
     }
@@ -86,13 +79,11 @@ void *PF_Decoder_Exec(Eventinfo *lf)
 
     /* Jumping to the src ip */
     tmp_str = strchr(tmp_str, ':');
-    if(!tmp_str)
-    {
+    if(!tmp_str) {
         return(NULL);
     }
     tmp_str++;
-    if(*tmp_str != ' ')
-    {
+    if(*tmp_str != ' ') {
         return(NULL);
     }
     tmp_str++;
@@ -118,15 +109,13 @@ void *PF_Decoder_Exec(Eventinfo *lf)
 
     /* Setting the source port if present */
     tmp_str = lf->srcip;
-    while(*tmp_str != '\0')
-    {
+    while(*tmp_str != '\0') {
         if(*tmp_str == '.')
             port_count++;
 
 
         /* Found port */
-        if(port_count == 4)
-        {
+        if(port_count == 4) {
             *tmp_str = '\0';
             tmp_str++;
             os_strdup(tmp_str, lf->srcport);
@@ -168,15 +157,13 @@ void *PF_Decoder_Exec(Eventinfo *lf)
     /* Getting destination port */
     aux_str = lf->dstip;
     port_count = 0;
-    while(*aux_str != '\0')
-    {
+    while(*aux_str != '\0') {
         if(*aux_str == '.')
             port_count++;
 
 
         /* Found port */
-        if(port_count == 4)
-        {
+        if(port_count == 4) {
             *aux_str = '\0';
             aux_str++;
             os_strdup(aux_str, lf->dstport);
@@ -188,23 +175,15 @@ void *PF_Decoder_Exec(Eventinfo *lf)
 
 
     /* Getting protocol */
-    while(*tmp_str != '\0')
-    {
-        if(*tmp_str == ' ')
-        {
+    while(*tmp_str != '\0') {
+        if(*tmp_str == ' ') {
             tmp_str++;
             continue;
-        }
-        else if(*tmp_str == 'u')
-        {
+        } else if(*tmp_str == 'u') {
             os_strdup("UDP", lf->protocol);
-        }
-        else if(*tmp_str == 'i')
-        {
+        } else if(*tmp_str == 'i') {
             os_strdup("ICMP", lf->protocol);
-        }
-        else
-        {
+        } else {
             os_strdup("TCP", lf->protocol);
         }
 

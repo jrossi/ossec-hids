@@ -33,46 +33,46 @@ int main(int argc, char **argv)
     OS_SetName(ARGV0);
 
 
-    while((c = getopt(argc, argv, "Vdhtfu:g:D:c:")) != -1){
-        switch(c){
-            case 'V':
-                print_version();
-                break;
-            case 'h':
-                help(ARGV0);
-                break;
-            case 'd':
-                nowDebug();
-                break;
-            case 'f':
-                run_foreground = 1;
-                break;
-            case 'u':
-                if(!optarg)
-                    ErrorExit("%s: -u needs an argument",ARGV0);
-                user=optarg;
-                break;
-            case 'g':
-                if(!optarg)
-                    ErrorExit("%s: -g needs an argument",ARGV0);
-                group=optarg;
-                break;
-            case 'D':
-                if(!optarg)
-                    ErrorExit("%s: -D needs an argument",ARGV0);
-                dir=optarg;
-                break;
-            case 'c':
-                if(!optarg)
-                    ErrorExit("%s: -c needs an argument",ARGV0);
-                cfg = optarg;
-                break;
-            case 't':
-                test_config = 1;
-                break;
-            default:
-                help(ARGV0);
-                break;
+    while((c = getopt(argc, argv, "Vdhtfu:g:D:c:")) != -1) {
+        switch(c) {
+        case 'V':
+            print_version();
+            break;
+        case 'h':
+            help(ARGV0);
+            break;
+        case 'd':
+            nowDebug();
+            break;
+        case 'f':
+            run_foreground = 1;
+            break;
+        case 'u':
+            if(!optarg)
+                ErrorExit("%s: -u needs an argument",ARGV0);
+            user=optarg;
+            break;
+        case 'g':
+            if(!optarg)
+                ErrorExit("%s: -g needs an argument",ARGV0);
+            group=optarg;
+            break;
+        case 'D':
+            if(!optarg)
+                ErrorExit("%s: -D needs an argument",ARGV0);
+            dir=optarg;
+            break;
+        case 'c':
+            if(!optarg)
+                ErrorExit("%s: -c needs an argument",ARGV0);
+            cfg = optarg;
+            break;
+        case 't':
+            test_config = 1;
+            break;
+        default:
+            help(ARGV0);
+            break;
         }
 
     }
@@ -105,41 +105,34 @@ int main(int argc, char **argv)
 
     c = 0;
     c|= CREPORTS;
-    if(ReadConfig(c, cfg, &mond, NULL) < 0)
-    {
+    if(ReadConfig(c, cfg, &mond, NULL) < 0) {
         ErrorExit(CONFIG_ERROR, ARGV0, cfg);
     }
 
     /* If we have any reports configured, read smtp/emailfrom */
-    if(mond.reports)
-    {
+    if(mond.reports) {
         OS_XML xml;
         char *tmpsmtp;
 
-        char *(xml_smtp[])={"ossec_config", "global", "smtp_server", NULL};
-        char *(xml_from[])={"ossec_config", "global", "email_from", NULL};
+        char *(xml_smtp[])= {"ossec_config", "global", "smtp_server", NULL};
+        char *(xml_from[])= {"ossec_config", "global", "email_from", NULL};
 
-        if(OS_ReadXML(cfg, &xml) < 0)
-        {
+        if(OS_ReadXML(cfg, &xml) < 0) {
             ErrorExit(CONFIG_ERROR, ARGV0, cfg);
         }
 
         tmpsmtp = OS_GetOneContentforElement(&xml,xml_smtp);
         mond.emailfrom = OS_GetOneContentforElement(&xml,xml_from);
 
-        if(tmpsmtp && mond.emailfrom)
-        {
+        if(tmpsmtp && mond.emailfrom) {
             mond.smtpserver = OS_GetHost(tmpsmtp, 5);
-            if(!mond.smtpserver)
-            {
+            if(!mond.smtpserver) {
                 merror(INVALID_SMTP, ARGV0, tmpsmtp);
                 if(mond.emailfrom) free(mond.emailfrom);
                 mond.emailfrom = NULL;
                 merror("%s: Invalid SMTP server.  Disabling email reports.", ARGV0);
             }
-        }
-        else
-        {
+        } else {
             if(tmpsmtp) free(tmpsmtp);
             if(mond.emailfrom) free(mond.emailfrom);
 
@@ -157,15 +150,14 @@ int main(int argc, char **argv)
         exit(0);
 
 
-    if (!run_foreground)
-    {
+    if (!run_foreground) {
         /* Going on daemon mode */
         nowDaemon();
         goDaemon();
     }
 
 
-    /* Privilege separation */	
+    /* Privilege separation */
     if(Privsep_SetGroup(gid) < 0)
         ErrorExit(SETGID_ERROR,ARGV0,group);
 
@@ -201,7 +193,7 @@ int main(int argc, char **argv)
     verbose(STARTUP_MSG, ARGV0, (int)getpid());
 
 
-    /* the real daemon now */	
+    /* the real daemon now */
     Monitord();
     exit(0);
 }

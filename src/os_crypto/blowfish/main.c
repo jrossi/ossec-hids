@@ -14,14 +14,12 @@ int main(int argc, char ** argv)
     memset(output, '\0', 1024);
     memset(output2, '\0', 1024);
 
-    if(argc < 3)
-    {
+    if(argc < 3) {
         printf("%s: string key\n", argv[0]);
         exit(1);
     }
 
-    if((strlen(argv[1]) > 1020) || (strlen(argv[2]) > 512))
-    {
+    if((strlen(argv[1]) > 1020) || (strlen(argv[2]) > 512)) {
         printf("%s: size err\n", argv[0]);
         exit(1);
     }
@@ -35,11 +33,10 @@ int main(int argc, char ** argv)
     printf("finished.\n");
     printf("input: '%s'\n",argv[1]);
     printf("crpt: ");
-    for(i=0;i <= strlen(argv[1]);i++)
-    {
+    for(i=0; i <= strlen(argv[1]); i++) {
         printf("%d", output[i]);
     }
     printf("\n");
-    printf("output2: '%s'\n",output2);	
+    printf("output2: '%s'\n",output2);
     return(0);
 }

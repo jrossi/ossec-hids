@@ -24,8 +24,8 @@
  */
 
 #ifdef ARGV0
-   #undef ARGV0
-   #define ARGV0 "ossec-testrule"
+#undef ARGV0
+#define ARGV0 "ossec-testrule"
 #endif
 
 
@@ -143,54 +143,54 @@ int main(int argc, char **argv)
     active_responses = NULL;
     memset(prev_month, '\0', 4);
 
-    while((c = getopt(argc, argv, "VatvdhU:u:g:D:c:")) != -1){
-        switch(c){
-	    case 'V':
-		print_version();
-		break;
-            case 't':
-                t_config = 1;
-                break;
-            case 'h':
-                logtest_help(ARGV0);
-                break;
-            case 'd':
-                nowDebug();
-                break;
-            case 'U':
-                if(!optarg)
-                    ErrorExit("%s: -U needs an argument",ARGV0);
-                ut_str = optarg;
-                break;
-            case 'u':
-                if(!optarg)
-                    ErrorExit("%s: -u needs an argument",ARGV0);
-                user = optarg;
-                break;
-            case 'g':
-                if(!optarg)
-                    ErrorExit("%s: -g needs an argument",ARGV0);
-                group = optarg;
-                break;
-            case 'D':
-                if(!optarg)
-                    ErrorExit("%s: -D needs an argument",ARGV0);
-                dir = optarg;
-                break;
-            case 'c':
-                if(!optarg)
-                    ErrorExit("%s: -c needs an argument",ARGV0);
-                cfg = optarg;
-                break;
-            case 'a':
-                alert_only = 1;
-                break;
-            case 'v':
-                full_output = 1;
-                break;
-            default:
-                logtest_help(ARGV0);
-                break;
+    while((c = getopt(argc, argv, "VatvdhU:u:g:D:c:")) != -1) {
+        switch(c) {
+        case 'V':
+            print_version();
+            break;
+        case 't':
+            t_config = 1;
+            break;
+        case 'h':
+            logtest_help(ARGV0);
+            break;
+        case 'd':
+            nowDebug();
+            break;
+        case 'U':
+            if(!optarg)
+                ErrorExit("%s: -U needs an argument",ARGV0);
+            ut_str = optarg;
+            break;
+        case 'u':
+            if(!optarg)
+                ErrorExit("%s: -u needs an argument",ARGV0);
+            user = optarg;
+            break;
+        case 'g':
+            if(!optarg)
+                ErrorExit("%s: -g needs an argument",ARGV0);
+            group = optarg;
+            break;
+        case 'D':
+            if(!optarg)
+                ErrorExit("%s: -D needs an argument",ARGV0);
+            dir = optarg;
+            break;
+        case 'c':
+            if(!optarg)
+                ErrorExit("%s: -c needs an argument",ARGV0);
+            cfg = optarg;
+            break;
+        case 'a':
+            alert_only = 1;
+            break;
+        case 'v':
+            full_output = 1;
+            break;
+        default:
+            logtest_help(ARGV0);
+            break;
         }
 
     }
@@ -199,8 +199,7 @@ int main(int argc, char **argv)
 
 
     /* Reading configuration file */
-    if(GlobalConf(cfg) < 0)
-    {
+    if(GlobalConf(cfg) < 0) {
         ErrorExit(CONFIG_ERROR,ARGV0, cfg);
     }
 
@@ -210,12 +209,9 @@ int main(int argc, char **argv)
 
     /* Getting servers hostname */
     memset(__shost, '\0', 512);
-    if(gethostname(__shost, 512 -1) != 0)
-    {
+    if(gethostname(__shost, 512 -1) != 0) {
         strncpy(__shost, OSSEC_SERVER, 512 -1);
-    }
-    else
-    {
+    } else {
         char *_ltmp;
 
         /* Remove domain part if available */
@@ -242,32 +238,26 @@ int main(int argc, char **argv)
             /* Initializing the decoders list */
             OS_CreateOSDecoderList();
 
-            if(!Config.decoders)
-            { /* Legacy loading */
+            if(!Config.decoders) {
+                /* Legacy loading */
                 /* Reading decoders */
-                if(!ReadDecodeXML("etc/decoder.xml"))
-                {
+                if(!ReadDecodeXML("etc/decoder.xml")) {
                     ErrorExit(CONFIG_ERROR, ARGV0,  XML_DECODER);
                 }
 
                 /* Reading local ones. */
                 c = ReadDecodeXML("etc/local_decoder.xml");
-                if(!c)
-                {
+                if(!c) {
                     if((c != -2))
                         ErrorExit(CONFIG_ERROR, ARGV0,  XML_LDECODER);
-                }
-                else
-                {
+                } else {
                     verbose("%s: INFO: Reading local decoder file.", ARGV0);
                 }
-            }
-            else
-            { /* New loaded based on file speified in ossec.conf */
+            } else {
+                /* New loaded based on file speified in ossec.conf */
                 char **decodersfiles;
                 decodersfiles = Config.decoders;
-                while( decodersfiles && *decodersfiles)
-                {
+                while( decodersfiles && *decodersfiles) {
 
                     verbose("%s: INFO: Reading decoder file %s.", ARGV0, *decodersfiles);
                     if(!ReadDecodeXML(*decodersfiles))
@@ -288,8 +278,7 @@ int main(int argc, char **argv)
             {
                 char **listfiles;
                 listfiles = Config.lists;
-                while(listfiles && *listfiles)
-                {
+                while(listfiles && *listfiles) {
                     verbose("%s: INFO: Reading the lists file: '%s'", ARGV0, *listfiles);
                     if(Lists_OP_LoadList(*listfiles) < 0)
                         ErrorExit(LISTS_ERROR, ARGV0, *listfiles);
@@ -308,8 +297,7 @@ int main(int argc, char **argv)
             {
                 char **rulesfiles;
                 rulesfiles = Config.includes;
-                while(rulesfiles && *rulesfiles)
-                {
+                while(rulesfiles && *rulesfiles) {
                     debug1("%s: INFO: Reading rules file: '%s'", ARGV0, *rulesfiles);
                     if(Rules_OP_ReadRules(*rulesfiles) < 0)
                         ErrorExit(RULES_ERROR, ARGV0, *rulesfiles);
@@ -345,16 +333,14 @@ int main(int argc, char **argv)
     {
         RuleNode *tmp_node = OS_GetFirstRule();
         Config.g_rules_hash = OSHash_Create();
-        if(!Config.g_rules_hash)
-        {
+        if(!Config.g_rules_hash) {
             ErrorExit(MEM_ERROR, ARGV0);
         }
         AddHash_Rule(tmp_node);
     }
 
 
-    if(t_config == 1)
-    {
+    if(t_config == 1) {
         exit(0);
     }
 
@@ -363,7 +349,7 @@ int main(int argc, char **argv)
     verbose(STARTUP_MSG, ARGV0, getpid());
 
 
-    /* Going to main loop */	
+    /* Going to main loop */
     OS_ReadMSG(m_queue, ut_str);
 
 
@@ -386,29 +372,22 @@ void OS_ReadMSG(int m_queue, char *ut_str)
     char *ut_rulelevel = NULL;
     char *ut_decoder_name = NULL;
 
-    if(ut_str)
-    {
+    if(ut_str) {
         /* XXX Break apart string */
         ut_rulelevel = ut_str;
         ut_alertlevel =  strchr(ut_rulelevel, ':');
-        if(!ut_alertlevel)
-        {
+        if(!ut_alertlevel) {
             ErrorExit("%s: -U requires the matching format to be "
                       "\"<rule_id>:<alert_level>:<decoder_name>\"", ARGV0);
-        }
-        else
-        {
+        } else {
             *ut_alertlevel = '\0';
             ut_alertlevel++;
         }
         ut_decoder_name = strchr(ut_alertlevel, ':');
-        if(!ut_decoder_name)
-        {
+        if(!ut_decoder_name) {
             ErrorExit("%s: -U requires the matching format to be "
                       "\"<rule_id>:<alert_level>:<decoder_name>\"", ARGV0);
-        }
-        else
-        {
+        } else {
             *ut_decoder_name = '\0';
             ut_decoder_name++;
         }
@@ -427,8 +406,7 @@ void OS_ReadMSG(int m_queue, char *ut_str)
 
 
     /* Initiating the FTS list */
-    if(!FTS_Init())
-    {
+    if(!FTS_Init()) {
         ErrorExit(FTS_LIST_ERROR, ARGV0);
     }
 
@@ -445,17 +423,15 @@ void OS_ReadMSG(int m_queue, char *ut_str)
 
 
     if(!alert_only)
-    print_out("%s: Type one log per line.\n", ARGV0);
+        print_out("%s: Type one log per line.\n", ARGV0);
 
 
     /* Daemon loop */
-    while(1)
-    {
+    while(1) {
         lf = (Eventinfo *)calloc(1,sizeof(Eventinfo));
 
         /* This shouldn't happen .. */
-        if(lf == NULL)
-        {
+        if(lf == NULL) {
             ErrorExit(MEM_ERROR,ARGV0);
         }
 
@@ -466,8 +442,7 @@ void OS_ReadMSG(int m_queue, char *ut_str)
 
 
         /* Receive message from queue */
-        if(fgets(msg +8, OS_MAXSTR, stdin))
-        {
+        if(fgets(msg +8, OS_MAXSTR, stdin)) {
             RuleNode *rulenode_pt;
 
             /* Getting the time we received the event */
@@ -480,8 +455,7 @@ void OS_ReadMSG(int m_queue, char *ut_str)
 
 
             /* Make sure we ignore blank lines. */
-            if(strlen(msg) < 10)
-            {
+            if(strlen(msg) < 10) {
                 continue;
             }
 
@@ -494,8 +468,7 @@ void OS_ReadMSG(int m_queue, char *ut_str)
 
 
             /* Clean the msg appropriately */
-            if(OS_CleanMSG(msg, lf) < 0)
-            {
+            if(OS_CleanMSG(msg, lf) < 0) {
                 merror(IMSG_ERROR,ARGV0,msg);
 
                 Free_Eventinfo(lf);
@@ -520,25 +493,21 @@ void OS_ReadMSG(int m_queue, char *ut_str)
 
             /* Looping all the rules */
             rulenode_pt = OS_GetFirstRule();
-            if(!rulenode_pt)
-            {
+            if(!rulenode_pt) {
                 ErrorExit("%s: Rules in an inconsistent state. Exiting.",
-                        ARGV0);
+                          ARGV0);
             }
 
 
-            #ifdef TESTRULE
+#ifdef TESTRULE
             if(full_output && !alert_only)
                 print_out("\n**Rule debugging:");
-            #endif
+#endif
 
 
-            do
-            {
-                if(lf->decoder_info->type == OSSEC_ALERT)
-                {
-                    if(!lf->generated_rule)
-                    {
+            do {
+                if(lf->decoder_info->type == OSSEC_ALERT) {
+                    if(!lf->generated_rule) {
                         break;
                     }
 
@@ -548,48 +517,41 @@ void OS_ReadMSG(int m_queue, char *ut_str)
 
                 /* The categories must match */
                 else if(rulenode_pt->ruleinfo->category !=
-                        lf->decoder_info->type)
-                {
+                        lf->decoder_info->type) {
                     continue;
                 }
 
 
                 /* Checking each rule. */
                 else if((currently_rule = OS_CheckIfRuleMatch(lf, rulenode_pt))
-                        == NULL)
-                {
+                        == NULL) {
                     continue;
                 }
 
-                #ifdef TESTRULE
-                if(!alert_only)
-                {
-                  char *(ruleinfodetail_text[])={"Text","Link","CVE","OSVDB","BUGTRACKID"};
-                  print_out("\n**Phase 3: Completed filtering (rules).");
-                  print_out("       Rule id: '%d'", currently_rule->sigid);
-                  print_out("       Level: '%d'", currently_rule->level);
-                  print_out("       Description: '%s'",currently_rule->comment);
-                  for (last_info_detail = currently_rule->info_details; last_info_detail != NULL; last_info_detail = last_info_detail->next)
-                  {
-                      print_out("       Info - %s: '%s'", ruleinfodetail_text[last_info_detail->type], last_info_detail->data);
-                  }
+#ifdef TESTRULE
+                if(!alert_only) {
+                    char *(ruleinfodetail_text[])= {"Text","Link","CVE","OSVDB","BUGTRACKID"};
+                    print_out("\n**Phase 3: Completed filtering (rules).");
+                    print_out("       Rule id: '%d'", currently_rule->sigid);
+                    print_out("       Level: '%d'", currently_rule->level);
+                    print_out("       Description: '%s'",currently_rule->comment);
+                    for (last_info_detail = currently_rule->info_details; last_info_detail != NULL; last_info_detail = last_info_detail->next) {
+                        print_out("       Info - %s: '%s'", ruleinfodetail_text[last_info_detail->type], last_info_detail->data);
+                    }
                 }
-                #endif
+#endif
 
 
 
                 /* Ignore level 0 */
-                if(currently_rule->level == 0)
-                {
+                if(currently_rule->level == 0) {
                     break;
                 }
 
 
                 /* Checking ignore time */
-                if(currently_rule->ignore_time)
-                {
-                    if(currently_rule->time_ignored == 0)
-                    {
+                if(currently_rule->ignore_time) {
+                    if(currently_rule->time_ignored == 0) {
                         currently_rule->time_ignored = lf->time;
                     }
                     /* If the currently time - the time the rule was ignored
@@ -597,12 +559,9 @@ void OS_ReadMSG(int m_queue, char *ut_str)
                      * leave (do not alert again).
                      */
                     else if((lf->time - currently_rule->time_ignored)
-                            < currently_rule->ignore_time)
-                    {
+                            < currently_rule->ignore_time) {
                         break;
-                    }
-                    else
-                    {
+                    } else {
                         currently_rule->time_ignored = 0;
                     }
                 }
@@ -612,60 +571,47 @@ void OS_ReadMSG(int m_queue, char *ut_str)
 
 
                 /* Checking if we should ignore it */
-                if(currently_rule->ckignore && IGnore(lf))
-                {
+                if(currently_rule->ckignore && IGnore(lf)) {
                     /* Ignoring rule */
                     lf->generated_rule = NULL;
                     break;
                 }
 
                 /* Checking if we need to add to ignore list */
-                if(currently_rule->ignore)
-                {
+                if(currently_rule->ignore) {
                     AddtoIGnore(lf);
                 }
 
 
                 /* Log the alert if configured to ... */
-                if(currently_rule->alert_opts & DO_LOGALERT)
-                {
-                    if(alert_only)
-                    {
+                if(currently_rule->alert_opts & DO_LOGALERT) {
+                    if(alert_only) {
                         OS_LogOutput(lf);
                         __crt_ftell++;
-                    }
-                    else
-                    {
+                    } else {
                         print_out("**Alert to be generated.\n\n");
                     }
                 }
 
 
                 /* Copy the structure to the state memory of if_matched_sid */
-                if(currently_rule->sid_prev_matched)
-                {
-                    if(!OSList_AddData(currently_rule->sid_prev_matched, lf))
-                    {
+                if(currently_rule->sid_prev_matched) {
+                    if(!OSList_AddData(currently_rule->sid_prev_matched, lf)) {
                         merror("%s: Unable to add data to sig list.", ARGV0);
-                    }
-                    else
-                    {
+                    } else {
                         lf->sid_node_to_delete =
                             currently_rule->sid_prev_matched->last_node;
                     }
                 }
                 /* Group list */
-                else if(currently_rule->group_prev_matched)
-                {
+                else if(currently_rule->group_prev_matched) {
                     i = 0;
 
-                    while(i < currently_rule->group_prev_matched_sz)
-                    {
+                    while(i < currently_rule->group_prev_matched_sz) {
                         if(!OSList_AddData(
-                                currently_rule->group_prev_matched[i],
-                                lf))
-                        {
-                           merror("%s: Unable to add data to grp list.",ARGV0);
+                                    currently_rule->group_prev_matched[i],
+                                    lf)) {
+                            merror("%s: Unable to add data to grp list.",ARGV0);
                         }
                         i++;
                     }
@@ -675,24 +621,20 @@ void OS_ReadMSG(int m_queue, char *ut_str)
 
                 break;
 
-            }while((rulenode_pt = rulenode_pt->next) != NULL);
+            } while((rulenode_pt = rulenode_pt->next) != NULL);
 
-            if(ut_str)
-            {
+            if(ut_str) {
                 /*setup exit code if we are doing unit testing*/
                 char holder[1024];
                 holder[1] = '\0';
                 exit_code = 3;
-                if(lf->decoder_info->name != NULL && strcasecmp(ut_decoder_name, lf->decoder_info->name) == 0)
-                {
+                if(lf->decoder_info->name != NULL && strcasecmp(ut_decoder_name, lf->decoder_info->name) == 0) {
                     exit_code--;
                     snprintf(holder, 1023, "%d", currently_rule->sigid);
-                    if(strcasecmp(ut_rulelevel, holder) == 0)
-                    {
+                    if(strcasecmp(ut_rulelevel, holder) == 0) {
                         exit_code--;
                         snprintf(holder, 1023, "%d", currently_rule->level);
-                        if(strcasecmp(ut_alertlevel, holder) == 0)
-                        {
+                        if(strcasecmp(ut_alertlevel, holder) == 0) {
                             exit_code--;
                             printf("%d\n",exit_code);
                         }
@@ -708,9 +650,7 @@ void OS_ReadMSG(int m_queue, char *ut_str)
             if(lf->generated_rule == NULL)
                 Free_Eventinfo(lf);
 
-        }
-        else
-        {
+        } else {
             exit(exit_code);
         }
     }

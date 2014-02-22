@@ -32,16 +32,14 @@ OSHash *OSHash_Create()
 
     /* Allocating memory for the hash */
     self = calloc(1, sizeof(OSHash));
-    if(!self)
-    {
+    if(!self) {
         return(NULL);
     }
 
 
     /* Setting default row size */
     self->rows = os_getprime(1024);
-    if(self->rows == 0)
-    {
+    if(self->rows == 0) {
         free(self);
         return(NULL);
     }
@@ -49,16 +47,14 @@ OSHash *OSHash_Create()
 
     /* Creating hashing table */
     self->table = (OSHashNode **)calloc(self->rows +1, sizeof(OSHashNode *));
-    if(!self->table)
-    {
+    if(!self->table) {
         free(self);
         return(NULL);
     }
 
 
     /* Zeroing our tables */
-    for(i = 0; i <= self->rows; i++)
-    {
+    for(i = 0; i <= self->rows; i++) {
         self->table[i] = NULL;
     }
 
@@ -85,12 +81,10 @@ void *OSHash_Free(OSHash *self)
 
 
     /* Freeing each entry */
-    while(i <= self->rows)
-    {
+    while(i <= self->rows) {
         curr_node = self->table[i];
         next_node = curr_node;
-        while(next_node)
-        {
+        while(next_node) {
             next_node = next_node->next;
             free(curr_node);
             curr_node = next_node;
@@ -118,8 +112,7 @@ int _os_genhash(OSHash *self, char *key)
     /* What we have here is a simple polynomial hash.
      * x0 * a^k-1 .. xk * a^k-k +1
      */
-    while(*key)
-    {
+    while(*key) {
         hash_key *= self->constant;
         hash_key += *key;
         key++;
@@ -139,31 +132,27 @@ int OSHash_setSize(OSHash *self, int new_size)
     int i = 0;
 
     /* We can't decrease the size */
-    if(new_size <= self->rows)
-    {
+    if(new_size <= self->rows) {
         return(1);
     }
 
 
     /* Getting next prime */
     self->rows = os_getprime(new_size);
-    if(self->rows == 0)
-    {
+    if(self->rows == 0) {
         return(0);
     }
 
 
     /* If we fail, the hash should not be used anymore */
     self->table = realloc(self->table, (self->rows +1) * sizeof(OSHashNode *));
-    if(!self->table)
-    {
+    if(!self->table) {
         return(0);
     }
 
 
     /* Zeroing our tables */
-    for(i = 0; i <= self->rows; i++)
-    {
+    for(i = 0; i <= self->rows; i++) {
         self->table[i] = NULL;
     }
 
@@ -199,11 +188,9 @@ int OSHash_Update(OSHash *self, char *key, void *data)
 
     /* Checking for duplicated entries in the index */
     curr_node = self->table[index];
-    while(curr_node)
-    {
+    while(curr_node) {
         /* Checking for duplicated key -- not adding */
-        if(strcmp(curr_node->key, key) == 0)
-        {
+        if(strcmp(curr_node->key, key) == 0) {
             free(curr_node->data);
             curr_node->data = data;
             return(1);
@@ -240,11 +227,9 @@ int OSHash_Add(OSHash *self, char *key, void *data)
 
     /* Checking for duplicated entries in the index */
     curr_node = self->table[index];
-    while(curr_node)
-    {
+    while(curr_node) {
         /* Checking for duplicated key -- not adding */
-        if(strcmp(curr_node->key, key) == 0)
-        {
+        if(strcmp(curr_node->key, key) == 0) {
             /* Not adding */
             return(1);
         }
@@ -254,8 +239,7 @@ int OSHash_Add(OSHash *self, char *key, void *data)
 
     /* Creating new node */
     new_node = calloc(1, sizeof(OSHashNode));
-    if(!new_node)
-    {
+    if(!new_node) {
         return(0);
     }
     new_node->next = NULL;
@@ -264,13 +248,11 @@ int OSHash_Add(OSHash *self, char *key, void *data)
 
 
     /* Adding to table */
-    if(!self->table[index])
-    {
+    if(!self->table[index]) {
         self->table[index] = new_node;
     }
     /* If there is duplicated, add to the beginning */
-    else
-    {
+    else {
         new_node->next = self->table[index];
         self->table[index] = new_node;
     }
@@ -303,11 +285,9 @@ void *OSHash_Get(OSHash *self, char *key)
 
     /* Getting entry */
     curr_node = self->table[index];
-    while(curr_node)
-    {
+    while(curr_node) {
         /* We may have colisions, so double check with strcmp */
-        if(strcmp(curr_node->key, key) == 0)
-        {
+        if(strcmp(curr_node->key, key) == 0) {
             return(curr_node->data);
         }
 

@@ -55,10 +55,8 @@ int dogrep(char *file, char *str)
     memset(line, '\0', OS_MAXSTR +1);
 
     /* Reading file and looking for str */
-    while(fgets(line, OS_MAXSTR, fp) != NULL)
-    {
-        if(OS_Match(str, line))
-        {
+    while(fgets(line, OS_MAXSTR, fp) != NULL) {
+        if(OS_Match(str, line)) {
             fclose(fp);
             return(1);
         }
@@ -89,8 +87,7 @@ void get_win_dir(char *file, int f_size)
 {
     ExpandEnvironmentStrings("%WINDIR%", file, f_size);
 
-    if(!direxist(file))
-    {
+    if(!direxist(file)) {
         strncpy(file, "C:\\WINDOWS", f_size);
     }
 }

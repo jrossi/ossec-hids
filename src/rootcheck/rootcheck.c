@@ -69,11 +69,11 @@ int rootcheck_init(int test_config)
 
 #endif
 
-    #ifdef OSSECHIDS
+#ifdef OSSECHIDS
     char *cfg = DEFAULTCPATH;
-    #else
+#else
     char *cfg = "./rootcheck.conf";
-    #endif
+#endif
 
     /* Zeroing the structure, initializing default values */
     rootcheck.workdir = NULL;
@@ -102,84 +102,80 @@ int rootcheck_init(int test_config)
     rootcheck.checks.rc_sys = 1;
     rootcheck.checks.rc_trojans = 1;
 
-    #ifdef WIN32
+#ifdef WIN32
 
     rootcheck.checks.rc_winaudit = 1;
     rootcheck.checks.rc_winmalware = 1;
     rootcheck.checks.rc_winapps = 1;
 
-    #else
+#else
 
     rootcheck.checks.rc_unixaudit = 1;
 
-    #endif
+#endif
 
     /* We store up to 255 alerts in there. */
     os_calloc(256, sizeof(char *), rootcheck.alert_msg);
     c = 0;
-    while(c <= 255)
-    {
+    while(c <= 255) {
         rootcheck.alert_msg[c] = NULL;
         c++;
     }
 
 
-    #ifndef OSSECHIDS
+#ifndef OSSECHIDS
     rootcheck.notify = SYSLOG;
     rootcheck.daemon = 0;
-    while((c = getopt(argc, argv, "VstrdhD:c:")) != -1)
-    {
-        switch(c)
-        {
-            case 'V':
-                print_version();
-                break;
-            case 'h':
-                rootcheck_help();
-                break;
-            case 'd':
-                nowDebug();
-                break;
-            case 'D':
-                if(!optarg)
-                    ErrorExit("%s: -D needs an argument",ARGV0);
-                rootcheck.workdir = optarg;
-                break;
-            case 'c':
-                if(!optarg)
-                    ErrorExit("%s: -c needs an argument",ARGV0);
-                cfg = optarg;
-                break;
-            case 's':
-                rootcheck.scanall = 1;
-                break;
-            case 't':
-                test_config = 1;
-                break;
-            case 'r':
-                rootcheck.readall = 1;
-                break;
-            default:
-                rootcheck_help();
-                break;
+    while((c = getopt(argc, argv, "VstrdhD:c:")) != -1) {
+        switch(c) {
+        case 'V':
+            print_version();
+            break;
+        case 'h':
+            rootcheck_help();
+            break;
+        case 'd':
+            nowDebug();
+            break;
+        case 'D':
+            if(!optarg)
+                ErrorExit("%s: -D needs an argument",ARGV0);
+            rootcheck.workdir = optarg;
+            break;
+        case 'c':
+            if(!optarg)
+                ErrorExit("%s: -c needs an argument",ARGV0);
+            cfg = optarg;
+            break;
+        case 's':
+            rootcheck.scanall = 1;
+            break;
+        case 't':
+            test_config = 1;
+            break;
+        case 'r':
+            rootcheck.readall = 1;
+            break;
+        default:
+            rootcheck_help();
+            break;
         }
 
     }
 
 
-    #ifdef WIN32
+#ifdef WIN32
     /* Starting Winsock */
     {
         WSADATA wsaData;
-        if (WSAStartup(MAKEWORD(2, 0), &wsaData) != 0)
-        {
+        if (WSAStartup(MAKEWORD(2, 0), &wsaData) != 0) {
             ErrorExit("%s: WSAStartup() failed", ARGV0);
         }
     }
-    #endif
+#endif
 
 
-    #endif /* OSSECHIDS */
+#endif /* OSSECHIDS */
 
 
     /* Staring message */
@@ -187,16 +183,14 @@ int rootcheck_init(int test_config)
 
 
     /* Checking if the configuration is present */
-    if(File_DateofChange(cfg) < 0)
-    {
+    if(File_DateofChange(cfg) < 0) {
         merror("%s: Configuration file '%s' not found",ARGV0,cfg);
         return(-1);
     }
 
 
     /* Reading configuration  --function specified twice (check makefile) */
-    if(Read_Rootcheck_Config(cfg, &rootcheck) < 0)
-    {
+    if(Read_Rootcheck_Config(cfg, &rootcheck) < 0) {
         ErrorExit(CONFIG_ERROR, ARGV0, cfg);
     }
 
@@ -207,19 +201,17 @@ int rootcheck_init(int test_config)
 
 
     /* Return 1 disables rootcheck */
-    if(rootcheck.disabled == 1)
-    {
+    if(rootcheck.disabled == 1) {
         verbose("%s: Rootcheck disabled. Exiting.", ARGV0);
         return(1);
     }
 
 
     /* Checking if Unix audit file is configured. */
-    if(!rootcheck.unixaudit)
-    {
-        #ifndef WIN32
+    if(!rootcheck.unixaudit) {
+#ifndef WIN32
         log2file("%s: System audit file not configured.", ARGV0);
-        #endif
+#endif
     }
 
 
@@ -228,29 +220,26 @@ int rootcheck_init(int test_config)
         rootcheck.workdir = DEFAULTDIR;
 
 
-    #ifdef OSSECHIDS
+#ifdef OSSECHIDS
 
 
     /* Start up message */
-    #ifdef WIN32
+#ifdef WIN32
     verbose(STARTUP_MSG, "ossec-rootcheck", getpid());
-    #else
+#else
 
 
     /* Connect to the queue if configured to do so */
-    if(rootcheck.notify == QUEUE)
-    {
+    if(rootcheck.notify == QUEUE) {
         debug1("%s: Starting queue ...",ARGV0);
 
         /* Starting the queue. */
-        if((rootcheck.queue = StartMQ(DEFAULTQPATH,WRITE)) < 0)
-        {
+        if((rootcheck.queue = StartMQ(DEFAULTQPATH,WRITE)) < 0) {
             merror(QUEUE_ERROR,ARGV0,DEFAULTQPATH, strerror(errno));
 
             /* 5 seconds to see if the agent starts */
             sleep(5);
-            if((rootcheck.queue = StartMQ(DEFAULTQPATH,WRITE)) < 0)
-            {
+            if((rootcheck.queue = StartMQ(DEFAULTQPATH,WRITE)) < 0) {
                 /* more 10 seconds wait.. */
                 merror(QUEUE_ERROR,ARGV0,DEFAULTQPATH, strerror(errno));
                 sleep(10);
@@ -260,33 +249,32 @@ int rootcheck_init(int test_config)
         }
     }
 
-    #endif /* Not win32 */
+#endif /* Not win32 */
 
-    #endif /* ossec hids */
+#endif /* ossec hids */
 
 
     /* Initializing rk list */
     rk_sys_name = calloc(MAX_RK_SYS +2, sizeof(char *));
     rk_sys_file = calloc(MAX_RK_SYS +2, sizeof(char *));
-    if(!rk_sys_name || !rk_sys_file)
-    {
+    if(!rk_sys_name || !rk_sys_file) {
         ErrorExit(MEM_ERROR, ARGV0);
     }
     rk_sys_name[0] = NULL;
     rk_sys_file[0] = NULL;
 
 
-    #ifndef OSSECHIDS
+#ifndef OSSECHIDS
 
-    #ifndef WIN32
+#ifndef WIN32
     /* Start the signal handling */
     StartSIG(ARGV0);
-    #endif
+#endif
 
-    #else
+#else
     return(0);
 
-    #endif
+#endif
 
 
     debug1("%s: DEBUG: Running run_rk_check",ARGV0);

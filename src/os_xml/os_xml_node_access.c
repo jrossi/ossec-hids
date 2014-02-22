@@ -27,34 +27,26 @@
  */
 void OS_ClearNode(xml_node **node)
 {
-    if(node)
-    {
+    if(node) {
         int i=0;
-        while(node[i])
-        {
-            if(node[i]->element)
-            {
+        while(node[i]) {
+            if(node[i]->element) {
                 free(node[i]->element);
             }
-            if(node[i]->content)
-            {
+            if(node[i]->content) {
                 free(node[i]->content);
             }
-            if(node[i]->attributes)
-            {
+            if(node[i]->attributes) {
                 int j=0;
-                while(node[i]->attributes[j])
-                {
+                while(node[i]->attributes[j]) {
                     free(node[i]->attributes[j]);
                     j++;
                 }
                 free(node[i]->attributes);
             }
-            if(node[i]->values)
-            {
+            if(node[i]->values) {
                 int j=0;
-                while(node[i]->values[j])
-                {
+                while(node[i]->values[j]) {
                     free(node[i]->values[j]);
                     j++;
                 }
@@ -83,24 +75,18 @@ xml_node **OS_GetElementsbyNode(OS_XML *_lxml, xml_node *node)
     int i,j,k=0;
     xml_node **ret=NULL;
 
-    if(node == NULL)
-    {
+    if(node == NULL) {
         j = -1;
         i = 0;
-    }
-    else
-    {
+    } else {
         i = node->key;
         j = _lxml->rl[i++];
     }
 
 
-    for(;i<_lxml->cur;i++)
-    {
-        if(_lxml->tp[i] == XML_ELEM)
-        {
-            if((_lxml->rl[i] == j+1) && (_lxml->el[i] != NULL))
-            {
+    for(; i<_lxml->cur; i++) {
+        if(_lxml->tp[i] == XML_ELEM) {
+            if((_lxml->rl[i] == j+1) && (_lxml->el[i] != NULL)) {
                 int l=i+1;
                 /* Allocating for xml_node ** */
                 ret = (xml_node**)realloc(ret,(k+1)*sizeof(xml_node*));
@@ -119,15 +105,13 @@ xml_node **OS_GetElementsbyNode(OS_XML *_lxml, xml_node *node)
 
                 /* Getting the element */
                 ret[k]->element=strdup(_lxml->el[i]);
-                if(ret[k]->element == NULL)
-                {
+                if(ret[k]->element == NULL) {
                     free(ret);
                     return(NULL);
                 }
 
                 /* Getting the content */
-                if(_lxml->ct[i])
-                {
+                if(_lxml->ct[i]) {
                     ret[k]->content=strdup(_lxml->ct[i]);
                     if(ret[k]->content == NULL)
                         return(NULL);
@@ -136,34 +120,29 @@ xml_node **OS_GetElementsbyNode(OS_XML *_lxml, xml_node *node)
                 ret[k]->key = i;
 
                 /* Getting attributes */
-                while(l < _lxml->cur)
-                {
+                while(l < _lxml->cur) {
                     if((_lxml->tp[l] == XML_ATTR)&&(_lxml->rl[l] == j+1)&&
-                        (_lxml->el[l]) && (_lxml->ct[l]))
-                        {
-                            ret[k]->attributes =
-                                (char**)realloc(ret[k]->attributes,
-                                                (l-i+1)*sizeof(char*));
-                            ret[k]->values =
-                                (char**)realloc(ret[k]->values,
-                                                (l-i+1)*sizeof(char*));
-                            if(!(ret[k]->attributes) ||
-                                    !(ret[k]->values))
-                                return(NULL);
-                            ret[k]->attributes[l-i-1]=strdup(_lxml->el[l]);
-                            ret[k]->values[l-i-1] = strdup(_lxml->ct[l]);
-                            if(!(ret[k]->attributes[l-i-1]) ||
-                                    !(ret[k]->values[l-i-1]))
-                                return(NULL);
-                            l++;
-                        }
-                    else
-                    {
+                            (_lxml->el[l]) && (_lxml->ct[l])) {
+                        ret[k]->attributes =
+                            (char**)realloc(ret[k]->attributes,
+                                            (l-i+1)*sizeof(char*));
+                        ret[k]->values =
+                            (char**)realloc(ret[k]->values,
+                                            (l-i+1)*sizeof(char*));
+                        if(!(ret[k]->attributes) ||
+                                !(ret[k]->values))
+                            return(NULL);
+                        ret[k]->attributes[l-i-1]=strdup(_lxml->el[l]);
+                        ret[k]->values[l-i-1] = strdup(_lxml->ct[l]);
+                        if(!(ret[k]->attributes[l-i-1]) ||
+                                !(ret[k]->values[l-i-1]))
+                            return(NULL);
+                        l++;
+                    } else {
                         break;
                     }
                 }
-                if(ret[k]->attributes)
-                {
+                if(ret[k]->attributes) {
                     ret[k]->attributes[l-i-1] = NULL;
                     ret[k]->values[l-i-1] = NULL;
                 }
@@ -171,8 +150,7 @@ xml_node **OS_GetElementsbyNode(OS_XML *_lxml, xml_node *node)
                 continue;
             }
         }
-        if((_lxml->tp[i] == XML_ELEM)&&(j+1 > _lxml->rl[i]))
-        {
+        if((_lxml->tp[i] == XML_ELEM)&&(j+1 > _lxml->rl[i])) {
             if(j == -1)
                 continue;
             else

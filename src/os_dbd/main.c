@@ -15,11 +15,11 @@
 
 
 #ifndef DBD
-   #define DBD
+#define DBD
 #endif
 
 #ifndef ARGV0
-   #define ARGV0 "ossec-dbd"
+#define ARGV0 "ossec-dbd"
 #endif
 
 #include "shared.h"
@@ -32,17 +32,17 @@ void db_info()
     print_out(" ");
     print_out("%s %s - %s", __ossec_name, __version, __author);
 
-    #ifdef UMYSQL
+#ifdef UMYSQL
     print_out("Compiled with MySQL support.");
-    #endif
+#endif
 
-    #ifdef UPOSTGRES
+#ifdef UPOSTGRES
     print_out("Compiled with PostgreSQL support.");
-    #endif
+#endif
 
-    #if !defined(UMYSQL) && !defined(UPOSTGRES)
+#if !defined(UMYSQL) && !defined(UPOSTGRES)
     print_out("Compiled without any Database support.");
-    #endif
+#endif
 
     print_out(" ");
     print_out("%s",__license);
@@ -73,49 +73,49 @@ int main(int argc, char **argv)
     OS_SetName(ARGV0);
 
 
-    while((c = getopt(argc, argv, "vVdhtfu:g:D:c:")) != -1){
-        switch(c){
-            case 'V':
-                db_info();
-                break;
-            case 'v':
-                db_info();
-                break;
-            case 'h':
-                help(ARGV0);
-                break;
-            case 'd':
-                nowDebug();
-                break;
-            case 'f':
-                run_foreground = 1;
-                break;
-            case 'u':
-                if(!optarg)
-                    ErrorExit("%s: -u needs an argument",ARGV0);
-                user=optarg;
-                break;
-            case 'g':
-                if(!optarg)
-                    ErrorExit("%s: -g needs an argument",ARGV0);
-                group=optarg;
-                break;
-            case 'D':
-                if(!optarg)
-                    ErrorExit("%s: -D needs an argument",ARGV0);
-                dir=optarg;
-                break;
-            case 'c':
-                if(!optarg)
-                    ErrorExit("%s: -c needs an argument",ARGV0);
-                cfg = optarg;
-                break;
-            case 't':
-                test_config = 1;
-                break;
-            default:
-                help(ARGV0);
-                break;
+    while((c = getopt(argc, argv, "vVdhtfu:g:D:c:")) != -1) {
+        switch(c) {
+        case 'V':
+            db_info();
+            break;
+        case 'v':
+            db_info();
+            break;
+        case 'h':
+            help(ARGV0);
+            break;
+        case 'd':
+            nowDebug();
+            break;
+        case 'f':
+            run_foreground = 1;
+            break;
+        case 'u':
+            if(!optarg)
+                ErrorExit("%s: -u needs an argument",ARGV0);
+            user=optarg;
+            break;
+        case 'g':
+            if(!optarg)
+                ErrorExit("%s: -g needs an argument",ARGV0);
+            group=optarg;
+            break;
+        case 'D':
+            if(!optarg)
+                ErrorExit("%s: -D needs an argument",ARGV0);
+            dir=optarg;
+            break;
+        case 'c':
+            if(!optarg)
+                ErrorExit("%s: -c needs an argument",ARGV0);
+            cfg = optarg;
+            break;
+        case 't':
+            test_config = 1;
+            break;
+        default:
+            help(ARGV0);
+            break;
         }
 
     }
@@ -128,15 +128,13 @@ int main(int argc, char **argv)
     /* Check if the user/group given are valid */
     uid = Privsep_GetUser(user);
     gid = Privsep_GetGroup(group);
-    if((uid < 0)||(gid < 0))
-    {
+    if((uid < 0)||(gid < 0)) {
         ErrorExit(USER_ERROR, ARGV0, user, group);
     }
 
 
     /* Reading configuration */
-    if((c = OS_ReadDBConf(test_config, cfg, &db_config)) < 0)
-    {
+    if((c = OS_ReadDBConf(test_config, cfg, &db_config)) < 0) {
         ErrorExit(CONFIG_ERROR, ARGV0, cfg);
     }
 
@@ -146,8 +144,7 @@ int main(int argc, char **argv)
         exit(0);
 
 
-    if(!run_foreground)
-    {
+    if(!run_foreground) {
         /* Going on daemon mode */
         nowDaemon();
         goDaemon();
@@ -156,8 +153,7 @@ int main(int argc, char **argv)
 
 
     /* Not configured */
-    if(c == 0)
-    {
+    if(c == 0) {
         verbose("%s: Database not configured. Clean exit.", ARGV0);
         exit(0);
     }
@@ -180,15 +176,13 @@ int main(int argc, char **argv)
 
     /* Connecting to the database */
     c = 0;
-    while(c <= (db_config.maxreconnect * 10))
-    {
+    while(c <= (db_config.maxreconnect * 10)) {
         db_config.conn = osdb_connect(db_config.host, db_config.user,
                                       db_config.pass, db_config.db,
                                       db_config.port,db_config.sock);
 
         /* If we are able to reconnect, keep going */
-        if(db_config.conn)
-        {
+        if(db_config.conn) {
             break;
         }
 
@@ -199,8 +193,7 @@ int main(int argc, char **argv)
 
 
     /* If after the maxreconnect attempts, it still didn't work, exit here. */
-    if(!db_config.conn)
-    {
+    if(!db_config.conn) {
         merror(DB_CONFIGERR, ARGV0);
         ErrorExit(CONFIG_ERROR, ARGV0, cfg);
     }
@@ -211,7 +204,7 @@ int main(int argc, char **argv)
             ARGV0, db_config.db, db_config.host);
 
 
-    /* Privilege separation */	
+    /* Privilege separation */
     if(Privsep_SetGroup(gid) < 0)
         ErrorExit(SETGID_ERROR,ARGV0,group);
 
@@ -227,15 +220,13 @@ int main(int argc, char **argv)
 
     /* Inserting server info into the db */
     db_config.server_id = OS_Server_ReadInsertDB(&db_config);
-    if(db_config.server_id <= 0)
-    {
+    if(db_config.server_id <= 0) {
         ErrorExit(CONFIG_ERROR, ARGV0, cfg);
     }
 
 
     /* Read rules and insert into the db */
-    if(OS_InsertRulesDB(&db_config) < 0)
-    {
+    if(OS_InsertRulesDB(&db_config) < 0) {
         ErrorExit(CONFIG_ERROR, ARGV0, cfg);
     }
 
@@ -262,7 +253,7 @@ int main(int argc, char **argv)
     verbose(STARTUP_MSG, ARGV0, (int)getpid());
 
 
-    /* the real daemon now */	
+    /* the real daemon now */
     OS_DBD(&db_config);
     exit(0);
 }

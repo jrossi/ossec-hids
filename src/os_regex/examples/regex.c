@@ -11,13 +11,12 @@
 int main(int argc,char **argv)
 {
 
-    if(argc != 3)
-    {
+    if(argc != 3) {
         printf("%s regex word\n",argv[0]);
         exit(1);
     }
 
-    printf("for REGEX: ");	
+    printf("for REGEX: ");
     if(OS_Regex(argv[1],argv[2]))
         printf("TRUE\n");
     else

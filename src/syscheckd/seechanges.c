@@ -23,14 +23,11 @@ int is_text(magic_t cookie, const void* buf, size_t len)
 {
     const char* magic = magic_buffer(cookie, buf, len);
 
-    if(!magic)
-    {
+    if(!magic) {
         const char* err = magic_error(cookie);
         merror("%s: ERROR: magic_buffer: %s", ARGV0, err ? err : "unknown");
         return(1); // TODO default to true?
-    }
-    else
-    {
+    } else {
         if(strncmp(magic, "text/", 5) == 0) return(1);
     }
 
@@ -54,34 +51,27 @@ char *gen_diff_alert(char *filename, int alert_diff_time)
              DIFF_DIR_PATH, filename,  alert_diff_time);
 
     fp = fopen(buf, "r");
-    if(!fp)
-    {
+    if(!fp) {
         merror("%s: ERROR: Unable to generate diff alert.", ARGV0);
         return(NULL);
     }
 
     n = fread(buf, 1, 4096 -1, fp);
-    if(n <= 0)
-    {
+    if(n <= 0) {
         merror("%s: ERROR: Unable to generate diff alert (fread).", ARGV0);
         fclose(fp);
         return(NULL);
-    }
-    else if(n >= 4000)
-    {
+    } else if(n >= 4000) {
         /* We need to clear the last new line. */
         buf[n] = '\0';
         tmp_str = strrchr(buf, '\n');
         if(tmp_str)
             *tmp_str = '\0';
-        else
-        {
+        else {
             /* Weird diff with only one large line. */
             buf[256] = '\0';
         }
-    }
-    else
-    {
+    } else {
         buf[n] = '\0';
     }
 
@@ -92,13 +82,11 @@ char *gen_diff_alert(char *filename, int alert_diff_time)
     tmp_str = buf;
 
 
-    while(tmp_str && (*tmp_str != '\0'))
-    {
+    while(tmp_str && (*tmp_str != '\0')) {
         tmp_str = strchr(tmp_str, '\n');
         if(!tmp_str)
             break;
-        else if(n >= 19)
-        {
+        else if(n >= 19) {
             *tmp_str = '\0';
             break;
         }
@@ -131,25 +119,21 @@ int seechanges_dupfile(char *old, char *new)
     fpr = fopen(old,"r");
     fpw = fopen(new,"w");
 
-    if(!fpr || !fpw)
-    {
+    if(!fpr || !fpw) {
         return(0);
     }
 
     n = fread(buf, 1, 2048, fpr);
-    #ifdef USE_MAGIC
-    if(is_text(magic_cookie, buf, n) == 0)
-    {
+#ifdef USE_MAGIC
+    if(is_text(magic_cookie, buf, n) == 0) {
         goto cleanup;
     }
-    #endif
+#endif
 
-    do
-    {
+    do {
         buf[n] = '\0';
         fwrite(buf, n, 1, fpw);
-    }
-    while((n = fread(buf, 1, 2048, fpr)) > 0);
+    } while((n = fread(buf, 1, 2048, fpr)) > 0);
 
 cleanup:
     fclose(fpr);
@@ -168,8 +152,7 @@ int seechanges_createpath(char *filename)
     os_strdup(filename, buffer);
     newdir = buffer;
     tmpstr = strchr(buffer +1, '/');
-    if(!tmpstr)
-    {
+    if(!tmpstr) {
         merror("%s: ERROR: Invalid path name: '%s'", ARGV0, filename);
         free(buffer);
         return(0);
@@ -178,15 +161,13 @@ int seechanges_createpath(char *filename)
     tmpstr++;
 
 
-    while(1)
-    {
-        if(IsDir(newdir) != 0)
-        {
-            #ifndef WIN32
+    while(1) {
+        if(IsDir(newdir) != 0) {
+#ifndef WIN32
             if(mkdir(newdir, 0770) == -1)
-            #else
+#else
             if(mkdir(newdir) == -1)
-            #endif
+#endif
             {
                 merror(MKDIR_ERROR, ARGV0, newdir);
                 free(buffer);
@@ -194,15 +175,13 @@ int seechanges_createpath(char *filename)
             }
         }
 
-        if(*tmpstr == '\0')
-        {
+        if(*tmpstr == '\0') {
             break;
         }
 
         tmpstr[-1] = '/';
         tmpstr = strchr(tmpstr, '/');
-        if(!tmpstr)
-        {
+        if(!tmpstr) {
             break;
         }
         *tmpstr = '\0';
@@ -237,11 +216,9 @@ char *seechanges_addfile(char *filename)
 
 
     /* If the file is not there, rename new location to last location. */
-    if(OS_MD5_File(old_location, md5sum_old) != 0)
-    {
+    if(OS_MD5_File(old_location, md5sum_old) != 0) {
         seechanges_createpath(old_location);
-        if(seechanges_dupfile(filename, old_location) != 1)
-        {
+        if(seechanges_dupfile(filename, old_location) != 1) {
             merror(RENAME_ERROR, ARGV0, filename);
         }
         return(NULL);
@@ -249,8 +226,7 @@ char *seechanges_addfile(char *filename)
 
 
     /* Get md5sum of the new file. */
-    if(OS_MD5_File(filename, md5sum_new) != 0)
-    {
+    if(OS_MD5_File(filename, md5sum_new) != 0) {
         //merror("%s: ERROR: Invalid internal state (missing '%s').",
         //       ARGV0, filename);
         return(NULL);
@@ -258,8 +234,7 @@ char *seechanges_addfile(char *filename)
 
 
     /* If they match, keep the old file and remove the new. */
-    if(strcmp(md5sum_new, md5sum_old) == 0)
-    {
+    if(strcmp(md5sum_new, md5sum_old) == 0) {
         return(NULL);
     }
 
@@ -269,8 +244,7 @@ char *seechanges_addfile(char *filename)
     snprintf(tmp_location, OS_MAXSTR, "%s/local/%s/state.%d", DIFF_DIR_PATH, filename +1,
              date_of_change);
     rename(old_location, tmp_location);
-    if(seechanges_dupfile(filename, old_location) != 1)
-    {
+    if(seechanges_dupfile(filename, old_location) != 1) {
         merror("%s: ERROR: Unable to create snapshot for %s",ARGV0, filename);
         return(NULL);
     }
@@ -282,8 +256,7 @@ char *seechanges_addfile(char *filename)
              "2>/dev/null",
              tmp_location, old_location,
              DIFF_DIR_PATH, filename +1, date_of_change);
-    if(system(diff_cmd) != 256)
-    {
+    if(system(diff_cmd) != 256) {
         merror("%s: ERROR: Unable to run diff for %s",
                ARGV0,  filename);
         return(NULL);

@@ -21,11 +21,11 @@
 int ExecdConfig(char * cfgfile)
 {
     extern int repeated_offenders_timeout[];
-    #ifdef WIN32
+#ifdef WIN32
     int is_disabled = 1;
-    #else
+#else
     int is_disabled = 0;
-    #endif
+#endif
     char *(xmlf[]) = {"ossec_config", "active-response", "disabled", NULL};
     char *(blocks[]) = {"ossec_config", "active-response", "repeated_offenders", NULL};
     char *disable_entry;
@@ -36,59 +36,47 @@ int ExecdConfig(char * cfgfile)
 
 
     /* Reading XML file */
-    if(OS_ReadXML(cfgfile,&xml) < 0)
-    {
+    if(OS_ReadXML(cfgfile,&xml) < 0) {
         ErrorExit(XML_ERROR, ARGV0, cfgfile, xml.err, xml.err_line);
     }
 
     /* We do not validate the xml in here. It is done by other processes */
     disable_entry = OS_GetOneContentforElement(&xml, xmlf);
-    if(disable_entry)
-    {
-        if(strcmp(disable_entry, "yes") == 0)
-        {
+    if(disable_entry) {
+        if(strcmp(disable_entry, "yes") == 0) {
             is_disabled = 1;
-        }
-        else if(strcmp(disable_entry, "no") == 0)
-        {
+        } else if(strcmp(disable_entry, "no") == 0) {
             is_disabled = 0;
-        }
-        else
-        {
+        } else {
             merror(XML_VALUEERR, ARGV0,
-                    "disabled",
-                    disable_entry);
+                   "disabled",
+                   disable_entry);
             return(-1);
         }
     }
 
     repeated_t = OS_GetOneContentforElement(&xml, blocks);
-    if(repeated_t)
-    {
+    if(repeated_t) {
         int i = 0;
         int j = 0;
         repeated_a = OS_StrBreak(',', repeated_t, 5);
-        if(!repeated_a)
-        {
+        if(!repeated_a) {
             merror(XML_VALUEERR, ARGV0,
-                    "repeated_offenders",
-                    disable_entry);
+                   "repeated_offenders",
+                   disable_entry);
             return(-1);
         }
 
-        while(repeated_a[i] != NULL)
-        {
+        while(repeated_a[i] != NULL) {
             char *tmpt = repeated_a[i];
-            while(*tmpt != '\0')
-            {
+            while(*tmpt != '\0') {
                 if(*tmpt == ' ' || *tmpt == '\t')
-                   tmpt++;
-    	        else
-                   break;
+                    tmpt++;
+                else
+                    break;
             }
 
-            if(*tmpt == '\0')
-            {
+            if(*tmpt == '\0') {
                 i++;
                 continue;
             }

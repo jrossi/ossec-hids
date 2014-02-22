@@ -26,8 +26,9 @@
 
 
 /* To translante between month (int) to month (char) */
-char *(month[])={"Jan","Feb","Mar","Apr","May","Jun","Jul","Aug",
-	             "Sep","Oct","Nov","Dec"};
+char *(month[])= {"Jan","Feb","Mar","Apr","May","Jun","Jul","Aug",
+                  "Sep","Oct","Nov","Dec"
+                 };
 
 
 
@@ -54,8 +55,7 @@ int OS_CleanMSG(char *msg, Eventinfo *lf)
 
     /* Setting pieces as the message */
     pieces = strchr(msg, ':');
-    if(!pieces)
-    {
+    if(!pieces) {
         merror(FORMAT_ERROR, ARGV0);
         return(-1);
     }
@@ -89,36 +89,35 @@ int OS_CleanMSG(char *msg, Eventinfo *lf)
      * ( ex: Dec 29 10:00:01
      *   or  2007-06-14T15:48:55-04:00 for syslog-ng isodate
      *   or  2009-05-22T09:36:46.214994-07:00 for rsyslog )
-     */	
+     */
     if(
         (
-        (loglen > 17) &&
-        (pieces[3] == ' ') &&
-        (pieces[6] == ' ') &&
-        (pieces[9] == ':') &&
-        (pieces[12] == ':') &&
-        (pieces[15] == ' ') && (lf->log+=16)
+            (loglen > 17) &&
+            (pieces[3] == ' ') &&
+            (pieces[6] == ' ') &&
+            (pieces[9] == ':') &&
+            (pieces[12] == ':') &&
+            (pieces[15] == ' ') && (lf->log+=16)
         )
         ||
         (
-        (loglen > 33) &&
-        (pieces[4] == '-') &&
-        (pieces[7] == '-') &&
-        (pieces[10] == 'T') &&
-        (pieces[13] == ':') &&
-        (pieces[16] == ':') &&
+            (loglen > 33) &&
+            (pieces[4] == '-') &&
+            (pieces[7] == '-') &&
+            (pieces[10] == 'T') &&
+            (pieces[13] == ':') &&
+            (pieces[16] == ':') &&
 
-        (
-         ((pieces[22] == ':') &&
-          (pieces[25] == ' ') && (lf->log+=26)) ||
+            (
+                ((pieces[22] == ':') &&
+                 (pieces[25] == ' ') && (lf->log+=26)) ||
 
-         ((pieces[19] == '.') &&
-          (pieces[29] == ':') && (lf->log+=32))
+                ((pieces[19] == '.') &&
+                 (pieces[29] == ':') && (lf->log+=32))
+            )
+
         )
-
-        )
-      )
-    {
+    ) {
         /* Checking for an extra space in here */
         if(*lf->log == ' ')
             lf->log++;
@@ -129,15 +128,13 @@ int OS_CleanMSG(char *msg, Eventinfo *lf)
 
 
         /* Checking for a valid hostname */
-        while(isValidChar(*pieces) == 1)
-        {
+        while(isValidChar(*pieces) == 1) {
             pieces++;
         }
 
 
         /* Checking if it is a syslog without hostname (common on Solaris. */
-        if(*pieces == ':' && pieces[1] == ' ')
-        {
+        if(*pieces == ':' && pieces[1] == ' ') {
             /* Getting solaris 8/9 messages without hostname.
              * In these cases, the process_name should be there.
              * http://www.ossec.net/wiki/index.php/Log_Samples_Solaris
@@ -154,14 +151,11 @@ int OS_CleanMSG(char *msg, Eventinfo *lf)
 
 
         /* Extracting the hostname */
-        else if(*pieces != ' ')
-        {
+        else if(*pieces != ' ') {
             /* Invalid hostname */
             lf->hostname = NULL;
             pieces = NULL;
-        }
-        else
-        {
+        } else {
             /* Ending the hostname string */
             *pieces = '\0';
 
@@ -183,44 +177,36 @@ int OS_CleanMSG(char *msg, Eventinfo *lf)
              * auth|security:info p_name:
              *
              */
-            while(isValidChar(*pieces) == 1)
-            {
+            while(isValidChar(*pieces) == 1) {
                 pieces++;
             }
 
 
             /* Checking for the first format: p_name: */
-            if((*pieces == ':') && (pieces[1] == ' '))
-            {
+            if((*pieces == ':') && (pieces[1] == ' ')) {
                 *pieces = '\0';
                 pieces+=2;
             }
 
             /* Checking for the second format: p_name[pid]: */
-            else if((*pieces == '[') && (isdigit((int)pieces[1])))
-            {
+            else if((*pieces == '[') && (isdigit((int)pieces[1]))) {
                 *pieces = '\0';
                 pieces+=2;
                 while(isdigit((int)*pieces))
                     pieces++;
 
-                if((*pieces == ']')&& (pieces[1] == ':')&& (pieces[2] == ' '))
-                {
+                if((*pieces == ']')&& (pieces[1] == ':')&& (pieces[2] == ' ')) {
                     pieces+=3;
                 }
                 /* Some systems are not terminating the program name with
                  * the ':'. Working around this in here..
                  */
-                else if((*pieces == ']') && (pieces[1] == ' '))
-                {
+                else if((*pieces == ']') && (pieces[1] == ' ')) {
                     pieces+=2;
-                }
-                else
-                {
+                } else {
                     /* Fixing for some weird log formats. */
                     pieces--;
-                    while(isdigit((int)*pieces))
-                    {
+                    while(isdigit((int)*pieces)) {
                         pieces--;
                     }
 
@@ -231,8 +217,7 @@ int OS_CleanMSG(char *msg, Eventinfo *lf)
                 }
             }
             /* AIX syslog. */
-            else if((*pieces == '|') && islower((int)pieces[1]))
-            {
+            else if((*pieces == '|') && islower((int)pieces[1])) {
                 pieces+=2;
 
                 /* Removing facility */
@@ -240,15 +225,13 @@ int OS_CleanMSG(char *msg, Eventinfo *lf)
                     pieces++;
 
 
-                if(*pieces == ':')
-                {
+                if(*pieces == ':') {
                     /* Removing severity. */
                     pieces++;
                     while(isalnum((int)*pieces))
                         pieces++;
 
-                    if(*pieces == ' ')
-                    {
+                    if(*pieces == ' ') {
                         pieces++;
                         lf->program_name = pieces;
 
@@ -258,46 +241,36 @@ int OS_CleanMSG(char *msg, Eventinfo *lf)
                             pieces++;
 
                         /* Checking for the first format: p_name: */
-                        if((*pieces == ':') && (pieces[1] == ' '))
-                        {
+                        if((*pieces == ':') && (pieces[1] == ' ')) {
                             *pieces = '\0';
                             pieces+=2;
                         }
 
                         /* Checking for the second format: p_name[pid]: */
-                        else if((*pieces == '[') && (isdigit((int)pieces[1])))
-                        {
+                        else if((*pieces == '[') && (isdigit((int)pieces[1]))) {
                             *pieces = '\0';
                             pieces+=2;
                             while(isdigit((int)*pieces))
                                 pieces++;
 
                             if((*pieces == ']') && (pieces[1] == ':') &&
-                               (pieces[2] == ' '))
-                            {
+                                    (pieces[2] == ' ')) {
                                 pieces+=3;
-                            }
-                            else
-                            {
+                            } else {
                                 pieces = NULL;
                             }
                         }
-                    }
-                    else
-                    {
+                    } else {
                         pieces = NULL;
                         lf->program_name = NULL;
                     }
                 }
                 /* Invalid AIX. */
-                else
-                {
+                else {
                     pieces = NULL;
                     lf->program_name = NULL;
                 }
-            }
-            else
-            {
+            } else {
                 pieces = NULL;
                 lf->program_name = NULL;
             }
@@ -305,22 +278,19 @@ int OS_CleanMSG(char *msg, Eventinfo *lf)
 
 
         /* Removing [ID xx facility.severity] */
-        if(pieces)
-        {
+        if(pieces) {
             /* Setting log after program name */
             lf->log = pieces;
 
             if((pieces[0] == '[') &&
-               (pieces[1] == 'I') &&
-               (pieces[2] == 'D') &&
-               (pieces[3] == ' '))
-            {
+                    (pieces[1] == 'I') &&
+                    (pieces[2] == 'D') &&
+                    (pieces[3] == ' ')) {
                 pieces+=4;
 
                 /* Going after the ] */
                 pieces = strchr(pieces, ']');
-                if(pieces)
-                {
+                if(pieces) {
                     pieces+=2;
                     lf->log = pieces;
                 }
@@ -328,8 +298,7 @@ int OS_CleanMSG(char *msg, Eventinfo *lf)
         }
 
         /* Getting program name size */
-        if(lf->program_name)
-        {
+        if(lf->program_name) {
             lf->p_name_size = strlen(lf->program_name);
         }
     }
@@ -345,8 +314,7 @@ int OS_CleanMSG(char *msg, Eventinfo *lf)
             (pieces[16] == ':')&&
             (pieces[19] == ' ')&&
             (pieces[24] == ' ')&&
-            (pieces[26] == ' '))
-    {
+            (pieces[26] == ' ')) {
         /* Moving log to the beginning of the message */
         lf->log+=24;
     }
@@ -361,8 +329,7 @@ int OS_CleanMSG(char *msg, Eventinfo *lf)
              (pieces[8] == ':') &&
              (pieces[11]== ':') &&
              (pieces[14]== '.') &&
-             (pieces[21] == ' ') )
-    {
+             (pieces[21] == ' ') ) {
         lf->log+=23;
     }
 
@@ -376,8 +343,7 @@ int OS_CleanMSG(char *msg, Eventinfo *lf)
              (pieces[13] == ':') &&
              (pieces[16]== ':') &&
              (pieces[19]== '.') &&
-             (pieces[26] == ' ') )
-    {
+             (pieces[26] == ' ') ) {
         lf->log+=28;
     }
 
@@ -392,8 +358,7 @@ int OS_CleanMSG(char *msg, Eventinfo *lf)
              (pieces[14]== ':') &&
              (pieces[17]== ':') &&
              (pieces[20]== ' ') &&
-             (pieces[25]== ']') )
-    {
+             (pieces[25]== ']') ) {
         lf->log+=27;
     }
 
@@ -411,8 +376,7 @@ int OS_CleanMSG(char *msg, Eventinfo *lf)
             (pieces[10] == '.') &&
             (pieces[13] == '.') &&
             (pieces[16] == ' ') &&
-            (pieces[19] == ':'))
-    {
+            (pieces[19] == ':')) {
         /* Do not read more than 1 message entry -> log tampering */
         short unsigned int done_message = 0;
 
@@ -422,21 +386,18 @@ int OS_CleanMSG(char *msg, Eventinfo *lf)
 
         /* Getting the desired values */
         pieces = strchr(lf->log, '[');
-        while(pieces)
-        {
+        while(pieces) {
             pieces++;
 
             /* Getting the sender (set to program name) */
             if((strncmp(pieces, "Sender ", 7) == 0) &&
-               (lf->program_name == NULL))
-            {
+                    (lf->program_name == NULL)) {
                 pieces+=7;
                 lf->program_name = pieces;
 
                 /* Getting the closing brackets */
                 pieces = strchr(pieces, ']');
-                if(pieces)
-                {
+                if(pieces) {
                     *pieces = '\0';
 
                     /* Setting program_name size */
@@ -445,8 +406,7 @@ int OS_CleanMSG(char *msg, Eventinfo *lf)
                     pieces++;
                 }
                 /* Invalid program name */
-                else
-                {
+                else {
                     lf->program_name = NULL;
                     break;
                 }
@@ -454,8 +414,7 @@ int OS_CleanMSG(char *msg, Eventinfo *lf)
 
             /* Getting message */
             else if((strncmp(pieces, "Message ", 8) == 0) &&
-                    (done_message == 0))
-            {
+                    (done_message == 0)) {
                 pieces+=8;
                 done_message = 1;
 
@@ -463,35 +422,30 @@ int OS_CleanMSG(char *msg, Eventinfo *lf)
 
                 /* Getting the closing brackets */
                 pieces = strchr(pieces, ']');
-                if(pieces)
-                {
+                if(pieces) {
                     *pieces = '\0';
                     pieces++;
                 }
                 /* Invalid log closure */
-                else
-                {
+                else {
                     break;
                 }
             }
 
             /* Getting hostname */
-            else if(strncmp(pieces, "Host ", 5) == 0)
-            {
+            else if(strncmp(pieces, "Host ", 5) == 0) {
                 pieces+=5;
                 lf->hostname = pieces;
 
                 /* Getting the closing brackets */
                 pieces = strchr(pieces, ']');
-                if(pieces)
-                {
+                if(pieces) {
                     *pieces = '\0';
                     pieces++;
                 }
 
                 /* Invalid hostname */
-                else
-                {
+                else {
                     lf->hostname = NULL;
                 }
                 break;
@@ -514,13 +468,11 @@ int OS_CleanMSG(char *msg, Eventinfo *lf)
             (pieces[10] == '.') &&
             (isdigit((int)pieces[13])) &&
             (pieces[14] == ' ') &&
-            ((pieces[21] == ' ')||(pieces[22] == ' ')))
-    {
+            ((pieces[21] == ' ')||(pieces[22] == ' '))) {
         lf->log+=14;
 
         /* We need to start at the size of the event */
-        while(*lf->log == ' ')
-        {
+        while(*lf->log == ' ') {
             lf->log++;
         }
     }
@@ -533,13 +485,10 @@ int OS_CleanMSG(char *msg, Eventinfo *lf)
 
 
     /* Setting hostname for local messages */
-    if(lf->location[0] == '(')
-    {
+    if(lf->location[0] == '(') {
         /* Messages from an agent */
         lf->hostname = lf->location;
-    }
-    else if(lf->hostname == NULL)
-    {
+    } else if(lf->hostname == NULL) {
         lf->hostname = __shost;
     }
 
@@ -555,9 +504,9 @@ int OS_CleanMSG(char *msg, Eventinfo *lf)
     lf->year = p->tm_year+1900;
     strncpy(lf->mon,month[p->tm_mon],3);
     snprintf(lf->hour, 9, "%02d:%02d:%02d",
-                          p->tm_hour,
-                          p->tm_min,
-                          p->tm_sec);
+             p->tm_hour,
+             p->tm_min,
+             p->tm_sec);
 
 
 
@@ -567,16 +516,15 @@ int OS_CleanMSG(char *msg, Eventinfo *lf)
 
 
 
-    #ifdef TESTRULE
-    if(!alert_only)
-    {
+#ifdef TESTRULE
+    if(!alert_only) {
         print_out("**Phase 1: Completed pre-decoding.");
         print_out("       full event: '%s'", lf->full_log);
         print_out("       hostname: '%s'", lf->hostname);
         print_out("       program_name: '%s'", lf->program_name);
         print_out("       log: '%s'", lf->log);
     }
-    #endif
+#endif
     return(0);
 
 }

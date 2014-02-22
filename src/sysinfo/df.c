@@ -2,8 +2,8 @@
 #include "statfs.h"
 
 int main()
-	{
-	if(getstatfspath() != 0)
-		printf("error..\n");
-	return(0);
-	}
+{
+    if(getstatfspath() != 0)
+        printf("error..\n");
+    return(0);
+}

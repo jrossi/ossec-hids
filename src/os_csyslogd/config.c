@@ -36,8 +36,7 @@ void *OS_ReadSyslogConf(int test_config, char *cfgfile,
 
 
     /* Reading configuration */
-    if(ReadConfig(modules, cfgfile, &gen_config, NULL) < 0)
-    {
+    if(ReadConfig(modules, cfgfile, &gen_config, NULL) < 0) {
         ErrorExit(CONFIG_ERROR, ARGV0, cfgfile);
         return(NULL);
     }

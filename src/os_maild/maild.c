@@ -15,11 +15,11 @@
 
 
 #ifndef MAILD
-   #define MAILD
+#define MAILD
 #endif
 
 #ifndef ARGV0
-   #define ARGV0 "ossec-maild"
+#define ARGV0 "ossec-maild"
 #endif
 
 #include "shared.h"
@@ -45,46 +45,46 @@ int main(int argc, char **argv)
     OS_SetName(ARGV0);
 
 
-    while((c = getopt(argc, argv, "Vdhtfu:g:D:c:")) != -1){
-        switch(c){
-            case 'V':
-                print_version();
-                break;
-            case 'h':
-                help(ARGV0);
-                break;
-            case 'd':
-                nowDebug();
-                break;
-            case 'f':
-                run_foreground = 1;
-                break;
-            case 'u':
-                if(!optarg)
-                    ErrorExit("%s: -u needs an argument",ARGV0);
-                user=optarg;
-                break;
-            case 'g':
-                if(!optarg)
-                    ErrorExit("%s: -g needs an argument",ARGV0);
-                group=optarg;
-                break;
-            case 'D':
-                if(!optarg)
-                    ErrorExit("%s: -D needs an argument",ARGV0);
-                dir=optarg;
-                break;
-            case 'c':
-                if(!optarg)
-                    ErrorExit("%s: -c needs an argument",ARGV0);
-                cfg = optarg;
-                break;
-            case 't':
-                test_config = 1;
-                break;
-            default:
-                help(ARGV0);
-                break;
+    while((c = getopt(argc, argv, "Vdhtfu:g:D:c:")) != -1) {
+        switch(c) {
+        case 'V':
+            print_version();
+            break;
+        case 'h':
+            help(ARGV0);
+            break;
+        case 'd':
+            nowDebug();
+            break;
+        case 'f':
+            run_foreground = 1;
+            break;
+        case 'u':
+            if(!optarg)
+                ErrorExit("%s: -u needs an argument",ARGV0);
+            user=optarg;
+            break;
+        case 'g':
+            if(!optarg)
+                ErrorExit("%s: -g needs an argument",ARGV0);
+            group=optarg;
+            break;
+        case 'D':
+            if(!optarg)
+                ErrorExit("%s: -D needs an argument",ARGV0);
+            dir=optarg;
+            break;
+        case 'c':
+            if(!optarg)
+                ErrorExit("%s: -c needs an argument",ARGV0);
+            cfg = optarg;
+            break;
+        case 't':
+            test_config = 1;
+            break;
+        default:
+            help(ARGV0);
+            break;
         }
 
     }
@@ -106,12 +106,12 @@ int main(int argc, char **argv)
     /* Reading internal options */
     mail.strict_checking = getDefine_Int("maild",
                                          "strict_checking",
-                                          0, 1);
+                                         0, 1);
 
     /* Get groupping */
     mail.groupping = getDefine_Int("maild",
                                    "groupping",
-                                    0, 1);
+                                   0, 1);
 
     /* Getting subject type */
     mail.subject_full = getDefine_Int("maild",
@@ -131,14 +131,13 @@ int main(int argc, char **argv)
         exit(0);
 
 
-    if(!run_foreground)
-    {
+    if(!run_foreground) {
         nowDaemon();
         goDaemon();
     }
 
 
-    /* Privilege separation */	
+    /* Privilege separation */
     if(Privsep_SetGroup(gid) < 0)
         ErrorExit(SETGID_ERROR,ARGV0,group);
 
@@ -174,7 +173,7 @@ int main(int argc, char **argv)
     verbose(STARTUP_MSG, ARGV0, (int)getpid());
 
 
-    /* the real daemon now */	
+    /* the real daemon now */
     OS_Run(&mail);
     exit(0);
 }
@@ -195,7 +194,7 @@ void OS_Run(MailConfig *mail)
     int i = 0;
     int mailtosend = 0;
     int childcount = 0;
-    int today = 0;		
+    int today = 0;
     int thishour = 0;
 
     int n_errs = 0;
@@ -205,7 +204,7 @@ void OS_Run(MailConfig *mail)
 
     /* Getting currently time before starting */
     tm = time(NULL);
-    p = localtime(&tm);	
+    p = localtime(&tm);
     today = p->tm_mday;
     thishour = p->tm_hour;
 
@@ -230,28 +229,23 @@ void OS_Run(MailConfig *mail)
     memset(_g_subject, '\0', SUBJECT_SIZE +2);
 
 
-    while(1)
-    {
+    while(1) {
         tm = time(NULL);
         p = localtime(&tm);
 
 
         /* SMS messages are sent without delay */
-        if(msg_sms)
-        {
+        if(msg_sms) {
             pid_t pid;
 
             pid = fork();
 
-            if(pid < 0)
-            {
+            if(pid < 0) {
                 merror("%s: Fork failed. cause: %d - %s", ARGV0, errno, strerror(errno));
                 merror(FORK_ERROR, ARGV0);
                 sleep(30);
                 continue;
-            }
-            else if (pid == 0)
-            {
+            } else if (pid == 0) {
                 if(OS_Sendsms(mail, p, msg_sms) < 0)
                     merror(SNDMAIL_ERROR, ARGV0, mail->smtpserver);
 
@@ -272,37 +266,31 @@ void OS_Run(MailConfig *mail)
         /* If mail_timeout == NEXTMAIL_TIMEOUT, we will try to get
          * more messages, before sending anything
          */
-        if((mail_timeout == NEXTMAIL_TIMEOUT) && (p->tm_hour == thishour))
-        {
+        if((mail_timeout == NEXTMAIL_TIMEOUT) && (p->tm_hour == thishour)) {
             /* getting more messages */
         }
 
 
         /* Hour changed. Send all supressed mails */
         else if(((mailtosend < mail->maxperhour) && (mailtosend != 0))||
-                ((p->tm_hour != thishour) && (childcount < MAXCHILDPROCESS)))
-        {
+                ((p->tm_hour != thishour) && (childcount < MAXCHILDPROCESS))) {
             MailNode *mailmsg;
             pid_t pid;
 
             /* Checking if we have anything to sent */
             mailmsg = OS_CheckLastMail();
-            if(mailmsg == NULL)
-            {
+            if(mailmsg == NULL) {
                 /* dont fork in here */
                 goto snd_check_hour;
             }
 
             pid = fork();
-            if(pid < 0)
-            {
+            if(pid < 0) {
                 merror("%s: Fork failed. cause: %d - %s", ARGV0, errno, strerror(errno));
                 merror(FORK_ERROR, ARGV0);
                 sleep(30);
                 continue;
-            }
-            else if (pid == 0)
-            {
+            } else if (pid == 0) {
                 if(OS_Sendmail(mail, p) < 0)
                     merror(SNDMAIL_ERROR,ARGV0,mail->smtpserver);
 
@@ -311,11 +299,10 @@ void OS_Run(MailConfig *mail)
 
             /* Cleaning the memory */
             mailmsg = OS_PopLastMail();
-            do
-            {
+            do {
                 FreeMail(mailmsg);
                 mailmsg = OS_PopLastMail();
-            }while(mailmsg);
+            } while(mailmsg);
 
 
             /* Increasing child count */
@@ -329,27 +316,21 @@ void OS_Run(MailConfig *mail)
 
 
             /* Cleaning up set values */
-            if(mail->gran_to)
-            {
+            if(mail->gran_to) {
                 i = 0;
-                while(mail->gran_to[i] != NULL)
-                {
-                    if(s_msg && mail->gran_set[i] == DONOTGROUP)
-                    {
+                while(mail->gran_to[i] != NULL) {
+                    if(s_msg && mail->gran_set[i] == DONOTGROUP) {
                         mail->gran_set[i] = FULL_FORMAT;
-                    }
-                    else
-                    {
+                    } else {
                         mail->gran_set[i] = 0;
                     }
                     i++;
                 }
             }
 
-            snd_check_hour:
+snd_check_hour:
             /* If we sent everything */
-            if(p->tm_hour != thishour)
-            {
+            if(p->tm_hour != thishour) {
                 thishour = p->tm_hour;
 
                 mailtosend = 0;
@@ -358,18 +339,14 @@ void OS_Run(MailConfig *mail)
 
         /* Saved message for the do_not_group option.
          */
-        if(s_msg)
-        {
+        if(s_msg) {
             /* We need to set the remaining do no group to
              * full format.
              */
-            if(mail->gran_to)
-            {
+            if(mail->gran_to) {
                 i = 0;
-                while(mail->gran_to[i] != NULL)
-                {
-                    if(mail->gran_set[i] == DONOTGROUP)
-                    {
+                while(mail->gran_to[i] != NULL) {
+                    if(mail->gran_set[i] == DONOTGROUP) {
                         mail->gran_set[i] = FULL_FORMAT;
                     }
                     i++;
@@ -385,55 +362,41 @@ void OS_Run(MailConfig *mail)
 
 
         /* Receive message from queue */
-        if((msg = OS_RecvMailQ(fileq, p, mail, &msg_sms)) != NULL)
-        {
+        if((msg = OS_RecvMailQ(fileq, p, mail, &msg_sms)) != NULL) {
             /* If the e-mail priority is do_not_group, we first will
              * flush all previous entries and then send it.
              * We use s_msg to hold the pointer to the message
              * while we flush it.
              */
-            if(mail->priority == DONOTGROUP)
-            {
+            if(mail->priority == DONOTGROUP) {
                 s_msg = msg;
-            }
-            else
-            {
+            } else {
                 OS_AddMailtoList(msg);
             }
 
 
             /* Change timeout to see if any new message is coming shortly */
-            if(mail->groupping)
-            {
+            if(mail->groupping) {
                 /* If priority is set, send email now */
-                if(mail->priority)
-                {
+                if(mail->priority) {
                     mail_timeout = DEFAULT_TIMEOUT;
 
                     /* If do_not_group is set, we do not increase the
                      * list count in here.
                      */
-                    if(mail->priority != DONOTGROUP)
-                    {
+                    if(mail->priority != DONOTGROUP) {
                         mailtosend++;
                     }
-                }
-                else
-                {
+                } else {
                     /* 5 seconds only */
                     mail_timeout = NEXTMAIL_TIMEOUT;
                 }
-            }
-            else
-            {
+            } else {
                 /* Send message by itself */
                 mailtosend++;
             }
-        }
-        else
-        {
-            if(mail_timeout == NEXTMAIL_TIMEOUT)
-            {
+        } else {
+            if(mail_timeout == NEXTMAIL_TIMEOUT) {
                 mailtosend++;
 
                 /* Default timeout */
@@ -443,13 +406,11 @@ void OS_Run(MailConfig *mail)
 
 
         /* Waiting for the childs .. */
-        while (childcount)
-        {
+        while (childcount) {
             int wp;
             int p_status;
             wp = waitpid((pid_t) -1, &p_status, WNOHANG);
-            if (wp < 0)
-            {
+            if (wp < 0) {
                 merror(WAITPID_ERROR, ARGV0);
                 n_errs++;
             }
@@ -457,10 +418,8 @@ void OS_Run(MailConfig *mail)
             /* if = 0, we still need to wait for the child process */
             else if (wp == 0)
                 break;
-            else
-            {
-                if(p_status != 0)
-                {
+            else {
+                if(p_status != 0) {
                     merror(CHLDWAIT_ERROR,ARGV0,p_status);
                     merror(SNDMAIL_ERROR,ARGV0,mail->smtpserver);
                     n_errs++;
@@ -469,8 +428,7 @@ void OS_Run(MailConfig *mail)
             }
 
             /* Too many errors */
-            if(n_errs > 6)
-            {
+            if(n_errs > 6) {
                 merror(TOOMANY_WAIT_ERROR,ARGV0);
                 merror(SNDMAIL_ERROR,ARGV0,mail->smtpserver);
                 exit(1);

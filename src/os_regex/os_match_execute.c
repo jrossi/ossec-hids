@@ -27,31 +27,28 @@ int _OS_Match(char *pattern, char *str, int str_len, int size)
     size = str_len - size;
 
     /* Look to match the first pattern */
-    do
-    {
+    do {
         /* Match */
-        if(charmap[(uchar)str[i]] == *pt)
-        {
+        if(charmap[(uchar)str[i]] == *pt) {
             pt++;
             j = i+1;
 
-            while(*pt != '\0')
-            {
+            while(*pt != '\0') {
                 if(str[j] == '\0')
                     return(FALSE);
 
-                else if(*pt != charmap[(uchar)str[j]])
-                {
+                else if(*pt != charmap[(uchar)str[j]]) {
                     pt = pattern;
                     goto nnext;
                 }
-                j++;pt++;
+                j++;
+                pt++;
             }
             return(TRUE);
-            nnext:
+nnext:
             continue;
         }
-    }while(++i <= size);
+    } while(++i <= size);
 
     return(FALSE);
 }
@@ -82,8 +79,7 @@ int _os_strmatch(char *pattern, char *str, int str_len, int size)
 
 int _os_strstr(char *pattern, char *str, int str_len, int size)
 {
-    if(strstr(str, pattern) != NULL)
-    {
+    if(strstr(str, pattern) != NULL) {
         return(TRUE);
     }
     return(FALSE);
@@ -115,21 +111,18 @@ int OSMatch_Execute(char *str, int str_len, OSMatch *reg)
     short int i = 0;
 
     /* The string can't be NULL */
-    if(str == NULL)
-    {
+    if(str == NULL) {
         reg->error = OS_REGEX_STR_NULL;
         return(0);
     }
 
 
     /* Looping on all sub patterns */
-    while(reg->patterns[i])
-    {
+    while(reg->patterns[i]) {
         if(reg->match_fp[i](reg->patterns[i],
                             str,
                             str_len,
-                            reg->size[i]) == TRUE)
-        {
+                            reg->size[i]) == TRUE) {
             return(1);
         }
         i++;

@@ -30,13 +30,10 @@ int connect_to_port(int proto, int port)
     int ossock;
     struct sockaddr_in server;
 
-    if(proto == IPPROTO_UDP)
-    {
+    if(proto == IPPROTO_UDP) {
         if((ossock = socket(PF_INET,SOCK_DGRAM,IPPROTO_UDP)) < 0)
             return(0);
-    }
-    else if(proto == IPPROTO_TCP)
-    {
+    } else if(proto == IPPROTO_TCP) {
         if((ossock = socket(PF_INET,SOCK_STREAM,IPPROTO_TCP)) < 0)
             return(0);
     }
@@ -46,8 +43,7 @@ int connect_to_port(int proto, int port)
     server.sin_port = htons( port );
     server.sin_addr.s_addr = inet_addr("127.0.0.1");
 
-    if(connect(ossock, (struct sockaddr *)&server, sizeof(server)) == 0)
-    {
+    if(connect(ossock, (struct sockaddr *)&server, sizeof(server)) == 0) {
         rc = 1;
     }
 
@@ -61,18 +57,13 @@ void try_to_access_ports()
 {
     int i;
 
-    for(i = 0; i<= 65535; i++)
-    {
-        if(total_ports_tcp[i] && connect_to_port(IPPROTO_TCP, i))
-        {
+    for(i = 0; i<= 65535; i++) {
+        if(total_ports_tcp[i] && connect_to_port(IPPROTO_TCP, i)) {
             char port_proto[64];
 
-            if(_ports_open == 0)
-            {
+            if(_ports_open == 0) {
                 snprintf(port_proto, 64, "\n      %d (tcp),", i);
-            }
-            else
-            {
+            } else {
                 snprintf(port_proto, 64, "%d (tcp),", i);
             }
             strncat(open_ports_str, port_proto, open_ports_size);
@@ -80,16 +71,12 @@ void try_to_access_ports()
 
             _ports_open++;
         }
-        if(total_ports_udp[i] && connect_to_port(IPPROTO_UDP, i))
-        {
+        if(total_ports_udp[i] && connect_to_port(IPPROTO_UDP, i)) {
             char port_proto[64];
 
-            if(_ports_open == 0)
-            {
+            if(_ports_open == 0) {
                 snprintf(port_proto, 64, "\n      %d (udp),", i);
-            }
-            else
-            {
+            } else {
                 snprintf(port_proto, 64, "%d (udp),", i);
             }
 
@@ -99,8 +86,7 @@ void try_to_access_ports()
             _ports_open++;
         }
 
-        if(_ports_open >= 4)
-        {
+        if(_ports_open >= 4) {
             _ports_open = 0;
         }
     }
@@ -117,7 +103,7 @@ void check_open_ports()
     open_ports_size = OS_SIZE_1024 - 1;
     _ports_open = 0;
 
-    #ifndef OSSECHIDS
+#ifndef OSSECHIDS
     snprintf(open_ports_str, OS_SIZE_1024, "The following ports are open:");
     open_ports_size-=strlen(open_ports_str) +1;
 
@@ -128,7 +114,7 @@ void check_open_ports()
 
     notify_rk(ALERT_OK, open_ports_str);
 
-    #endif
+#endif
     return;
 }
 

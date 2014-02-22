@@ -27,15 +27,15 @@ void os_trimcrlf(char *str)
     len=strlen(str);
     len--;
 
-    while (str[len]=='\n' || str[len]=='\r')
-    {
-       str[len]='\0';
-       len--;
+    while (str[len]=='\n' || str[len]=='\r') {
+        str[len]='\0';
+        len--;
     }
 }
 
 /* Remove offending char (e.g., double quotes) from source */
-char *os_strip_char(char *source, char remove) {
+char *os_strip_char(char *source, char remove)
+{
     char *clean;
     char *iterator = source;
     int length = 0;
@@ -68,7 +68,8 @@ char *os_strip_char(char *source, char remove) {
 }
 
 /* Do a substring */
-int os_substr(char *dest, const char *src, int position, int length) {
+int os_substr(char *dest, const char *src, int position, int length)
+{
     dest[0]='\0';
 
     if( length <= 0  ) {
@@ -88,10 +89,12 @@ int os_substr(char *dest, const char *src, int position, int length) {
 }
 
 /* Escape a set of characters */
-char *os_shell_escape(const char *src) {
+char *os_shell_escape(const char *src)
+{
     // Maximum Length of the String is 2xthe current length
     char shell_escapes[] = { '\\', '"', '\'', ' ', '\t', ';', '`', '>', '<', '|', '#',
-                            '*', '[', ']', '{', '}', '&', '$', '!', ':', '(', ')' };
+                             '*', '[', ']', '{', '}', '&', '$', '!', ':', '(', ')'
+                           };
 
     char *escaped_string;
     int length = 0;

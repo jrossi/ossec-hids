@@ -49,14 +49,12 @@ void *os_ssl_keys(int isclient, char *dir)
     sslmeth = (SSL_METHOD *)SSLv23_method();
     ctx = SSL_CTX_new(sslmeth);
 
-    if(isclient)
-    {
+    if(isclient) {
         debug1("%s: DEBUG: Returning CTX for client.", ARGV0);
         return(ctx);
     }
 
-    if(!dir)
-    {
+    if(!dir) {
         return(NULL);
     }
 
@@ -68,36 +66,32 @@ void *os_ssl_keys(int isclient, char *dir)
     snprintf(keyf, 1023, "%s%s", dir, KEYFILE);
 
 
-    if(File_DateofChange(certf) <= 0)
-    {
+    if(File_DateofChange(certf) <= 0) {
         merror("%s: ERROR: Unable to read certificate file (not found): %s", ARGV0, certf);
         return(NULL);
     }
 
     /* Load our keys and certificates*/
-    if(!(SSL_CTX_use_certificate_chain_file(ctx, certf)))
-    {
+    if(!(SSL_CTX_use_certificate_chain_file(ctx, certf))) {
         merror("%s: ERROR: Unable to read certificate file: %s", ARGV0, certf);
         ERR_print_errors_fp(stderr);
         return(NULL);
     }
 
-    if(!(SSL_CTX_use_PrivateKey_file(ctx, keyf, SSL_FILETYPE_PEM)))
-    {
+    if(!(SSL_CTX_use_PrivateKey_file(ctx, keyf, SSL_FILETYPE_PEM))) {
         merror("%s: ERROR: Unable to read private key file: %s", ARGV0, keyf);
         return(NULL);
     }
 
-    if (!SSL_CTX_check_private_key(ctx))
-    {
+    if (!SSL_CTX_check_private_key(ctx)) {
         merror("%s: ERROR: Unable to verify private key file", ARGV0);
         return(NULL);
     }
 
 
-    #if(OPENSSL_VERSION_NUMBER < 0x00905100L)
+#if(OPENSSL_VERSION_NUMBER < 0x00905100L)
     SSL_CTX_set_verify_depth(ctx,1);
-    #endif
+#endif
 
     return ctx;
 }

@@ -64,24 +64,22 @@ int OS_ReadDBConf(int test_config, char *cfgfile, DBConfig *db_config)
 
     /* Checking if dbd isn't supposed to run. */
     if(!db_config->host &&
-       !db_config->user &&
-       !db_config->pass &&
-       !db_config->db &&
-       !db_config->sock &&
-       !db_config->port &&
-       !db_config->db_type)
-    {
+            !db_config->user &&
+            !db_config->pass &&
+            !db_config->db &&
+            !db_config->sock &&
+            !db_config->port &&
+            !db_config->db_type) {
         return(0);
     }
 
 
     /* Checking for a valid config. */
     if(!db_config->host ||
-       !db_config->user ||
-       !db_config->pass ||
-       !db_config->db ||
-       !db_config->db_type)
-    {
+            !db_config->user ||
+            !db_config->pass ||
+            !db_config->db ||
+            !db_config->db_type) {
         merror(DB_MISS_CONFIG, ARGV0);
         return(OS_INVALID);
     }
@@ -89,48 +87,42 @@ int OS_ReadDBConf(int test_config, char *cfgfile, DBConfig *db_config)
     osdb_connect = NULL;
 
     /* Assigning the proper location for the function calls */
-    #ifdef UMYSQL
-    if(db_config->db_type == MYSQLDB)
-    {
+#ifdef UMYSQL
+    if(db_config->db_type == MYSQLDB) {
         osdb_connect = mysql_osdb_connect;
         osdb_query_insert = mysql_osdb_query_insert;
         osdb_query_select = mysql_osdb_query_select;
         osdb_close = mysql_osdb_close;
     }
-    #endif
+#endif
 
-    #ifdef UPOSTGRES
-    if(db_config->db_type == POSTGDB)
-    {
+#ifdef UPOSTGRES
+    if(db_config->db_type == POSTGDB) {
         osdb_connect = postgresql_osdb_connect;
         osdb_query_insert = postgresql_osdb_query_insert;
         osdb_query_select = postgresql_osdb_query_select;
         osdb_close = postgresql_osdb_close;
     }
-    #endif
+#endif
 
 
 
     /* Checking for config errros (moving from config.c).
      */
-    if(db_config->db_type == MYSQLDB)
-    {
-        #ifndef UMYSQL
+    if(db_config->db_type == MYSQLDB) {
+#ifndef UMYSQL
         merror(DB_COMPILED, ARGV0, "mysql");
         return(OS_INVALID);
-        #endif
-    }
-    else if(db_config->db_type == POSTGDB)
-    {
-        #ifndef UPOSTGRES
+#endif
+    } else if(db_config->db_type == POSTGDB) {
+#ifndef UPOSTGRES
         merror(DB_COMPILED, ARGV0, "postgresql");
         return(OS_INVALID);
-        #endif
+#endif
     }
 
 
-    if(osdb_connect == NULL)
-    {
+    if(osdb_connect == NULL) {
         merror("%s: Invalid DB configuration (Internal error?). ", ARGV0);
         return(OS_INVALID);
     }

@@ -45,21 +45,15 @@ int os_start_service()
 
     /* Removing from the services database */
     schSCManager = OpenSCManager(NULL, NULL, SC_MANAGER_ALL_ACCESS);
-    if (schSCManager)
-    {
+    if (schSCManager) {
         schService = OpenService(schSCManager,g_lpszServiceName,
                                  SC_MANAGER_ALL_ACCESS);
-        if(schService)
-        {
+        if(schService) {
 
-            if(StartService(schService, 0, NULL))
-            {
+            if(StartService(schService, 0, NULL)) {
                 rc = 1;
-            }
-            else
-            {
-                if(GetLastError() == ERROR_SERVICE_ALREADY_RUNNING)
-                {
+            } else {
+                if(GetLastError() == ERROR_SERVICE_ALREADY_RUNNING) {
                     rc = -1;
                 }
             }
@@ -83,17 +77,14 @@ int os_stop_service()
 
     /* Removing from the services database */
     schSCManager = OpenSCManager(NULL, NULL, SC_MANAGER_ALL_ACCESS);
-    if (schSCManager)
-    {
+    if (schSCManager) {
         schService = OpenService(schSCManager,g_lpszServiceName,
                                  SC_MANAGER_ALL_ACCESS);
-        if(schService)
-        {
+        if(schService) {
             SERVICE_STATUS lpServiceStatus;
 
             if(ControlService(schService,
-                              SERVICE_CONTROL_STOP, &lpServiceStatus))
-            {
+                              SERVICE_CONTROL_STOP, &lpServiceStatus)) {
                 rc = 1;
             }
 
@@ -116,19 +107,15 @@ int CheckServiceRunning()
 
     /* Removing from the services database */
     schSCManager = OpenSCManager(NULL, NULL, SC_MANAGER_ALL_ACCESS);
-    if (schSCManager)
-    {
+    if (schSCManager) {
         schService = OpenService(schSCManager,g_lpszServiceName,
                                  SC_MANAGER_ALL_ACCESS);
-        if(schService)
-        {
+        if(schService) {
             /* Checking status */
             SERVICE_STATUS lpServiceStatus;
 
-            if(QueryServiceStatus(schService, &lpServiceStatus))
-            {
-                if(lpServiceStatus.dwCurrentState == SERVICE_RUNNING)
-                {
+            if(QueryServiceStatus(schService, &lpServiceStatus)) {
+                if(lpServiceStatus.dwCurrentState == SERVICE_RUNNING) {
                     rc = 1;
                 }
             }
@@ -166,8 +153,7 @@ int InstallService(char *path)
     /* Opening the services database */
     schSCManager = OpenSCManager(NULL,NULL,SC_MANAGER_ALL_ACCESS);
 
-    if (schSCManager == NULL)
-    {
+    if (schSCManager == NULL) {
         goto install_error;
     }
 
@@ -182,15 +168,13 @@ int InstallService(char *path)
                                lpszBinaryPathName,
                                NULL, NULL, NULL, NULL, NULL);
 
-    if (schService == NULL)
-    {
+    if (schService == NULL) {
         goto install_error;
     }
 
     /* Setting description */
     sdBuf.lpDescription = g_lpszServiceDescription;
-    if(!ChangeServiceConfig2(schService, SERVICE_CONFIG_DESCRIPTION, &sdBuf))
-    {
+    if(!ChangeServiceConfig2(schService, SERVICE_CONFIG_DESCRIPTION, &sdBuf)) {
         goto install_error;
     }
 
@@ -201,8 +185,7 @@ int InstallService(char *path)
     return(1);
 
 
-    install_error:
-    {
+install_error: {
         char local_msg[1025];
         LPVOID lpMsgBuf;
 
@@ -219,7 +202,7 @@ int InstallService(char *path)
                        NULL);
 
         merror(local_msg, 1024, "[%s] Unable to create registry "
-                                  "entry: %s", ARGV0,(LPCTSTR)lpMsgBuf);
+               "entry: %s", ARGV0,(LPCTSTR)lpMsgBuf);
         return(0);
     }
 }
@@ -235,11 +218,9 @@ int UninstallService()
 
     /* Removing from the services database */
     schSCManager = OpenSCManager(NULL, NULL, SC_MANAGER_ALL_ACCESS);
-    if (schSCManager)
-    {
+    if (schSCManager) {
         schService = OpenService(schSCManager,g_lpszServiceName,DELETE);
-        if(schService)
-        {
+        if(schService) {
             if (DeleteService(schService))
 
             {
@@ -256,7 +237,7 @@ int UninstallService()
     }
 
     fprintf(stderr, " [%s] Error removing from "
-                    "the Services database.\n", ARGV0);
+            "the Services database.\n", ARGV0);
 
     return(0);
 }
@@ -268,20 +249,19 @@ int UninstallService()
  */
 VOID WINAPI OssecServiceCtrlHandler(DWORD dwOpcode)
 {
-    switch(dwOpcode)
-    {
-        case SERVICE_CONTROL_STOP:
-            ossecServiceStatus.dwCurrentState           = SERVICE_STOPPED;
-            ossecServiceStatus.dwWin32ExitCode          = 0;
-            ossecServiceStatus.dwCheckPoint             = 0;
-            ossecServiceStatus.dwWaitHint               = 0;
+    switch(dwOpcode) {
+    case SERVICE_CONTROL_STOP:
+        ossecServiceStatus.dwCurrentState           = SERVICE_STOPPED;
+        ossecServiceStatus.dwWin32ExitCode          = 0;
+        ossecServiceStatus.dwCheckPoint             = 0;
+        ossecServiceStatus.dwWaitHint               = 0;
 
-            verbose("%s: Received exit signal.", ARGV0);
-            SetServiceStatus (ossecServiceStatusHandle, &ossecServiceStatus);
-            verbose("%s: Exiting...", ARGV0);
-            return;
-        default:
-            break;
+        verbose("%s: Received exit signal.", ARGV0);
+        SetServiceStatus (ossecServiceStatusHandle, &ossecServiceStatus);
+        verbose("%s: Exiting...", ARGV0);
+        return;
+    default:
+        break;
     }
     return;
 }
@@ -301,14 +281,12 @@ void WinSetError()
  */
 int os_WinMain(int argc, char **argv)
 {
-    SERVICE_TABLE_ENTRY   steDispatchTable[] =
-    {
+    SERVICE_TABLE_ENTRY   steDispatchTable[] = {
         { g_lpszServiceName, OssecServiceStart },
         { NULL,       NULL                     }
     };
 
-    if(!StartServiceCtrlDispatcher(steDispatchTable))
-    {
+    if(!StartServiceCtrlDispatcher(steDispatchTable)) {
         merror("%s: Unable to set service information.", ARGV0);
         return(1);
     }
@@ -334,8 +312,7 @@ void WINAPI OssecServiceStart (DWORD argc, LPTSTR *argv)
         RegisterServiceCtrlHandler(g_lpszServiceName,
                                    OssecServiceCtrlHandler);
 
-    if (ossecServiceStatusHandle == (SERVICE_STATUS_HANDLE)0)
-    {
+    if (ossecServiceStatusHandle == (SERVICE_STATUS_HANDLE)0) {
         merror("%s: RegisterServiceCtrlHandler failed.", ARGV0);
         return;
     }
@@ -344,17 +321,16 @@ void WINAPI OssecServiceStart (DWORD argc, LPTSTR *argv)
     ossecServiceStatus.dwCheckPoint = 0;
     ossecServiceStatus.dwWaitHint = 0;
 
-    if (!SetServiceStatus(ossecServiceStatusHandle, &ossecServiceStatus))
-    {
+    if (!SetServiceStatus(ossecServiceStatusHandle, &ossecServiceStatus)) {
         merror("%s: SetServiceStatus error.", ARGV0);
         return;
     }
 
 
-    #ifdef OSSECHIDS
+#ifdef OSSECHIDS
     /* Starting process */
     local_start();
-    #endif
+#endif
 }
 
 

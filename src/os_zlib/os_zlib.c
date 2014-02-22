@@ -22,8 +22,7 @@ int os_compress(char *src, char *dst, int src_size, int dst_size)
     if(compress2((unsigned char *)dst,
                  &zl_dst,
                  (unsigned char *)src,
-                 (unsigned long int)src_size, 9) == Z_OK)
-    {
+                 (unsigned long int)src_size, 9) == Z_OK) {
         dst[zl_dst] = '\0';
         return(zl_dst);
     }
@@ -40,8 +39,7 @@ int os_uncompress(char *src, char *dst, int src_size, int dst_size)
     if(uncompress((unsigned char *)dst,
                   &zl_dst,
                   (unsigned char *)src,
-                  (unsigned long int)src_size) == Z_OK)
-    {
+                  (unsigned long int)src_size) == Z_OK) {
         dst[zl_dst] = '\0';
         return(zl_dst);
     }

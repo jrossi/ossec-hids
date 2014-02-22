@@ -51,56 +51,44 @@ int OS_Bindport(unsigned int _port, unsigned int _proto, char *_ip, int ipv6)
     int ossock;
     struct sockaddr_in server;
 
-    #ifndef WIN32
+#ifndef WIN32
     struct sockaddr_in6 server6;
-    #else
+#else
     ipv6 = 0;
-    #endif
+#endif
 
 
-    if(_proto == IPPROTO_UDP)
-    {
-        if((ossock = socket(ipv6 == 1?PF_INET6:PF_INET, SOCK_DGRAM, IPPROTO_UDP)) < 0)
-        {
+    if(_proto == IPPROTO_UDP) {
+        if((ossock = socket(ipv6 == 1?PF_INET6:PF_INET, SOCK_DGRAM, IPPROTO_UDP)) < 0) {
             return OS_SOCKTERR;
         }
-    }
-    else if(_proto == IPPROTO_TCP)
-    {
+    } else if(_proto == IPPROTO_TCP) {
         int flag = 1;
-        if((ossock = socket(ipv6 == 1?PF_INET6:PF_INET, SOCK_STREAM, IPPROTO_TCP)) < 0)
-        {
+        if((ossock = socket(ipv6 == 1?PF_INET6:PF_INET, SOCK_STREAM, IPPROTO_TCP)) < 0) {
             return(int)(OS_SOCKTERR);
         }
 
         if(setsockopt(ossock, SOL_SOCKET, SO_REUSEADDR,
-                              (char *)&flag,  sizeof(flag)) < 0)
-        {
+                      (char *)&flag,  sizeof(flag)) < 0) {
             return(OS_SOCKTERR);
         }
-    }
-    else
-    {
+    } else {
         return(OS_INVALID);
     }
 
-    if(ipv6)
-    {
-        #ifndef WIN32
+    if(ipv6) {
+#ifndef WIN32
         memset(&server6, 0, sizeof(server6));
         server6.sin6_family = AF_INET6;
         server6.sin6_port = htons( _port );
         server6.sin6_addr = in6addr_any;
 
 
-        if(bind(ossock, (struct sockaddr *) &server6, sizeof(server6)) < 0)
-        {
+        if(bind(ossock, (struct sockaddr *) &server6, sizeof(server6)) < 0) {
             return(OS_SOCKTERR);
         }
-        #endif
-    }
-    else
-    {
+#endif
+    } else {
         memset(&server, 0, sizeof(server));
         server.sin_family = AF_INET;
         server.sin_port = htons( _port );
@@ -112,18 +100,15 @@ int OS_Bindport(unsigned int _port, unsigned int _proto, char *_ip, int ipv6)
             server.sin_addr.s_addr = inet_addr(_ip);
 
 
-        if(bind(ossock, (struct sockaddr *) &server, sizeof(server)) < 0)
-        {
+        if(bind(ossock, (struct sockaddr *) &server, sizeof(server)) < 0) {
             return(OS_SOCKTERR);
         }
     }
 
 
 
-    if(_proto == IPPROTO_TCP)
-    {
-        if(listen(ossock, 32) < 0)
-        {
+    if(_proto == IPPROTO_TCP) {
+        if(listen(ossock, 32) < 0) {
             return(OS_SOCKTERR);
         }
     }
@@ -170,8 +155,7 @@ int OS_BindUnixDomain(char * path, int mode, int max_msg_size)
     if((ossock = socket(AF_UNIX, SOCK_DGRAM, 0)) < 0)
         return(OS_SOCKTERR);
 
-    if(bind(ossock, (struct sockaddr *)&n_us, SUN_LEN(&n_us)) < 0)
-    {
+    if(bind(ossock, (struct sockaddr *)&n_us, SUN_LEN(&n_us)) < 0) {
         close(ossock);
         return(OS_SOCKTERR);
     }
@@ -186,8 +170,7 @@ int OS_BindUnixDomain(char * path, int mode, int max_msg_size)
 
 
     /* Setting socket opt */
-    if(len < max_msg_size)
-    {
+    if(len < max_msg_size) {
         len = max_msg_size;
         setsockopt(ossock, SOL_SOCKET, SO_RCVBUF, &len, optlen);
     }
@@ -211,7 +194,7 @@ int OS_ConnectUnixDomain(char * path, int max_msg_size)
     n_us.sun_family = AF_UNIX;
 
     /* Setting up path */
-    strncpy(n_us.sun_path,path,sizeof(n_us.sun_path)-1);	
+    strncpy(n_us.sun_path,path,sizeof(n_us.sun_path)-1);
 
     if((ossock = socket(AF_UNIX, SOCK_DGRAM,0)) < 0)
         return(OS_SOCKTERR);
@@ -230,14 +213,13 @@ int OS_ConnectUnixDomain(char * path, int max_msg_size)
 
 
     /* Setting maximum message size */
-    if(len < max_msg_size)
-    {
+    if(len < max_msg_size) {
         len = max_msg_size;
         setsockopt(ossock, SOL_SOCKET, SO_SNDBUF, &len, optlen);
     }
 
 
-    /* Returning the socket */	
+    /* Returning the socket */
     return(ossock);
 }
 
@@ -264,34 +246,30 @@ int OS_Connect(unsigned int _port, unsigned int protocol, char *_ip, int ipv6)
     int ossock;
     struct sockaddr_in server;
 
-    #ifndef WIN32
+#ifndef WIN32
     struct sockaddr_in6 server6;
-    #else
+#else
     ipv6 = 0;
-    #endif
+#endif
 
-    if(protocol == IPPROTO_TCP)
-    {
+    if(protocol == IPPROTO_TCP) {
         if((ossock = socket(ipv6 == 1?PF_INET6:PF_INET,SOCK_STREAM,IPPROTO_TCP)) < 0)
             return(OS_SOCKTERR);
-    }
-    else if(protocol == IPPROTO_UDP)
-    {
+    } else if(protocol == IPPROTO_UDP) {
         if((ossock = socket(ipv6 == 1?PF_INET6:PF_INET,SOCK_DGRAM,IPPROTO_UDP)) < 0)
             return(OS_SOCKTERR);
-    }
-    else
+    } else
         return(OS_INVALID);
 
 
 
-    #ifdef HPUX
+#ifdef HPUX
     {
-    int flags;
-    flags = fcntl(ossock,F_GETFL,0);
-    fcntl(ossock, F_SETFL, flags | O_NONBLOCK);
+        int flags;
+        flags = fcntl(ossock,F_GETFL,0);
+        fcntl(ossock, F_SETFL, flags | O_NONBLOCK);
     }
-    #endif
+#endif
 
 
 
@@ -299,9 +277,8 @@ int OS_Connect(unsigned int _port, unsigned int protocol, char *_ip, int ipv6)
         return(OS_INVALID);
 
 
-    if(ipv6 == 1)
-    {
-        #ifndef WIN32
+    if(ipv6 == 1) {
+#ifndef WIN32
         memset(&server6, 0, sizeof(server6));
         server6.sin6_family = AF_INET6;
         server6.sin6_port = htons( _port );
@@ -309,10 +286,8 @@ int OS_Connect(unsigned int _port, unsigned int protocol, char *_ip, int ipv6)
 
         if(connect(ossock,(struct sockaddr *)&server6, sizeof(server6)) < 0)
             return(OS_SOCKTERR);
-        #endif
-    }
-    else
-    {
+#endif
+    } else {
         memset(&server, 0, sizeof(server));
         server.sin_family = AF_INET;
         server.sin_port = htons( _port );
@@ -376,10 +351,8 @@ int OS_SendUDPbySize(int socket, int size, char *msg)
     int i = 0;
 
     /* Maximum attempts is 5 */
-    while((send(socket,msg,size,0)) < 0)
-    {
-        if((errno != ENOBUFS) || (i >= 5))
-        {
+    while((send(socket,msg,size,0)) < 0) {
+        if((errno != ENOBUFS) || (i >= 5)) {
             return(OS_SOCKTERR);
         }
 
@@ -406,8 +379,8 @@ int OS_AcceptTCP(int socket, char *srcip, int addrsize)
     _ncl = sizeof(_nc);
 
     if((clientsocket = accept(socket, (struct sockaddr *) &_nc,
-                    &_ncl)) < 0)
-        return(-1);	
+                              &_ncl)) < 0)
+        return(-1);
 
     strncpy(srcip, inet_ntoa(_nc.sin_addr),addrsize -1);
     srcip[addrsize -1]='\0';
@@ -443,11 +416,9 @@ int OS_RecvTCPBuffer(int socket, char *buffer, int sizet)
 {
     int retsize = 0;
 
-    while(!retsize)
-    {
+    while(!retsize) {
         retsize = recv(socket, buffer, sizet -1, 0);
-        if(retsize > 0)
-        {
+        if(retsize > 0) {
             buffer[retsize] = '\0';
             return(0);
         }
@@ -517,8 +488,7 @@ int OS_SendUnix(int socket, char * msg, int size)
     if(size == 0)
         size = strlen(msg)+1;
 
-    if(send(socket, msg, size,0) < size)
-    {
+    if(send(socket, msg, size,0) < size) {
         if(errno == ENOBUFS)
             return(OS_SOCKBUSY);
 
@@ -544,10 +514,8 @@ char *OS_GetHost(char *host, int attempts)
     if(host == NULL)
         return(NULL);
 
-    while(i <= attempts)
-    {
-        if((h = gethostbyname(host)) == NULL)
-        {
+    while(i <= attempts) {
+        if((h = gethostbyname(host)) == NULL) {
             sleep(i++);
             continue;
         }

@@ -39,19 +39,14 @@ int OS_WordMatch(char *pattern, char *str)
     if(*pattern == '\0')
         return(FALSE);
 
-    do
-    {
-        if(pattern[count] == '|')
-        {
+    do {
+        if(pattern[count] == '|') {
             /* If we match '|' , search with
              * we have so far.
              */
-            if(_InternalMatch(pattern, str, count))
-            {
+            if(_InternalMatch(pattern, str, count)) {
                 return(TRUE);
-            }
-            else
-            {
+            } else {
                 pattern += count+1;
                 count = 0;
                 continue;
@@ -60,7 +55,7 @@ int OS_WordMatch(char *pattern, char *str)
 
         count++;
 
-    }while(pattern[count] != '\0');
+    } while(pattern[count] != '\0');
 
     /* Last check until end of string */
     return(_InternalMatch(pattern, str,count));
@@ -81,8 +76,7 @@ int _InternalMatch(char *pattern, char *str, int pattern_size)
 
 
     /* If '^' specified, just do a strncasecmp */
-    else if(*pattern == '^')
-    {
+    else if(*pattern == '^') {
         pattern++;
         pattern_size --;
 
@@ -99,36 +93,34 @@ int _InternalMatch(char *pattern, char *str, int pattern_size)
 
 
     /* Look to match the first pattern */
-    do
-    {
+    do {
         /* Match */
-        if(charmap[*st] == charmap[*pt])
-        {
+        if(charmap[*st] == charmap[*pt]) {
             str = (char *)st++;
             pt++;
 
-            while(*pt != last_char)
-            {
+            while(*pt != last_char) {
                 if(*st == '\0')
                     return(FALSE);
 
                 else if(charmap[*pt] != charmap[*st])
                     goto error;
 
-                st++;pt++;
+                st++;
+                pt++;
             }
 
             /* Return here if pt == last_char */
             return(TRUE);
 
-            error:
-                st = (uchar *)str;
-                pt = (uchar *)pattern;
+error:
+            st = (uchar *)str;
+            pt = (uchar *)pattern;
 
         }
 
         st++;
-    }while(*st != '\0');
+    } while(*st != '\0');
 
     return(FALSE);
 }

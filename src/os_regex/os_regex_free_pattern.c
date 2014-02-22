@@ -28,11 +28,9 @@ void OSRegex_FreePattern(OSRegex *reg)
     int i = 0;
 
     /* Freeing the patterns */
-    if(reg->patterns)
-    {
+    if(reg->patterns) {
         char **pattern = reg->patterns;
-        while(*pattern)
-        {
+        while(*pattern) {
             if(*pattern)
                 free(*pattern);
             pattern++;
@@ -46,11 +44,9 @@ void OSRegex_FreePattern(OSRegex *reg)
     }
 
     /* Freeing the closure */
-    if(reg->prts_closure)
-    {
+    if(reg->prts_closure) {
         i = 0;
-        while(reg->prts_closure[i])
-        {
+        while(reg->prts_closure[i]) {
             free(reg->prts_closure[i]);
             i++;
         }
@@ -59,11 +55,9 @@ void OSRegex_FreePattern(OSRegex *reg)
     }
 
     /* Freeing the str */
-    if(reg->prts_str)
-    {
+    if(reg->prts_str) {
         i = 0;
-        while(reg->prts_str[i])
-        {
+        while(reg->prts_str[i]) {
             free(reg->prts_str[i]);
             i++;
         }
@@ -72,8 +66,7 @@ void OSRegex_FreePattern(OSRegex *reg)
     }
 
     /* Freeing the sub strings */
-    if(reg->sub_strings)
-    {
+    if(reg->sub_strings) {
         OSRegex_FreeSubStrings(reg);
         free(reg->sub_strings);
         reg->sub_strings = NULL;

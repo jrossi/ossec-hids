@@ -39,8 +39,7 @@ int ClientConf(char *cfgfile)
 
     modules|= CCLIENT;
 
-    if(ReadConfig(modules, cfgfile, logr, NULL) < 0)
-    {
+    if(ReadConfig(modules, cfgfile, logr, NULL) < 0) {
         return(OS_INVALID);
     }
 

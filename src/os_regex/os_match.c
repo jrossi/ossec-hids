@@ -30,10 +30,8 @@ int OS_Match2(char *pattern, char *str)
     OSMatch reg;
 
     /* If the compilation failed, we don't need to free anything */
-    if(OSMatch_Compile(pattern, &reg, 0))
-    {
-        if(OSMatch_Execute(str,strlen(str), &reg))
-        {
+    if(OSMatch_Compile(pattern, &reg, 0)) {
+        if(OSMatch_Execute(str,strlen(str), &reg)) {
             r_code = 1;
         }
 
@@ -66,11 +64,9 @@ int OS_Match3(char *pattern, char *str, char *delimiter)
     token = strtok_r(dupstr, delimiter, &saveptr);
     /* debug2("3. str [%s], dupstr [%s], token[%s], delim [%s]", str, dupstr, token, delimiter); */
 
-    while (token != NULL)
-    {
+    while (token != NULL) {
         debug2("Matching [%s] with [%s]", pattern, token);
-        if (!strcmp(pattern, token))
-        {
+        if (!strcmp(pattern, token)) {
             r_code = 1;
             break;
         }

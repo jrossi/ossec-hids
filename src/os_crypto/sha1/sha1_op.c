@@ -45,16 +45,14 @@ int OS_SHA1_File(char * fname, char * output)
         return(-1);
 
     SHA1_Init(&c);
-    while((n = fread(buf, 1, 2048, fp)) > 0)
-    {
+    while((n = fread(buf, 1, 2048, fp)) > 0) {
         buf[n] = '\0';
         SHA1_Update(&c,buf,(unsigned long)n);
     }
 
     SHA1_Final(&(md[0]),&c);
 
-    for (n=0; n<SHA_DIGEST_LENGTH; n++)
-    {
+    for (n=0; n<SHA_DIGEST_LENGTH; n++) {
         snprintf(output, 3, "%02x", md[n]);
         output+=2;
     }

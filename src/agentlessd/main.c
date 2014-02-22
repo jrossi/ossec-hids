@@ -31,46 +31,46 @@ int main(int argc, char **argv)
     OS_SetName(ARGV0);
 
 
-    while((c = getopt(argc, argv, "Vdhtfu:g:D:c:")) != -1){
-        switch(c){
-            case 'V':
-                print_version();
-                break;
-            case 'h':
-                help(ARGV0);
-                break;
-            case 'd':
-                nowDebug();
-                break;
-            case 'f':
-                run_foreground = 1;
+    while((c = getopt(argc, argv, "Vdhtfu:g:D:c:")) != -1) {
+        switch(c) {
+        case 'V':
+            print_version();
             break;
-            case 'u':
-                if(!optarg)
-                    ErrorExit("%s: -u needs an argument",ARGV0);
-                user=optarg;
-                break;
-            case 'g':
-                if(!optarg)
-                    ErrorExit("%s: -g needs an argument",ARGV0);
-                group=optarg;
-                break;
-            case 'D':
-                if(!optarg)
-                    ErrorExit("%s: -D needs an argument",ARGV0);
-                dir=optarg;
-                break;
-            case 'c':
-                if(!optarg)
-                    ErrorExit("%s: -c needs an argument",ARGV0);
-                cfg = optarg;
-                break;
-            case 't':
-                test_config = 1;
-                break;
-            default:
-                help(ARGV0);
-                break;
+        case 'h':
+            help(ARGV0);
+            break;
+        case 'd':
+            nowDebug();
+            break;
+        case 'f':
+            run_foreground = 1;
+            break;
+        case 'u':
+            if(!optarg)
+                ErrorExit("%s: -u needs an argument",ARGV0);
+            user=optarg;
+            break;
+        case 'g':
+            if(!optarg)
+                ErrorExit("%s: -g needs an argument",ARGV0);
+            group=optarg;
+            break;
+        case 'D':
+            if(!optarg)
+                ErrorExit("%s: -D needs an argument",ARGV0);
+            dir=optarg;
+            break;
+        case 'c':
+            if(!optarg)
+                ErrorExit("%s: -c needs an argument",ARGV0);
+            cfg = optarg;
+            break;
+        case 't':
+            test_config = 1;
+            break;
+        default:
+            help(ARGV0);
+            break;
         }
 
     }
@@ -93,8 +93,7 @@ int main(int argc, char **argv)
     lessdc.entries = NULL;
     lessdc.queue = 0;
 
-    if(ReadConfig(c, cfg, &lessdc, NULL) < 0)
-    {
+    if(ReadConfig(c, cfg, &lessdc, NULL) < 0) {
         ErrorExit(XML_INV_AGENTLESS, ARGV0);
     }
 
@@ -105,8 +104,7 @@ int main(int argc, char **argv)
 
 
     /* Going on daemon mode */
-    if(!run_foreground)
-    {
+    if(!run_foreground) {
         nowDaemon();
         goDaemonLight();
     }
@@ -114,14 +112,13 @@ int main(int argc, char **argv)
 
 
     /* Exiting if not configured. */
-    if(!lessdc.entries)
-    {
+    if(!lessdc.entries) {
         verbose("%s: INFO: Not configured. Exiting.", ARGV0);
         exit(0);
     }
 
 
-    /* Privilege separation */	
+    /* Privilege separation */
     if(Privsep_SetGroup(gid) < 0)
         ErrorExit(SETGID_ERROR,ARGV0,group);
 
@@ -149,7 +146,7 @@ int main(int argc, char **argv)
     verbose(STARTUP_MSG, ARGV0, (int)getpid());
 
 
-    /* the real daemon now */	
+    /* the real daemon now */
     Agentlessd();
     exit(0);
 }

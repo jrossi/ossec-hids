@@ -68,8 +68,7 @@ void check_rc_if()
     struct ifreq _ifr;
 
     _fd = socket(AF_INET, SOCK_DGRAM, 0);
-    if(_fd < 0)
-    {
+    if(_fd < 0) {
         merror("%s: Error checking interfaces (socket)", ARGV0);
         return;
     }
@@ -79,8 +78,7 @@ void check_rc_if()
     _if.ifc_len = sizeof(tmp_str);
     _if.ifc_buf = (caddr_t)(tmp_str);
 
-    if (ioctl(_fd, SIOCGIFCONF, &_if) < 0)
-    {
+    if (ioctl(_fd, SIOCGIFCONF, &_if) < 0) {
         close(_fd);
         merror("%s: Error checking interfaces (ioctl)", ARGV0);
         return;
@@ -90,33 +88,27 @@ void check_rc_if()
     _ir = tmp_str;
 
     /* Looping on all interfaces */
-    for (; _ir < _ifend; _ir++)
-    {
+    for (; _ir < _ifend; _ir++) {
         strncpy(_ifr.ifr_name, _ir->ifr_name, sizeof(_ifr.ifr_name));
 
         /* Getting information from each interface */
-        if (ioctl(_fd, SIOCGIFFLAGS, (char*)&_ifr) == -1)
-        {
+        if (ioctl(_fd, SIOCGIFFLAGS, (char*)&_ifr) == -1) {
             continue;
         }
 
         _total++;
 
 
-        if ((_ifr.ifr_flags & IFF_PROMISC) )
-        {
+        if ((_ifr.ifr_flags & IFF_PROMISC) ) {
             char op_msg[OS_SIZE_1024 +1];
-            if(run_ifconfig(_ifr.ifr_name))
-            {
+            if(run_ifconfig(_ifr.ifr_name)) {
                 snprintf(op_msg, OS_SIZE_1024,"Interface '%s' in promiscuous"
-                                            " mode.", _ifr.ifr_name);
+                         " mode.", _ifr.ifr_name);
                 notify_rk(ALERT_SYSTEM_CRIT, op_msg);
-            }
-            else
-            {
+            } else {
                 snprintf(op_msg, OS_SIZE_1024,"Interface '%s' in promiscuous"
-                                 " mode, but ifconfig is not showing it"
-                                 "(probably trojaned).", _ifr.ifr_name);
+                         " mode, but ifconfig is not showing it"
+                         "(probably trojaned).", _ifr.ifr_name);
                 notify_rk(ALERT_ROOTKIT_FOUND, op_msg);
             }
             _errors++;
@@ -124,11 +116,10 @@ void check_rc_if()
     }
     close(_fd);
 
-    if(_errors == 0)
-    {
+    if(_errors == 0) {
         char op_msg[OS_SIZE_1024 +1];
         snprintf(op_msg, OS_SIZE_1024, "No problem detected on ifconfig/ifs."
-                                    " Analyzed %d interfaces.", _total);
+                 " Analyzed %d interfaces.", _total);
         notify_rk(ALERT_OK, op_msg);
     }
 

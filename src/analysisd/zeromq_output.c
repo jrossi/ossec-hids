@@ -13,10 +13,11 @@
 
 
 static zctx_t *zeromq_context;
-static void *zeromq_pubsocket; 
+static void *zeromq_pubsocket;
 
 
-void zeromq_output_start(char *uri, int argc, char **argv) {
+void zeromq_output_start(char *uri, int argc, char **argv)
+{
 
     int rc;
 
@@ -44,13 +45,15 @@ void zeromq_output_start(char *uri, int argc, char **argv) {
 
 }
 
-void zeromq_output_end() {
+void zeromq_output_end()
+{
     zsocket_destroy(zeromq_context, zeromq_pubsocket);
     zctx_destroy(&zeromq_context);
 }
 
 
-void zeromq_output_event(Eventinfo *lf){
+void zeromq_output_event(Eventinfo *lf)
+{
     char *json_alert = Eventinfo_to_jsonstr(lf);
     zmsg_t *msg = zmsg_new();
     zmsg_addstr(msg, "ossec.alerts");
@@ -60,10 +63,11 @@ void zeromq_output_event(Eventinfo *lf){
 }
 
 /* Convert Eventinfo to json */
-char *Eventinfo_to_jsonstr(Eventinfo *lf) {
+char *Eventinfo_to_jsonstr(Eventinfo *lf)
+{
     cJSON *root;
     cJSON *rule;
-    cJSON *file_diff; 
+    cJSON *file_diff;
     char *out;
     root = cJSON_CreateObject();
     cJSON_AddItemToObject(root, "rule", rule=cJSON_CreateObject());
@@ -93,11 +97,11 @@ char *Eventinfo_to_jsonstr(Eventinfo *lf) {
         if (lf->md5_before && lf->md5_after && strcmp(lf->md5_before, lf->md5_after) != 0  ) {
             cJSON_AddStringToObject(file_diff,"md5_before", lf->md5_before);
             cJSON_AddStringToObject(file_diff,"md5_after", lf->md5_after);
-        } 
+        }
         if (lf->sha1_before && lf->sha1_after && !strcmp(lf->sha1_before, lf->sha1_after) != 0) {
             cJSON_AddStringToObject(file_diff,"sha1_before", lf->sha1_before);
             cJSON_AddStringToObject(file_diff,"sha1_after", lf->sha1_after);
-        } 
+        }
         if (lf->owner_before && lf->owner_after && !strcmp(lf->owner_before, lf->owner_after) != 0) {
             cJSON_AddStringToObject(file_diff,"owner_before", lf->owner_before);
             cJSON_AddStringToObject(file_diff,"owner_after", lf->owner_after);
@@ -113,7 +117,7 @@ char *Eventinfo_to_jsonstr(Eventinfo *lf) {
     }
     out=cJSON_PrintUnformatted(root);
     cJSON_Delete(root);
-    return out; 
+    return out;
 }
 
 

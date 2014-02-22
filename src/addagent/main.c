@@ -16,14 +16,15 @@
 #include <stdlib.h>
 
 #if defined(__MINGW32__)
-static int setenv(const char * name, const char * val, int overwrite) {
-    int len = strlen(name) + strlen(val) + 2; 
-    char * str = (char *)malloc(len); 
-    snprintf(str, len, "%s=%s", name, val); 
+static int setenv(const char * name, const char * val, int overwrite)
+{
+    int len = strlen(name) + strlen(val) + 2;
+    char * str = (char *)malloc(len);
+    snprintf(str, len, "%s=%s", name, val);
     putenv(str);
-    return 0; 
+    return 0;
 }
-#endif 
+#endif
 
 /** help **/
 void helpmsg()
@@ -48,11 +49,11 @@ void print_banner()
     printf("\n");
     printf(BANNER, __ossec_name, __version);
 
-    #ifdef CLIENT
+#ifdef CLIENT
     printf(BANNER_CLIENT);
-    #else
+#else
     printf(BANNER_OPT);
-    #endif
+#endif
 
     return;
 }
@@ -62,12 +63,9 @@ void print_banner()
 void manage_shutdown()
 {
     /* Checking if restart message is necessary */
-    if(restart_necessary)
-    {
+    if(restart_necessary) {
         printf(MUST_RESTART);
-    }
-    else
-    {
+    } else {
         printf("\n");
     }
     printf(EXIT);
@@ -86,71 +84,71 @@ int main(int argc, char **argv)
     char *cmdimport = NULL;
     char *cmdbulk = NULL;
 
-    #ifndef WIN32
+#ifndef WIN32
     char *dir = DEFAULTDIR;
     char *group = GROUPGLOBAL;
     int gid;
-    #endif
+#endif
 
 
     /* Setting the name */
     OS_SetName(ARGV0);
 
 
-    while((c = getopt(argc, argv, "Vhle:r:i:f:")) != -1){
-        switch(c){
-	        case 'V':
-		        print_version();
-		        break;
-            case 'h':
-                helpmsg();
-                break;
-            case 'd':
-                nowDebug();
-                break;
-            case 'e':
-                #ifdef CLIENT
-                ErrorExit("%s: You can't export keys on an agent", ARGV0);
-                #endif
-                if(!optarg)
-                    ErrorExit("%s: -e needs an argument",ARGV0);
-                cmdexport = optarg;
-                break;
-            case 'r':
-                #ifdef CLIENT
-                ErrorExit("%s: You can't remove keys on an agent", ARGV0);
-                #endif
-                if(!optarg)
-                    ErrorExit("%s: -r needs an argument",ARGV0);
-	            
-                /* Use environment variables already available to remove_agent() */           	
-                setenv("OSSEC_ACTION", "r", 1);
-                setenv("OSSEC_AGENT_ID", optarg, 1);
-                setenv("OSSEC_ACTION_CONFIRMED", "y", 1);
-                break;
-            case 'i':
-                #ifndef CLIENT
-                ErrorExit("%s: You can't import keys on the manager.", ARGV0);
-                #endif
-                if(!optarg)
-                    ErrorExit("%s: -i needs an argument",ARGV0);
-                cmdimport = optarg;
-                break;
-            case 'f':
-                #ifdef CLIENT
-                ErrorExit("%s: You can't bulk generate keys on an agent.", ARGV0);
-                #endif
-                if(!optarg)
-                    ErrorExit("%s: -f needs an argument",ARGV0);
-                cmdbulk = optarg;
-                printf("Bulk load file: %s\n", cmdbulk);
-                break;
-            case 'l':
-                cmdlist = 1;
-                break;
-            default:
-                helpmsg();
-                break;
+    while((c = getopt(argc, argv, "Vhle:r:i:f:")) != -1) {
+        switch(c) {
+        case 'V':
+            print_version();
+            break;
+        case 'h':
+            helpmsg();
+            break;
+        case 'd':
+            nowDebug();
+            break;
+        case 'e':
+#ifdef CLIENT
+            ErrorExit("%s: You can't export keys on an agent", ARGV0);
+#endif
+            if(!optarg)
+                ErrorExit("%s: -e needs an argument",ARGV0);
+            cmdexport = optarg;
+            break;
+        case 'r':
+#ifdef CLIENT
+            ErrorExit("%s: You can't remove keys on an agent", ARGV0);
+#endif
+            if(!optarg)
+                ErrorExit("%s: -r needs an argument",ARGV0);
+
+            /* Use environment variables already available to remove_agent() */
+            setenv("OSSEC_ACTION", "r", 1);
+            setenv("OSSEC_AGENT_ID", optarg, 1);
+            setenv("OSSEC_ACTION_CONFIRMED", "y", 1);
+            break;
+        case 'i':
+#ifndef CLIENT
+            ErrorExit("%s: You can't import keys on the manager.", ARGV0);
+#endif
+            if(!optarg)
+                ErrorExit("%s: -i needs an argument",ARGV0);
+            cmdimport = optarg;
+            break;
+        case 'f':
+#ifdef CLIENT
+            ErrorExit("%s: You can't bulk generate keys on an agent.", ARGV0);
+#endif
+            if(!optarg)
+                ErrorExit("%s: -f needs an argument",ARGV0);
+            cmdbulk = optarg;
+            printf("Bulk load file: %s\n", cmdbulk);
+            break;
+        case 'l':
+            cmdlist = 1;
+            break;
+        default:
+            helpmsg();
+            break;
         }
 
     }
@@ -162,25 +160,22 @@ int main(int argc, char **argv)
     restart_necessary = 0;
 
 
-    #ifndef WIN32
+#ifndef WIN32
     /* Getting the group name */
     gid = Privsep_GetGroup(group);
-    if(gid < 0)
-    {
-	    ErrorExit(USER_ERROR, ARGV0, "", group);
+    if(gid < 0) {
+        ErrorExit(USER_ERROR, ARGV0, "", group);
     }
 
 
     /* Setting the group */
-    if(Privsep_SetGroup(gid) < 0)
-    {
-	    ErrorExit(SETGID_ERROR, ARGV0, group);
+    if(Privsep_SetGroup(gid) < 0) {
+        ErrorExit(SETGID_ERROR, ARGV0, group);
     }
 
 
     /* Chrooting to the default directory */
-    if(Privsep_Chroot(dir) < 0)
-    {
+    if(Privsep_Chroot(dir) < 0) {
         ErrorExit(CHROOT_ERROR, ARGV0, dir);
     }
 
@@ -191,26 +186,19 @@ int main(int argc, char **argv)
 
     /* Starting signal handler */
     StartSIG2(ARGV0, manage_shutdown);
-    #endif
+#endif
 
 
-    if(cmdlist == 1)
-    {
+    if(cmdlist == 1) {
         list_agents(cmdlist);
         exit(0);
-    }
-    else if(cmdimport)
-    {
+    } else if(cmdimport) {
         k_import(cmdimport);
         exit(0);
-    }
-    else if(cmdexport)
-    {
+    } else if(cmdexport) {
         k_extract(cmdexport);
         exit(0);
-    }
-    else if(cmdbulk)
-    {
+    } else if(cmdbulk) {
         k_bulkload(cmdbulk);
         exit(0);
     }
@@ -218,8 +206,7 @@ int main(int argc, char **argv)
 
 
     /* Little shell */
-    while(1)
-    {
+    while(1) {
         int leave_s = 0;
         print_banner();
 
@@ -227,49 +214,46 @@ int main(int argc, char **argv)
          * we must set leave_s = 1 to ensure that the loop will end */
         user_msg = getenv("OSSEC_ACTION");
         if (user_msg == NULL) {
-          user_msg = read_from_user();
-        }
-        else{
-          leave_s = 1;
+            user_msg = read_from_user();
+        } else {
+            leave_s = 1;
         }
 
         /* All the allowed actions */
-        switch(user_msg[0])
-        {
-            case 'A':
-            case 'a':
-                add_agent();
-                break;
-            case 'e':
-            case 'E':
-                k_extract(NULL);
-                break;
-            case 'i':
-            case 'I':
-                k_import(NULL);
-                break;
-            case 'l':
-            case 'L':
-                list_agents(0);
-                break;
-            case 'r':
-            case 'R':
-                remove_agent();
-                break;
-            case 'q':
-            case 'Q':
-                leave_s = 1;
-                break;
-	        case 'V':
-		        print_version();
-		        break;
-            default:
-                printf("\n ** Invalid Action ** \n\n");
-                break;
+        switch(user_msg[0]) {
+        case 'A':
+        case 'a':
+            add_agent();
+            break;
+        case 'e':
+        case 'E':
+            k_extract(NULL);
+            break;
+        case 'i':
+        case 'I':
+            k_import(NULL);
+            break;
+        case 'l':
+        case 'L':
+            list_agents(0);
+            break;
+        case 'r':
+        case 'R':
+            remove_agent();
+            break;
+        case 'q':
+        case 'Q':
+            leave_s = 1;
+            break;
+        case 'V':
+            print_version();
+            break;
+        default:
+            printf("\n ** Invalid Action ** \n\n");
+            break;
         }
 
-        if(leave_s)
-        {
+        if(leave_s) {
             break;
         }
 
@@ -278,12 +262,9 @@ int main(int argc, char **argv)
     }
 
     /* Checking if restart message is necessary */
-    if(restart_necessary)
-    {
+    if(restart_necessary) {
         printf(MUST_RESTART);
-    }
-    else
-    {
+    } else {
         printf("\n");
     }
     printf(EXIT);

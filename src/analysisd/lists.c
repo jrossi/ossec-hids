@@ -44,14 +44,12 @@ int Lists_OP_LoadList(char * listfile)
     if (tmp_listnode_pt == NULL)
         ErrorExit(MEM_ERROR,ARGV0);
     snprintf(a_filename, OS_MAXSTR-1, "%s", listfile);
-    if((strchr(a_filename, '/') == NULL))
-    {
+    if((strchr(a_filename, '/') == NULL)) {
         /* default to rules/ if a path is not given */
         snprintf(b_filename, OS_MAXSTR-1, "rules/%s", a_filename);
         snprintf(a_filename, OS_MAXSTR-1, "%s", b_filename);
     }
-    if((holder = strstr(a_filename, ".cdb")))
-    {
+    if((holder = strstr(a_filename, ".cdb"))) {
         snprintf(b_filename, (int)(holder - a_filename) + 1, "%s", a_filename);
         snprintf(a_filename, OS_MAXSTR-1, "%s", b_filename);
     }

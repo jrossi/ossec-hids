@@ -38,49 +38,49 @@ int main(int argc, char **argv)
     OS_SetName(ARGV0);
 
 
-    while((c = getopt(argc, argv, "vVdhtfu:g:D:c:")) != -1){
-        switch(c){
-            case 'V':
-                print_version();
-                break;
-            case 'v':
-                print_version();
-                break;
-            case 'h':
-                help(ARGV0);
-                break;
-            case 'd':
-                nowDebug();
-                break;
-            case 'f':
-                run_foreground = 1;
-                break;
-            case 'u':
-                if(!optarg)
-                    ErrorExit("%s: -u needs an argument",ARGV0);
-                user=optarg;
-                break;
-            case 'g':
-                if(!optarg)
-                    ErrorExit("%s: -g needs an argument",ARGV0);
-                group=optarg;
-                break;
-            case 'D':
-                if(!optarg)
-                    ErrorExit("%s: -D needs an argument",ARGV0);
-                dir=optarg;
-                break;
-            case 'c':
-                if(!optarg)
-                    ErrorExit("%s: -c needs an argument",ARGV0);
-                cfg = optarg;
-                break;
-            case 't':
-                test_config = 1;
-                break;
-            default:
-                help(ARGV0);
-                break;
+    while((c = getopt(argc, argv, "vVdhtfu:g:D:c:")) != -1) {
+        switch(c) {
+        case 'V':
+            print_version();
+            break;
+        case 'v':
+            print_version();
+            break;
+        case 'h':
+            help(ARGV0);
+            break;
+        case 'd':
+            nowDebug();
+            break;
+        case 'f':
+            run_foreground = 1;
+            break;
+        case 'u':
+            if(!optarg)
+                ErrorExit("%s: -u needs an argument",ARGV0);
+            user=optarg;
+            break;
+        case 'g':
+            if(!optarg)
+                ErrorExit("%s: -g needs an argument",ARGV0);
+            group=optarg;
+            break;
+        case 'D':
+            if(!optarg)
+                ErrorExit("%s: -D needs an argument",ARGV0);
+            dir=optarg;
+            break;
+        case 'c':
+            if(!optarg)
+                ErrorExit("%s: -c needs an argument",ARGV0);
+            cfg = optarg;
+            break;
+        case 't':
+            test_config = 1;
+            break;
+        default:
+            help(ARGV0);
+            break;
         }
 
     }
@@ -93,8 +93,7 @@ int main(int argc, char **argv)
     /* Check if the user/group given are valid */
     uid = Privsep_GetUser(user);
     gid = Privsep_GetGroup(group);
-    if((uid < 0)||(gid < 0))
-    {
+    if((uid < 0)||(gid < 0)) {
         ErrorExit(USER_ERROR, ARGV0, user, group);
     }
 
@@ -105,12 +104,9 @@ int main(int argc, char **argv)
 
     /* Getting servers hostname */
     memset(__shost, '\0', 512);
-    if(gethostname(__shost, 512 -1) != 0)
-    {
+    if(gethostname(__shost, 512 -1) != 0) {
         ErrorExit("%s: ERROR: gethostname() failed", ARGV0);
-    }
-    else
-    {
+    } else {
         char *ltmp;
 
         /* Remove domain part if available */
@@ -125,8 +121,7 @@ int main(int argc, char **argv)
         exit(0);
 
 
-    if (!run_foreground)
-    {
+    if (!run_foreground) {
         /* Going on daemon mode */
         nowDaemon();
         goDaemon();
@@ -135,8 +130,7 @@ int main(int argc, char **argv)
 
 
     /* Not configured */
-    if(!syslog_config || !syslog_config[0])
-    {
+    if(!syslog_config || !syslog_config[0]) {
         verbose("%s: INFO: Remote syslog server not configured. "
                 "Clean exit.", ARGV0);
         exit(0);
@@ -144,7 +138,7 @@ int main(int argc, char **argv)
 
 
 
-    /* Privilege separation */	
+    /* Privilege separation */
     if(Privsep_SetGroup(gid) < 0)
         ErrorExit(SETGID_ERROR,ARGV0,group);
 
@@ -181,7 +175,7 @@ int main(int argc, char **argv)
     verbose(STARTUP_MSG, ARGV0, (int)getpid());
 
 
-    /* the real daemon now */	
+    /* the real daemon now */
     OS_CSyslogD(syslog_config);
     exit(0);
 }

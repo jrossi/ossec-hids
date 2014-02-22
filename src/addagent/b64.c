@@ -54,7 +54,8 @@ static unsigned char decode(char c);
  * @param src The data to be base64 encode
  * @return encoded string otherwise NULL
  */
-char *encode_base64(int size, char *src) {
+char *encode_base64(int size, char *src)
+{
 
     int i;
     char *out, *p;
@@ -116,8 +117,7 @@ char *encode_base64(int size, char *src) {
  */
 char *decode_base64(const char *src)
 {
-    if(src && *src)
-    {
+    if(src && *src) {
         char *dest;
         unsigned char *p;
         int k, l = strlen(src)+1;
@@ -137,23 +137,19 @@ char *decode_base64(const char *src)
             return(NULL);
 
         /* Ignore non base64 chars as per the POSIX standard */
-        for(k=0, l=0; src[k]; k++)
-        {
-            if(is_base64(src[k]))
-            {
+        for(k=0, l=0; src[k]; k++) {
+            if(is_base64(src[k])) {
                 buf[l++]= src[k];
             }
         }
 
-        for(k=0; k<l; k+=4)
-        {
+        for(k=0; k<l; k+=4) {
             char c1='A', c2='A', c3='A', c4='A';
             unsigned char b1=0, b2=0, b3=0, b4=0;
 
             c1= buf[k];
 
-            if(k+1<l)
-            {
+            if(k+1<l) {
                 c2= buf[k+1];
             }
 
@@ -194,9 +190,10 @@ char *decode_base64(const char *src)
 }
 
 
- /* ----------------------------------------------------------------- Private */
+/* ----------------------------------------------------------------- Private */
 
-static char encode(unsigned char u) {
+static char encode(unsigned char u)
+{
 
     if(u < 26)  return 'A'+u;
     if(u < 52)  return 'a'+(u-26);
@@ -211,7 +208,8 @@ static char encode(unsigned char u) {
 /**
  * Decode a base64 character
  */
-static unsigned char decode(char c) {
+static unsigned char decode(char c)
+{
 
     if(c >= 'A' && c <= 'Z') return(c - 'A');
     if(c >= 'a' && c <= 'z') return(c - 'a' + 26);
@@ -226,7 +224,8 @@ static unsigned char decode(char c) {
 /**
  * Return TRUE if 'c' is a valid base64 character, otherwise FALSE
  */
-static int is_base64(char c) {
+static int is_base64(char c)
+{
 
     if((c >= 'A' && c <= 'Z') || (c >= 'a' && c <= 'z') ||
             (c >= '0' && c <= '9') || (c == '+')             ||

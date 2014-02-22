@@ -24,15 +24,13 @@ int send_msg(int agentid, char *msg)
     char crypt_msg[OS_MAXSTR +1];
 
     msg_size = CreateSecMSG(&keys, msg, crypt_msg, agentid);
-    if(msg_size == 0)
-    {
+    if(msg_size == 0) {
         merror(SEC_ERROR,ARGV0);
         return(-1);
     }
 
     /* Send msg_size of crypt_msg */
-    if(OS_SendUDPbySize(logr->sock, msg_size, crypt_msg) < 0)
-    {
+    if(OS_SendUDPbySize(logr->sock, msg_size, crypt_msg) < 0) {
         merror(SEND_ERROR,ARGV0, "server");
         sleep(1);
         return(-1);

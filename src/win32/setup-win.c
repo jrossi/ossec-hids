@@ -17,23 +17,20 @@
 /* Setup windows after install */
 int main(int argc, char **argv)
 {
-    if(argc < 2)
-    {
+    if(argc < 2) {
         printf("%s: Invalid syntax.\n", argv[0]);
         printf("Try: '%s directory'\n\n", argv[0]);
         return(0);
     }
 
     /* Trying to chdir to ossec directory. */
-    if(chdir(argv[1]) != 0)
-    {
+    if(chdir(argv[1]) != 0) {
         printf("%s: Invalid directory: '%s'.\n", argv[0], argv[1]);
         return(0);
     }
 
     /* Checking if ossec was installed already (upgrade) */
-    if(!fileexist(OSSECCONF))
-    {
+    if(!fileexist(OSSECCONF)) {
         char cmd[OS_MAXSTR +1];
 
         /* Copy default config to ossec.conf */
@@ -55,8 +52,7 @@ int main(int argc, char **argv)
     checkVista();
 
 
-    if(isVista)
-    {
+    if(isVista) {
         char cmd[OS_MAXSTR +1];
 
         /* Copy some files to outside */
@@ -95,9 +91,7 @@ int main(int argc, char **argv)
 
         snprintf(cmd, OS_MAXSTR, "move ..\\help.txt .");
         system(cmd);
-    }
-    else
-    {
+    } else {
         system("echo y|cacls . /T /G Administrators:f ");
     }
 

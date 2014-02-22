@@ -40,30 +40,27 @@ void OS_CompressLog(char *logfile)
     /* Setting the umask */
     umask(0027);
 
-		
+
     /* Creating the gzip file name */
     snprintf(logfileGZ, OS_FLSIZE, "%s.gz", logfile);
 
 
     /* Reading log file */
     log = fopen(logfile, "r");
-    if(!log)
-    {
+    if(!log) {
         /* Do not warn in here, since the alert file may not exist. */
         return;
     }
 
     /* Opening compressed file */
     zlog = gzopen(logfileGZ, "w");
-    if(!zlog)
-    {
+    if(!zlog) {
         fclose(log);
         merror(FOPEN_ERROR, ARGV0, logfileGZ);
         return;
     }
 
-    for(;;)
-    {
+    for(;;) {
         len = fread(buf, 1, OS_MAXSTR, log);
         if(len <= 0)
             break;
@@ -80,6 +77,6 @@ void OS_CompressLog(char *logfile)
 
     return;
 }
-	
+
 
 /* EOF */

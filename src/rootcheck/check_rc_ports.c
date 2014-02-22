@@ -49,8 +49,7 @@ int run_netstat(int proto, int port)
         snprintf(nt, OS_SIZE_1024, NETSTAT, "tcp", port);
     else if(proto == IPPROTO_UDP)
         snprintf(nt, OS_SIZE_1024, NETSTAT, "udp", port);
-    else
-    {
+    else {
         merror("%s: Netstat error (wrong protocol)", ARGV0);
         return(0);
     }
@@ -60,8 +59,7 @@ int run_netstat(int proto, int port)
     if(ret == 0)
         return(1);
 
-    else if(ret == 1)
-    {
+    else if(ret == 1) {
         return(0);
     }
 
@@ -75,13 +73,10 @@ int conn_port(int proto, int port)
     int ossock;
     struct sockaddr_in server;
 
-    if(proto == IPPROTO_UDP)
-    {
+    if(proto == IPPROTO_UDP) {
         if((ossock = socket(PF_INET,SOCK_DGRAM,IPPROTO_UDP)) < 0)
             return(0);
-    }
-    else if(proto == IPPROTO_TCP)
-    {
+    } else if(proto == IPPROTO_TCP) {
         if((ossock = socket(PF_INET,SOCK_STREAM,IPPROTO_TCP)) < 0)
             return(0);
     }
@@ -94,18 +89,14 @@ int conn_port(int proto, int port)
 
 
     /* If we can't bind, it means the port is open */
-    if(bind(ossock, (struct sockaddr *) &server, sizeof(server)) < 0)
-    {
+    if(bind(ossock, (struct sockaddr *) &server, sizeof(server)) < 0) {
         rc = 1;
     }
 
     /* Setting if port is open or closed */
-    if(proto == IPPROTO_TCP)
-    {
+    if(proto == IPPROTO_TCP) {
         total_ports_tcp[port] = rc;
-    }
-    else
-    {
+    } else {
         total_ports_udp[port] = rc;
     }
 
@@ -119,50 +110,45 @@ void test_ports(int proto, int *_errors, int *_total)
 {
     int i;
 
-    for(i = 0; i<= 65535; i++)
-    {
+    for(i = 0; i<= 65535; i++) {
         (*_total)++;
-        if(conn_port(proto, i))
-        {
+        if(conn_port(proto, i)) {
             /* Checking if we can find it using netstat, if not,
              * check again to see if the port is still being used.
              */
-            if(run_netstat(proto, i))
-            {
+            if(run_netstat(proto, i)) {
                 continue;
 
-                #ifdef OSSECHIDS
+#ifdef OSSECHIDS
                 sleep(2);
-                #endif
+#endif
             }
 
             /* If we are being run by the ossec hids, sleep here (no rush) */
-            #ifdef OSSECHIDS
+#ifdef OSSECHIDS
             sleep(2);
-            #endif
+#endif
 
-            if(!run_netstat(proto, i) && conn_port(proto, i))
-            {
+            if(!run_netstat(proto, i) && conn_port(proto, i)) {
                 char op_msg[OS_SIZE_1024 +1];
 
                 (*_errors)++;
 
                 snprintf(op_msg, OS_SIZE_1024, "Port '%d'(%s) hidden. "
-                        "Kernel-level rootkit or trojaned "
-                        "version of netstat.", i,
-                        (proto == IPPROTO_UDP)? "udp" : "tcp");
+                         "Kernel-level rootkit or trojaned "
+                         "version of netstat.", i,
+                         (proto == IPPROTO_UDP)? "udp" : "tcp");
 
                 notify_rk(ALERT_ROOTKIT_FOUND, op_msg);
             }
         }
 
-        if((*_errors) > 20)
-        {
+        if((*_errors) > 20) {
             char op_msg[OS_SIZE_1024 +1];
             snprintf(op_msg, OS_SIZE_1024, "Excessive number of '%s' ports "
-                             "hidden. It maybe a false-positive or "
-                             "something really bad is going on.",
-                             (proto == IPPROTO_UDP)? "udp" : "tcp" );
+                     "hidden. It maybe a false-positive or "
+                     "something really bad is going on.",
+                     (proto == IPPROTO_UDP)? "udp" : "tcp" );
             notify_rk(ALERT_SYSTEM_CRIT, op_msg);
             return;
         }
@@ -181,8 +167,7 @@ void check_rc_ports()
 
     int i = 0;
 
-    while(i<=65535)
-    {
+    while(i<=65535) {
         total_ports_tcp[i] = 0;
         total_ports_udp[i] = 0;
         i++;
@@ -194,12 +179,11 @@ void check_rc_ports()
     /* Testing UDP ports */
     test_ports(IPPROTO_UDP, &_errors, &_total);
 
-    if(_errors == 0)
-    {
+    if(_errors == 0) {
         char op_msg[OS_SIZE_1024 +1];
         snprintf(op_msg,OS_SIZE_1024,"No kernel-level rootkit hiding any port."
-                                   "\n      Netstat is acting correctly."
-                                    " Analyzed %d ports.", _total);
+                 "\n      Netstat is acting correctly."
+                 " Analyzed %d ports.", _total);
         notify_rk(ALERT_OK, op_msg);
     }
 

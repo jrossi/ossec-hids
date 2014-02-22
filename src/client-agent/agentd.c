@@ -41,10 +41,9 @@ void AgentdStart(char *dir, int uid, int gid, char *user, char *group)
 
 
     /* Going Daemon */
-    if (!run_foreground)
-    {
-       nowDaemon();
-       goDaemon();
+    if (!run_foreground) {
+        nowDaemon();
+        goDaemon();
     }
 
 
@@ -77,7 +76,7 @@ void AgentdStart(char *dir, int uid, int gid, char *user, char *group)
 
 
 
-    /* Creating PID file */	
+    /* Creating PID file */
     if(CreatePID(ARGV0, getpid()) < 0)
         merror(PID_ERROR,ARGV0);
 
@@ -100,43 +99,38 @@ void AgentdStart(char *dir, int uid, int gid, char *user, char *group)
 
 
     /* Initial random numbers */
-    #ifdef __OpenBSD__
+#ifdef __OpenBSD__
     srandomdev();
-    #else
+#else
     srandom( time(0) + getpid()+ pid + getppid());
-    #endif
+#endif
 
     random();
 
 
     /* Connecting UDP */
     rc = 0;
-    while(rc < logr->rip_id)
-    {
+    while(rc < logr->rip_id) {
         verbose("%s: INFO: Server IP Address: %s", ARGV0, logr->rip[rc]);
         rc++;
     }
 
 
     /* Trying to connect to the server */
-    if(!connect_server(0))
-    {
+    if(!connect_server(0)) {
         ErrorExit(UNABLE_CONN, ARGV0);
     }
 
 
     /* Setting max fd for select */
-    if(logr->sock > maxfd)
-    {
+    if(logr->sock > maxfd) {
         maxfd = logr->sock;
     }
 
 
     /* Connecting to the execd queue */
-    if(logr->execdq == 0)
-    {
-        if((logr->execdq = StartMQ(EXECQUEUE, WRITE)) < 0)
-        {
+    if(logr->execdq == 0) {
+        if((logr->execdq = StartMQ(EXECQUEUE, WRITE)) < 0) {
             merror("%s: INFO: Unable to connect to the active response "
                    "queue (disabled).", ARGV0);
             logr->execdq = -1;
@@ -167,8 +161,7 @@ void AgentdStart(char *dir, int uid, int gid, char *user, char *group)
 
 
     /* monitor loop */
-    while(1)
-    {
+    while(1) {
         /* Monitoring all available sockets from here */
         FD_ZERO(&fdset);
         FD_SET(logr->sock, &fdset);
@@ -182,28 +175,24 @@ void AgentdStart(char *dir, int uid, int gid, char *user, char *group)
 
         /* Wait with a timeout for any descriptor */
         rc = select(maxfd, &fdset, NULL, NULL, &fdtimeout);
-        if(rc == -1)
-        {
+        if(rc == -1) {
             ErrorExit(SELECT_ERROR, ARGV0);
         }
 
 
-        else if(rc == 0)
-        {
+        else if(rc == 0) {
             continue;
         }
 
 
         /* For the receiver */
-        if(FD_ISSET(logr->sock, &fdset))
-        {
+        if(FD_ISSET(logr->sock, &fdset)) {
             receive_msg();
         }
 
 
         /* For the forwarder */
-        if(FD_ISSET(logr->m_queue, &fdset))
-        {
+        if(FD_ISSET(logr->m_queue, &fdset)) {
             EventForward();
         }
     }

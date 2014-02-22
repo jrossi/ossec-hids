@@ -57,18 +57,17 @@
 #elif defined Darwin || defined HPUX
 
 /* For some reason darwin does not have that */
-struct exec
-{
-  unsigned long a_info;         /* Use macros N_MAGIC, etc for access */
-  unsigned char   a_machtype;     /* machine type */
-  unsigned short  a_magic;        /* magic number */
-  unsigned a_text;              /* length of text, in bytes */
-  unsigned a_data;              /* length of data, in bytes */
-  unsigned a_bss;               /* length of uninitialized data area for file, in bytes */
-  unsigned a_syms;              /* length of symbol table data in file, in bytes */
-  unsigned a_entry;             /* start address */
-  unsigned a_trsize;            /* length of relocation info for text, in bytes */
-  unsigned a_drsize;            /* length of relocation info for data, in bytes */
+struct exec {
+    unsigned long a_info;         /* Use macros N_MAGIC, etc for access */
+    unsigned char   a_machtype;     /* machine type */
+    unsigned short  a_magic;        /* magic number */
+    unsigned a_text;              /* length of text, in bytes */
+    unsigned a_data;              /* length of data, in bytes */
+    unsigned a_bss;               /* length of uninitialized data area for file, in bytes */
+    unsigned a_syms;              /* length of symbol table data in file, in bytes */
+    unsigned a_entry;             /* start address */
+    unsigned a_trsize;            /* length of relocation info for text, in bytes */
+    unsigned a_drsize;            /* length of relocation info for data, in bytes */
 };
 #define OMAGIC 0407		/* Object file or impure executable.  */
 #define NMAGIC 0410		/* Code indicating pure executable.  */
@@ -141,15 +140,14 @@ typedef struct aouthdr EXEC;
 typedef struct exec EXEC;
 #endif
 
-typedef struct _os_strings
-{
+typedef struct _os_strings {
     int head_len;
     int read_len;
     int hcnt;
     long foff;
     unsigned char hbfr[sizeof(EXEC)];
     FILE *fp;
-}os_strings;
+} os_strings;
 
 
 /* os_getch: Read each character from a binary file */
@@ -174,24 +172,21 @@ int os_string(char *file, char *regex)
     os_strings oss;
 
     /* Return didn't match */
-    if(!file || !regex)
-    {
+    if(!file || !regex) {
         return(0);
     }
 
 
     /* Allocating for the buffer */
     bfr = calloc(STR_MINLEN + 2, sizeof(char *));
-    if (!bfr)
-    {
+    if (!bfr) {
         merror(MEM_ERROR, ARGV0);
         return(0);
     }
 
     /* Opening the file */
     oss.fp = fopen(file, "r");
-    if(!oss.fp)
-    {
+    if(!oss.fp) {
         free(bfr);
         return(0);
     }
@@ -207,39 +202,29 @@ int os_string(char *file, char *regex)
     head = (EXEC *)oss.hbfr;
 
 
-    if ((oss.head_len = read(fileno(oss.fp), head, sizeof(EXEC))) == -1)
-    {
+    if ((oss.head_len = read(fileno(oss.fp), head, sizeof(EXEC))) == -1) {
         oss.head_len = 0;
         oss.read_len = -1;
-    }
-    else if (oss.head_len == sizeof(EXEC) && !N_BADMAG(*head))
-    {
+    } else if (oss.head_len == sizeof(EXEC) && !N_BADMAG(*head)) {
         oss.foff = N_TXTOFF(*head);
-        if (fseek(stdin, oss.foff, SEEK_SET) == -1)
-        {
+        if (fseek(stdin, oss.foff, SEEK_SET) == -1) {
             oss.read_len = -1;
-        }
-        else
-        {
-            #ifdef AIX
+        } else {
+#ifdef AIX
             oss.read_len = head->tsize + head->dsize;
-            #else
+#else
             oss.read_len = head->a_text + head->a_data;
-            #endif
+#endif
         }
 
         oss.head_len = 0;
-    }
-    else
-    {
+    } else {
         oss.hcnt = 0;
     }
 
     /* Read the file and perform the regex comparison */
-    for (cnt = 0; (ch = os_getch(&oss)) != EOF;)
-    {
-        if (ISSTR(ch))
-        {
+    for (cnt = 0; (ch = os_getch(&oss)) != EOF;) {
+        if (ISSTR(ch)) {
             if (!cnt)
                 C = bfr;
             *C++ = ch;
@@ -251,25 +236,20 @@ int os_string(char *file, char *regex)
             buf+=strlen(line);
 
 
-            while ((ch = os_getch(&oss)) != EOF && ISSTR(ch))
-            {
-                if(cnt < OS_SIZE_1024)
-                {
+            while ((ch = os_getch(&oss)) != EOF && ISSTR(ch)) {
+                if(cnt < OS_SIZE_1024) {
                     *buf = (char)ch;
                     buf++;
-                }
-                else
-                {
+                } else {
                     *buf = '\0';
                     break;
                 }
-		cnt++;
+                cnt++;
             }
 
             *buf = '\0';
 
-            if(OS_PRegex(line, regex))
-            {
+            if(OS_PRegex(line, regex)) {
                 if(oss.fp)
                     fclose(oss.fp);
                 free(bfr);
@@ -293,18 +273,16 @@ int os_string(char *file, char *regex)
  */
 int os_getch(os_strings *oss)
 {
-	++oss->foff;
-	if (oss->head_len)
-    {
-		if (oss->hcnt < oss->head_len)
-			return((int)oss->hbfr[oss->hcnt++]);
-		oss->head_len = 0;
-	}
-	if (oss->read_len == -1 || oss->read_len-- > 0)
-    {
-		return(fgetc(oss->fp));
+    ++oss->foff;
+    if (oss->head_len) {
+        if (oss->hcnt < oss->head_len)
+            return((int)oss->hbfr[oss->hcnt++]);
+        oss->head_len = 0;
     }
-	return(EOF);
+    if (oss->read_len == -1 || oss->read_len-- > 0) {
+        return(fgetc(oss->fp));
+    }
+    return(EOF);
 }
 
 /* EOF */

@@ -53,31 +53,28 @@ int main(int argc, char **argv)
     /* printf ("Agrc [%d], Argv [%s]\n", argc, *argv); */
 
     /* user arguments */
-    if(argc > 1)
-    {
-        while((c = getopt(argc, argv, "Vdhf:")) != -1)
-        {
-            switch(c){
-                case 'V':
-                    print_version();
-                    break;
-                case 'h':
+    if(argc > 1) {
+        while((c = getopt(argc, argv, "Vdhf:")) != -1) {
+            switch(c) {
+            case 'V':
+                print_version();
+                break;
+            case 'h':
+                helpmsg();
+                break;
+            case 'd':
+                nowDebug();
+                break;
+            case 'f':
+                if(!optarg) {
+                    merror("%s: -f needs an argument",ARGV0);
                     helpmsg();
-                    break;
-                case 'd':
-                    nowDebug();
-                    break;
-                case 'f':
-                    if(!optarg)
-                    {
-                        merror("%s: -f needs an argument",ARGV0);
-                        helpmsg();
-                    }
-                    ar = optarg;
-                    break;
-                default:
-                    helpmsg();
-                    break;
+                }
+                ar = optarg;
+                break;
+            default:
+                helpmsg();
+                break;
             }
 
         }
@@ -90,8 +87,7 @@ int main(int argc, char **argv)
     modules|= CLOCALFILE;
     modules|= CAGENT_CONFIG;
     log_config.config = NULL;
-    if(ReadConfig(modules, ar, &log_config, NULL) < 0)
-    {
+    if(ReadConfig(modules, ar, &log_config, NULL) < 0) {
         return(OS_INVALID);
     }
 

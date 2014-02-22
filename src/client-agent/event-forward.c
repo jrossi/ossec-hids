@@ -38,8 +38,7 @@ void *EventForward()
     msg[OS_MAXSTR] = '\0';
 
 
-    while((recv_b = recv(logr->m_queue, msg, OS_MAXSTR, MSG_DONTWAIT)) > 0)
-    {
+    while((recv_b = recv(logr->m_queue, msg, OS_MAXSTR, MSG_DONTWAIT)) > 0) {
         msg[recv_b] = '\0';
 
         send_msg(0, msg);

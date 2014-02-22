@@ -48,66 +48,62 @@ int main(int argc, char **argv)
 
 
     /* Setuping up random */
-    #ifndef WIN32
-        #ifdef __OpenBSD__
-        srandomdev();
-        #else
-        srandom(time(0));
-        #endif
-    #else
+#ifndef WIN32
+#ifdef __OpenBSD__
+    srandomdev();
+#else
+    srandom(time(0));
+#endif
+#else
     srandom(time(0))
-    #endif
+#endif
 
     /* Setting the name */
     OS_SetName(ARGV0);
 
 
-    while((c = getopt(argc, argv, "VtdhfD:c:")) != -1)
-    {
-        switch(c)
-        {
-            case 'V':
-                print_version();
-                break;
-            case 'h':
-                help(ARGV0);
-                break;
-            case 'd':
-                nowDebug();
-                debug_level = 1;
-                break;
-            case 'f':
-                run_foreground = 1;
-                break;
-            case 'D':
-                if(!optarg)
-                    ErrorExit("%s: -D needs an argument",ARGV0);
-                dir = optarg;
-                break;
-            case 'c':
-                if(!optarg)
-                    ErrorExit("%s: -c needs an argument",ARGV0);
-                cfg = optarg;
-                break;
-            case 't':
-                test_config = 1;
-                break;
-            default:
-                help(ARGV0);
-                break;
+    while((c = getopt(argc, argv, "VtdhfD:c:")) != -1) {
+        switch(c) {
+        case 'V':
+            print_version();
+            break;
+        case 'h':
+            help(ARGV0);
+            break;
+        case 'd':
+            nowDebug();
+            debug_level = 1;
+            break;
+        case 'f':
+            run_foreground = 1;
+            break;
+        case 'D':
+            if(!optarg)
+                ErrorExit("%s: -D needs an argument",ARGV0);
+            dir = optarg;
+            break;
+        case 'c':
+            if(!optarg)
+                ErrorExit("%s: -c needs an argument",ARGV0);
+            cfg = optarg;
+            break;
+        case 't':
+            test_config = 1;
+            break;
+        default:
+            help(ARGV0);
+            break;
         }
 
     }
 
     /* Check current debug_level
-     * Command line setting takes precedence 
+     * Command line setting takes precedence
      */
-    if (debug_level == 0)
-    {
+    if (debug_level == 0) {
         /* Getting debug level */
         debug_level = getDefine_Int("logcollector", "debug", 0, 2);
-        while(debug_level != 0)
-        {
+        while(debug_level != 0) {
             nowDebug();
             debug_level--;
         }
@@ -118,7 +114,7 @@ int main(int argc, char **argv)
 
 
     accept_manager_commands = getDefine_Int("logcollector", "remote_commands",
-                                       0, 1);
+                                            0, 1);
 
 
     /* Reading config file */
@@ -135,7 +131,7 @@ int main(int argc, char **argv)
                                        2, 998);
 
     accept_manager_commands = getDefine_Int("logcollector", "remote_commands",
-                                       0, 1);
+                                            0, 1);
 
 
     /* Exit if test config */
@@ -144,8 +140,7 @@ int main(int argc, char **argv)
 
 
     /* No file available to monitor -- continue */
-    if(logff == NULL)
-    {
+    if(logff == NULL) {
         os_calloc(2, sizeof(logreader), logff);
         logff[0].file = NULL;
         logff[0].ffile = NULL;
@@ -159,11 +154,10 @@ int main(int argc, char **argv)
 
 
     /* Starting signal handler */
-    StartSIG(ARGV0);	
+    StartSIG(ARGV0);
 
 
-    if (!run_foreground)
-    {
+    if (!run_foreground) {
         /* Going on daemon mode */
         nowDaemon();
         goDaemon();

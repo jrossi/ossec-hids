@@ -23,8 +23,7 @@
 void Lists_OP_MakeAll(int force)
 {
     ListNode *lnode = OS_GetFirstList();
-    while(lnode)
-    {
+    while(lnode) {
         Lists_OP_MakeCDB(lnode->txt_filename,
                          lnode->cdb_filename,
                          force);
@@ -57,18 +56,15 @@ void Lists_OP_MakeCDB(char *txt_filename, char *cdb_filename, int force)
         debug1("%s: stat of file %s failed", ARGV0, cdb_filename);
         */
     if(File_DateofChange(txt_filename) > File_DateofChange(cdb_filename) ||
-       force)
-    {
+            force) {
         printf(" * File %s needs to be updated\n", cdb_filename);
         tmp_fd = fopen(tmp_filename, "w+");
         cdb_make_start(&cdbm, tmp_fd);
-        if(!(txt_fd = fopen(txt_filename, "r")))
-        {
+        if(!(txt_fd = fopen(txt_filename, "r"))) {
             merror(FOPEN_ERROR, ARGV0, txt_filename);
             return;
         }
-        while((fgets(str, OS_MAXSTR-1,txt_fd)) != NULL)
-        {
+        while((fgets(str, OS_MAXSTR-1,txt_fd)) != NULL) {
             /* Removing new lines or carriage returns. */
             tmp_str = strchr(str, '\r');
             if(tmp_str)
@@ -76,13 +72,10 @@ void Lists_OP_MakeCDB(char *txt_filename, char *cdb_filename, int force)
             tmp_str = strchr(str, '\n');
             if(tmp_str)
                 *tmp_str = '\0';
-            if((val = strchr(str, ':')))
-            {
+            if((val = strchr(str, ':'))) {
                 *val = '\0';
                 val++;
-            }
-            else
-            {
+            } else {
                 continue;
             }
             key = str;
@@ -91,9 +84,7 @@ void Lists_OP_MakeCDB(char *txt_filename, char *cdb_filename, int force)
         }
         cdb_make_finish(&cdbm);
         rename(tmp_filename,cdb_filename);
-    }
-    else
-    {
+    } else {
         printf(" * File %s does not need to be compiled\n", cdb_filename);
     }
 }

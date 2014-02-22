@@ -39,12 +39,12 @@ int LogCollectorConfig(char * cfgfile, int accept_remote)
     if(ReadConfig(modules, cfgfile, &log_config, NULL) < 0)
         return(OS_INVALID);
 
-    #ifdef CLIENT
+#ifdef CLIENT
     modules|= CAGENT_CONFIG;
     log_config.agent_cfg = 1;
     ReadConfig(modules, AGENTCONFIG, &log_config, NULL);
     log_config.agent_cfg = 0;
-    #endif
+#endif
 
     logff = log_config.config;
 

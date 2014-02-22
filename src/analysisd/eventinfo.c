@@ -41,43 +41,37 @@ Eventinfo *Search_LastSids(Eventinfo *my_lf, RuleInfo *currently_rule)
 
 
     /* checking sid search is valid */
-    if(!currently_rule->sid_search)
-    {
+    if(!currently_rule->sid_search) {
         merror("%s: No sid search!! XXX", ARGV0);
     }
 
     /* Getting last node */
     lf_node = OSList_GetLastNode(currently_rule->sid_search);
-    if(!lf_node)
-    {
+    if(!lf_node) {
         return(NULL);
     }
     first_lf = (Eventinfo *)lf_node->data;
 
 
-    do
-    {
+    do {
         lf = (Eventinfo *)lf_node->data;
 
         /* If time is outside the timeframe, return */
-        if((c_time - lf->time) > currently_rule->timeframe)
-        {
+        if((c_time - lf->time) > currently_rule->timeframe) {
             return(NULL);
         }
 
         /* We avoid multiple triggers for the same rule
          * or rules with a lower level.
          */
-        else if(lf->matched >= currently_rule->level)
-        {
+        else if(lf->matched >= currently_rule->level) {
             return(NULL);
         }
 
 
 
         /* Checking for same id */
-        if(currently_rule->context_opts & SAME_ID)
-        {
+        if(currently_rule->context_opts & SAME_ID) {
             if((!lf->id) || (!my_lf->id))
                 continue;
 
@@ -86,8 +80,7 @@ Eventinfo *Search_LastSids(Eventinfo *my_lf, RuleInfo *currently_rule)
         }
 
         /* Checking for repetitions from same src_ip */
-        if(currently_rule->context_opts & SAME_SRCIP)
-        {
+        if(currently_rule->context_opts & SAME_SRCIP) {
             if((!lf->srcip)||(!my_lf->srcip))
                 continue;
 
@@ -97,11 +90,9 @@ Eventinfo *Search_LastSids(Eventinfo *my_lf, RuleInfo *currently_rule)
 
 
         /* Grouping of additional data */
-        if(currently_rule->alert_opts & SAME_EXTRAINFO)
-        {
+        if(currently_rule->alert_opts & SAME_EXTRAINFO) {
             /* Checking for same source port */
-            if(currently_rule->context_opts & SAME_SRCPORT)
-            {
+            if(currently_rule->context_opts & SAME_SRCPORT) {
                 if((!lf->srcport)||(!my_lf->srcport))
                     continue;
 
@@ -110,8 +101,7 @@ Eventinfo *Search_LastSids(Eventinfo *my_lf, RuleInfo *currently_rule)
             }
 
             /* Checking for same dst port */
-            if(currently_rule->context_opts & SAME_DSTPORT)
-            {
+            if(currently_rule->context_opts & SAME_DSTPORT) {
                 if((!lf->dstport)||(!my_lf->dstport))
                     continue;
 
@@ -120,8 +110,7 @@ Eventinfo *Search_LastSids(Eventinfo *my_lf, RuleInfo *currently_rule)
             }
 
             /* Checking for repetitions on user error */
-            if(currently_rule->context_opts & SAME_USER)
-            {
+            if(currently_rule->context_opts & SAME_USER) {
                 if((!lf->dstuser)||(!my_lf->dstuser))
                     continue;
 
@@ -130,23 +119,19 @@ Eventinfo *Search_LastSids(Eventinfo *my_lf, RuleInfo *currently_rule)
             }
 
             /* Checking for same location */
-            if(currently_rule->context_opts & SAME_LOCATION)
-            {
+            if(currently_rule->context_opts & SAME_LOCATION) {
                 if(strcmp(lf->hostname, my_lf->hostname) != 0)
                     continue;
             }
 
 
             /* Checking for different urls */
-            if(currently_rule->context_opts & DIFFERENT_URL)
-            {
-                if((!lf->url)||(!my_lf->url))
-                {
+            if(currently_rule->context_opts & DIFFERENT_URL) {
+                if((!lf->url)||(!my_lf->url)) {
                     continue;
                 }
 
-                if(strcmp(lf->url, my_lf->url) == 0)
-                {
+                if(strcmp(lf->url, my_lf->url) == 0) {
                     continue;
                 }
             }
@@ -155,16 +140,14 @@ Eventinfo *Search_LastSids(Eventinfo *my_lf, RuleInfo *currently_rule)
 
 
         /* Checking if the number of matches worked */
-        if(currently_rule->__frequency <= 10)
-        {
+        if(currently_rule->__frequency <= 10) {
             currently_rule->last_events[currently_rule->__frequency]
-                = lf->full_log;
+            = lf->full_log;
             currently_rule->last_events[currently_rule->__frequency+1]
-                = NULL;
+            = NULL;
         }
 
-        if(currently_rule->__frequency < currently_rule->frequency)
-        {
+        if(currently_rule->__frequency < currently_rule->frequency) {
             currently_rule->__frequency++;
             continue;
         }
@@ -179,7 +162,7 @@ Eventinfo *Search_LastSids(Eventinfo *my_lf, RuleInfo *currently_rule)
         return(lf);
 
 
-    }while((lf_node = lf_node->prev) != NULL);
+    } while((lf_node = lf_node->prev) != NULL);
 
     return(NULL);
 }
@@ -201,43 +184,37 @@ Eventinfo *Search_LastGroups(Eventinfo *my_lf, RuleInfo *currently_rule)
 
 
     /* checking sid search is valid */
-    if(!currently_rule->group_search)
-    {
+    if(!currently_rule->group_search) {
         merror("%s: No group search!! XXX", ARGV0);
     }
 
     /* Getting last node */
     lf_node = OSList_GetLastNode(currently_rule->group_search);
-    if(!lf_node)
-    {
+    if(!lf_node) {
         return(NULL);
     }
     first_lf = (Eventinfo *)lf_node->data;
 
 
-    do
-    {
+    do {
         lf = (Eventinfo *)lf_node->data;
 
         /* If time is outside the timeframe, return */
-        if((c_time - lf->time) > currently_rule->timeframe)
-        {
+        if((c_time - lf->time) > currently_rule->timeframe) {
             return(NULL);
         }
 
         /* We avoid multiple triggers for the same rule
          * or rules with a lower level.
          */
-        else if(lf->matched >= currently_rule->level)
-        {
+        else if(lf->matched >= currently_rule->level) {
             return(NULL);
         }
 
 
 
         /* Checking for same id */
-        if(currently_rule->context_opts & SAME_ID)
-        {
+        if(currently_rule->context_opts & SAME_ID) {
             if((!lf->id) || (!my_lf->id))
                 continue;
 
@@ -246,8 +223,7 @@ Eventinfo *Search_LastGroups(Eventinfo *my_lf, RuleInfo *currently_rule)
         }
 
         /* Checking for repetitions from same src_ip */
-        if(currently_rule->context_opts & SAME_SRCIP)
-        {
+        if(currently_rule->context_opts & SAME_SRCIP) {
             if((!lf->srcip)||(!my_lf->srcip))
                 continue;
 
@@ -257,11 +233,9 @@ Eventinfo *Search_LastGroups(Eventinfo *my_lf, RuleInfo *currently_rule)
 
 
         /* Grouping of additional data */
-        if(currently_rule->alert_opts & SAME_EXTRAINFO)
-        {
+        if(currently_rule->alert_opts & SAME_EXTRAINFO) {
             /* Checking for same source port */
-            if(currently_rule->context_opts & SAME_SRCPORT)
-            {
+            if(currently_rule->context_opts & SAME_SRCPORT) {
                 if((!lf->srcport)||(!my_lf->srcport))
                     continue;
 
@@ -270,8 +244,7 @@ Eventinfo *Search_LastGroups(Eventinfo *my_lf, RuleInfo *currently_rule)
             }
 
             /* Checking for same dst port */
-            if(currently_rule->context_opts & SAME_DSTPORT)
-            {
+            if(currently_rule->context_opts & SAME_DSTPORT) {
                 if((!lf->dstport)||(!my_lf->dstport))
                     continue;
 
@@ -280,8 +253,7 @@ Eventinfo *Search_LastGroups(Eventinfo *my_lf, RuleInfo *currently_rule)
             }
 
             /* Checking for repetitions on user error */
-            if(currently_rule->context_opts & SAME_USER)
-            {
+            if(currently_rule->context_opts & SAME_USER) {
                 if((!lf->dstuser)||(!my_lf->dstuser))
                     continue;
 
@@ -290,23 +262,19 @@ Eventinfo *Search_LastGroups(Eventinfo *my_lf, RuleInfo *currently_rule)
             }
 
             /* Checking for same location */
-            if(currently_rule->context_opts & SAME_LOCATION)
-            {
+            if(currently_rule->context_opts & SAME_LOCATION) {
                 if(strcmp(lf->hostname, my_lf->hostname) != 0)
                     continue;
             }
 
 
             /* Checking for different urls */
-            if(currently_rule->context_opts & DIFFERENT_URL)
-            {
-                if((!lf->url)||(!my_lf->url))
-                {
+            if(currently_rule->context_opts & DIFFERENT_URL) {
+                if((!lf->url)||(!my_lf->url)) {
                     continue;
                 }
 
-                if(strcmp(lf->url, my_lf->url) == 0)
-                {
+                if(strcmp(lf->url, my_lf->url) == 0) {
                     continue;
                 }
             }
@@ -315,14 +283,12 @@ Eventinfo *Search_LastGroups(Eventinfo *my_lf, RuleInfo *currently_rule)
 
 
         /* Checking if the number of matches worked */
-        if(currently_rule->__frequency < currently_rule->frequency)
-        {
-            if(currently_rule->__frequency <= 10)
-            {
+        if(currently_rule->__frequency < currently_rule->frequency) {
+            if(currently_rule->__frequency <= 10) {
                 currently_rule->last_events[currently_rule->__frequency]
-                    = lf->full_log;
+                = lf->full_log;
                 currently_rule->last_events[currently_rule->__frequency+1]
-                    = NULL;
+                = NULL;
             }
 
             currently_rule->__frequency++;
@@ -338,7 +304,7 @@ Eventinfo *Search_LastGroups(Eventinfo *my_lf, RuleInfo *currently_rule)
         return(lf);
 
 
-    }while((lf_node = lf_node->prev) != NULL);
+    } while((lf_node = lf_node->prev) != NULL);
 
     return(NULL);
 }
@@ -360,8 +326,7 @@ Eventinfo *Search_LastEvents(Eventinfo *my_lf, RuleInfo *currently_rule)
 
     /* Last events */
     eventnode_pt = OS_GetLastEvent();
-    if(!eventnode_pt)
-    {
+    if(!eventnode_pt) {
         /* Nothing found */
         return(NULL);
     }
@@ -372,13 +337,11 @@ Eventinfo *Search_LastEvents(Eventinfo *my_lf, RuleInfo *currently_rule)
 
 
     /* Searching all previous events */
-    do
-    {
+    do {
         lf = eventnode_pt->event;
 
         /* If time is outside the timeframe, return */
-        if((c_time - lf->time) > currently_rule->timeframe)
-        {
+        if((c_time - lf->time) > currently_rule->timeframe) {
             return(NULL);
         }
 
@@ -386,32 +349,27 @@ Eventinfo *Search_LastEvents(Eventinfo *my_lf, RuleInfo *currently_rule)
         /* We avoid multiple triggers for the same rule
          * or rules with a lower level.
          */
-        else if(lf->matched >= currently_rule->level)
-        {
+        else if(lf->matched >= currently_rule->level) {
             return(NULL);
         }
 
 
         /* The category must be the same */
-        else if(lf->decoder_info->type != my_lf->decoder_info->type)
-        {
+        else if(lf->decoder_info->type != my_lf->decoder_info->type) {
             continue;
         }
 
 
         /* If regex does not match, go to next */
-        if(currently_rule->if_matched_regex)
-        {
-            if(!OSRegex_Execute(lf->log, currently_rule->if_matched_regex))
-            {
+        if(currently_rule->if_matched_regex) {
+            if(!OSRegex_Execute(lf->log, currently_rule->if_matched_regex)) {
                 /* Didn't match */
                 continue;
             }
         }
 
         /* Checking for repetitions on user error */
-        if(currently_rule->context_opts & SAME_USER)
-        {
+        if(currently_rule->context_opts & SAME_USER) {
             if((!lf->dstuser)||(!my_lf->dstuser))
                 continue;
 
@@ -420,8 +378,7 @@ Eventinfo *Search_LastEvents(Eventinfo *my_lf, RuleInfo *currently_rule)
         }
 
         /* Checking for same id */
-        if(currently_rule->context_opts & SAME_ID)
-        {
+        if(currently_rule->context_opts & SAME_ID) {
             if((!lf->id) || (!my_lf->id))
                 continue;
 
@@ -430,8 +387,7 @@ Eventinfo *Search_LastEvents(Eventinfo *my_lf, RuleInfo *currently_rule)
         }
 
         /* Checking for repetitions from same src_ip */
-        if(currently_rule->context_opts & SAME_SRCIP)
-        {
+        if(currently_rule->context_opts & SAME_SRCIP) {
             if((!lf->srcip)||(!my_lf->srcip))
                 continue;
 
@@ -440,29 +396,24 @@ Eventinfo *Search_LastEvents(Eventinfo *my_lf, RuleInfo *currently_rule)
         }
 
         /* Checking for different urls */
-        if(currently_rule->context_opts & DIFFERENT_URL)
-        {
-            if((!lf->url)||(!my_lf->url))
-            {
+        if(currently_rule->context_opts & DIFFERENT_URL) {
+            if((!lf->url)||(!my_lf->url)) {
                 continue;
             }
 
-            if(strcmp(lf->url, my_lf->url) == 0)
-            {
+            if(strcmp(lf->url, my_lf->url) == 0) {
                 continue;
             }
         }
 
 
         /* Checking if the number of matches worked */
-        if(currently_rule->__frequency < currently_rule->frequency)
-        {
-            if(currently_rule->__frequency <= 10)
-            {
+        if(currently_rule->__frequency < currently_rule->frequency) {
+            if(currently_rule->__frequency <= 10) {
                 currently_rule->last_events[currently_rule->__frequency]
-                            = lf->full_log;
+                = lf->full_log;
                 currently_rule->last_events[currently_rule->__frequency+1]
-                            = NULL;
+                = NULL;
             }
 
             currently_rule->__frequency++;
@@ -477,7 +428,7 @@ Eventinfo *Search_LastEvents(Eventinfo *my_lf, RuleInfo *currently_rule)
 
         return(lf);
 
-    }while((eventnode_pt = eventnode_pt->next) != NULL);
+    } while((eventnode_pt = eventnode_pt->next) != NULL);
 
 
     return(NULL);
@@ -540,8 +491,7 @@ void Zero_Eventinfo(Eventinfo *lf)
 /* Free the loginfo structure */
 void Free_Eventinfo(Eventinfo *lf)
 {
-    if(!lf)
-    {
+    if(!lf) {
         merror("%s: Trying to free NULL event. Inconsistent..",ARGV0);
         return;
     }
@@ -605,17 +555,13 @@ void Free_Eventinfo(Eventinfo *lf)
         free(lf->gowner_after);
 
     /* Freeing node to delete */
-    if(lf->sid_node_to_delete)
-    {
+    if(lf->sid_node_to_delete) {
         OSList_DeleteThisNode(lf->generated_rule->sid_prev_matched,
                               lf->sid_node_to_delete);
-    }
-    else if(lf->generated_rule && lf->generated_rule->group_prev_matched)
-    {
+    } else if(lf->generated_rule && lf->generated_rule->group_prev_matched) {
         int i = 0;
 
-        while(i < lf->generated_rule->group_prev_matched_sz)
-        {
+        while(i < lf->generated_rule->group_prev_matched_sz) {
             OSList_DeleteOldestNode(lf->generated_rule->group_prev_matched[i]);
             i++;
         }

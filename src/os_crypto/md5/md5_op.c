@@ -34,22 +34,19 @@ int OS_MD5_File(char * fname, char * output)
     buf[1024] = '\0';
 
     fp = fopen(fname,"r");
-    if(!fp)
-    {
+    if(!fp) {
         return(-1);
     }
 
     MD5Init(&ctx);
-    while((n = fread(buf, 1, sizeof(buf) -1, fp)) > 0)
-    {
+    while((n = fread(buf, 1, sizeof(buf) -1, fp)) > 0) {
         buf[n] = '\0';
         MD5Update(&ctx,buf,n);
     }
 
     MD5Final(digest, &ctx);
 
-    for(n = 0;n < 16; n++)
-    {
+    for(n = 0; n < 16; n++) {
         snprintf(output, 3, "%02x", digest[n]);
         output+=2;
     }
@@ -76,8 +73,7 @@ int OS_MD5_Str(char * str, char * output)
     MD5Final(digest, &ctx);
 
     output[32] = '\0';
-    for(n = 0;n < 16;n++)
-    {
+    for(n = 0; n < 16; n++) {
         snprintf(output, 3, "%02x", digest[n]);
         output+=2;
     }

@@ -47,10 +47,8 @@ int MailConf(int test_config, char *cfgfile, MailConfig *Mail)
     if(ReadConfig(modules, cfgfile, NULL, Mail) < 0)
         return(OS_INVALID);
 
-    if(!Mail->mn)
-    {
-        if(!test_config)
-        {
+    if(!Mail->mn) {
+        if(!test_config) {
             verbose(MAIL_DIS, ARGV0);
         }
         exit(0);

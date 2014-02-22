@@ -56,14 +56,12 @@ static char *__go_after(char *x, char *y)
     x_s = strlen(x);
     y_s = strlen(y);
 
-    if(x_s <= y_s)
-    {
+    if(x_s <= y_s) {
         return(NULL);
     }
 
     /* String does not match */
-    if(strncmp(x,y,y_s) != 0)
-    {
+    if(strncmp(x,y,y_s) != 0) {
         return(NULL);
     }
 
@@ -99,18 +97,15 @@ void HostinfoInit()
 
     /* r+ to read and write. Do not truncate */
     _hi_fp = fopen(_hi_buf,"r+");
-    if(!_hi_fp)
-    {
+    if(!_hi_fp) {
         /* try opening with a w flag, file probably does not exist */
         _hi_fp = fopen(_hi_buf, "w");
-        if(_hi_fp)
-        {
+        if(_hi_fp) {
             fclose(_hi_fp);
             _hi_fp = fopen(_hi_buf, "r+");
         }
     }
-    if(!_hi_fp)
-    {
+    if(!_hi_fp) {
         merror(FOPEN_ERROR, ARGV0, _hi_buf);
         return;
     }
@@ -129,8 +124,7 @@ void HostinfoInit()
  */
 FILE *HI_File()
 {
-    if(_hi_fp)
-    {
+    if(_hi_fp) {
         fseek(_hi_fp, 0, SEEK_SET);
         return(_hi_fp);
     }
@@ -159,8 +153,7 @@ int DecodeHostinfo(Eventinfo *lf)
 
 
     /* Checking maximum number of errors */
-    if(hi_err > 30)
-    {
+    if(hi_err > 30) {
         merror("%s: Too many errors handling host information db. "
                "Ignoring it.", ARGV0);
         return(0);
@@ -171,8 +164,7 @@ int DecodeHostinfo(Eventinfo *lf)
     buffer[OS_MAXSTR] = '\0';
     opened[OS_MAXSTR] = '\0';
     fp = HI_File();
-    if(!fp)
-    {
+    if(!fp) {
         merror("%s: Error handling host information database.",ARGV0);
         hi_err++; /* Increment hi error */
 
@@ -186,8 +178,7 @@ int DecodeHostinfo(Eventinfo *lf)
 
     /* Getting ip */
     tmpstr = __go_after(buffer, HOST_HOST);
-    if(!tmpstr)
-    {
+    if(!tmpstr) {
         merror("%s: Error handling host information database.",ARGV0);
         hi_err++;
 
@@ -198,8 +189,7 @@ int DecodeHostinfo(Eventinfo *lf)
     /* Setting ip */
     ip = tmpstr;
     tmpstr = strchr(tmpstr, ',');
-    if(!tmpstr)
-    {
+    if(!tmpstr) {
         merror("%s: Error handling host information database.",ARGV0);
         hi_err++;
 
@@ -212,8 +202,7 @@ int DecodeHostinfo(Eventinfo *lf)
 
     /* Getting ip only information -- to store */
     tmpstr = strchr(ip, ' ');
-    if(tmpstr)
-    {
+    if(tmpstr) {
         *tmpstr = '\0';
     }
     bf_size = strlen(ip);
@@ -222,11 +211,9 @@ int DecodeHostinfo(Eventinfo *lf)
     /* Reads the file and search for a possible
      * entry
      */
-    while(fgets(_hi_buf, OS_MAXSTR -1, fp) != NULL)
-    {
+    while(fgets(_hi_buf, OS_MAXSTR -1, fp) != NULL) {
         /* Ignore blank lines and lines with a comment */
-        if(_hi_buf[0] == '\n' || _hi_buf[0] == '#')
-        {
+        if(_hi_buf[0] == '\n' || _hi_buf[0] == '#') {
             continue;
         }
 
@@ -237,15 +224,11 @@ int DecodeHostinfo(Eventinfo *lf)
 
 
         /* Checking for ip */
-        if(strncmp(ip, _hi_buf, bf_size) == 0)
-        {
+        if(strncmp(ip, _hi_buf, bf_size) == 0) {
             /* Cannot use strncmp to avoid errors with crafted files */
-            if(strcmp(portss, _hi_buf + bf_size) == 0)
-            {
+            if(strcmp(portss, _hi_buf + bf_size) == 0) {
                 return(0);
-            }
-            else
-            {
+            } else {
                 char *tmp_ports;
 
                 tmp_ports = _hi_buf + (bf_size +1);
@@ -266,13 +249,10 @@ int DecodeHostinfo(Eventinfo *lf)
 
 
     /* Setting comment */
-    if(changed == 1)
-    {
+    if(changed == 1) {
         hostinfo_dec->id = id_mod;
         //lf->generated_rule->last_events[0] = opened;
-    }
-    else
-    {
+    } else {
         hostinfo_dec->id = id_new;
     }
 

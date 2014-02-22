@@ -54,51 +54,49 @@ int Read_Rootcheck_Config(char * cfgfile)
 
 
     /* XML Definitions */
-    char *(xml_daemon[])={xml_rootcheck,"daemon", NULL};
-    char *(xml_notify[])={xml_rootcheck, "notify", NULL};
-    char *(xml_base_dir[])={xml_rootcheck, "base_directory", NULL};
-    char *(xml_workdir[])={xml_rootcheck, "work_directory", NULL};
-    char *(xml_rootkit_files[])={xml_rootcheck, "rootkit_files", NULL};
-    char *(xml_rootkit_trojans[])={xml_rootcheck, "rootkit_trojans", NULL};
-    char *(xml_rootkit_unixaudit[])={xml_rootcheck, "system_audit", NULL};
-    char *(xml_rootkit_winaudit[])={xml_rootcheck, "windows_audit", NULL};
-    char *(xml_rootkit_winapps[])={xml_rootcheck, "windows_apps", NULL};
-    char *(xml_rootkit_winmalware[])={xml_rootcheck, "windows_malware", NULL};
-    char *(xml_scanall[])={xml_rootcheck, "scanall", NULL};
-    char *(xml_readall[])={xml_rootcheck, "readall", NULL};
-    char *(xml_time[])={xml_rootcheck, "frequency", NULL};
+    char *(xml_daemon[])= {xml_rootcheck,"daemon", NULL};
+    char *(xml_notify[])= {xml_rootcheck, "notify", NULL};
+    char *(xml_base_dir[])= {xml_rootcheck, "base_directory", NULL};
+    char *(xml_workdir[])= {xml_rootcheck, "work_directory", NULL};
+    char *(xml_rootkit_files[])= {xml_rootcheck, "rootkit_files", NULL};
+    char *(xml_rootkit_trojans[])= {xml_rootcheck, "rootkit_trojans", NULL};
+    char *(xml_rootkit_unixaudit[])= {xml_rootcheck, "system_audit", NULL};
+    char *(xml_rootkit_winaudit[])= {xml_rootcheck, "windows_audit", NULL};
+    char *(xml_rootkit_winapps[])= {xml_rootcheck, "windows_apps", NULL};
+    char *(xml_rootkit_winmalware[])= {xml_rootcheck, "windows_malware", NULL};
+    char *(xml_scanall[])= {xml_rootcheck, "scanall", NULL};
+    char *(xml_readall[])= {xml_rootcheck, "readall", NULL};
+    char *(xml_time[])= {xml_rootcheck, "frequency", NULL};
 
-    char *(xml_check_dev[])={xml_rootcheck, "check_dev", NULL};
-    char *(xml_check_files[])={xml_rootcheck, "check_files", NULL};
-    char *(xml_check_if[])={xml_rootcheck, "check_if", NULL};
-    char *(xml_check_pids[])={xml_rootcheck, "check_pids", NULL};
-    char *(xml_check_ports[])={xml_rootcheck, "check_ports", NULL};
-    char *(xml_check_sys[])={xml_rootcheck, "check_sys", NULL};
-    char *(xml_check_trojans[])={xml_rootcheck, "check_trojans", NULL};
+    char *(xml_check_dev[])= {xml_rootcheck, "check_dev", NULL};
+    char *(xml_check_files[])= {xml_rootcheck, "check_files", NULL};
+    char *(xml_check_if[])= {xml_rootcheck, "check_if", NULL};
+    char *(xml_check_pids[])= {xml_rootcheck, "check_pids", NULL};
+    char *(xml_check_ports[])= {xml_rootcheck, "check_ports", NULL};
+    char *(xml_check_sys[])= {xml_rootcheck, "check_sys", NULL};
+    char *(xml_check_trojans[])= {xml_rootcheck, "check_trojans", NULL};
 
-    #ifdef WIN32
+#ifdef WIN32
 
-    char *(xml_check_winapps[])={xml_rootcheck, "check_winapps", NULL};
-    char *(xml_check_winaudit[])={xml_rootcheck, "check_winaudit", NULL};
-    char *(xml_check_winmalware[])={xml_rootcheck, "check_winmalware", NULL};
+    char *(xml_check_winapps[])= {xml_rootcheck, "check_winapps", NULL};
+    char *(xml_check_winaudit[])= {xml_rootcheck, "check_winaudit", NULL};
+    char *(xml_check_winmalware[])= {xml_rootcheck, "check_winmalware", NULL};
 
-    #else
+#else
 
-    char *(xml_check_unixaudit[])={xml_rootcheck, "check_unixaudit", NULL};
+    char *(xml_check_unixaudit[])= {xml_rootcheck, "check_unixaudit", NULL};
 
-    #endif
+#endif
 
     /* :) */
     xml_time[2] = NULL;
 
-    if(OS_ReadXML(cfgfile,&xml) < 0)
-    {
+    if(OS_ReadXML(cfgfile,&xml) < 0) {
         merror("config_op: XML error: %s",xml.err);
         return(OS_INVALID);
     }
 
-    if(!OS_RootElementExist(&xml,xml_rootcheck))
-    {
+    if(!OS_RootElementExist(&xml,xml_rootcheck)) {
         OS_ClearXML(&xml);
         merror("%s: Rootcheck configuration not found. ",ARGV0);
         return(-1);
@@ -109,14 +107,12 @@ int Read_Rootcheck_Config(char * cfgfile)
     rootcheck.daemon = eval_bool2(OS_GetOneContentforElement(&xml,xml_daemon), rootcheck.daemon);
 
     /* time  */
-    #ifdef OSSECHIDS
+#ifdef OSSECHIDS
     str = OS_GetOneContentforElement(&xml,xml_time);
-    if(str)
-    {
-        if(!OS_StrIsNum(str))
-        {
+    if(str) {
+        if(!OS_StrIsNum(str)) {
             merror("Invalid frequency time '%s' for the rootkit "
-                    "detection (must be int).", str);
+                   "detection (must be int).", str);
             return(OS_INVALID);
         }
 
@@ -125,43 +121,37 @@ int Read_Rootcheck_Config(char * cfgfile)
         free(str);
         str = NULL;
     }
-    #endif
+#endif
 
 
     /* Scan all flag */
-    if(!rootcheck.scanall)
-    {
+    if(!rootcheck.scanall) {
         rootcheck.scanall = eval_bool2(OS_GetOneContentforElement(&xml,xml_scanall), 0);
     }
 
 
     /* read all flag */
-    if(!rootcheck.readall)
-    {
+    if(!rootcheck.readall) {
         rootcheck.readall = eval_bool2(OS_GetOneContentforElement(&xml,xml_readall), 0);
     }
 
 
     /* Notifications type */
     str  = OS_GetOneContentforElement(&xml,xml_notify);
-    if(str)
-    {
+    if(str) {
         if(strcasecmp(str,"queue") == 0)
             rootcheck.notify = QUEUE;
         else if(strcasecmp(str,"syslog") == 0)
             rootcheck.notify = SYSLOG;
-        else
-        {
+        else {
             merror("%s: Invalid notification option. Only "
-                      "'syslog' or 'queue' are allowed.",ARGV0);
+                   "'syslog' or 'queue' are allowed.",ARGV0);
             return(-1);
         }
 
         free(str);
         str = NULL;
-    }
-    else
-    {
+    } else {
         /* Default to SYSLOG */
         rootcheck.notify = SYSLOG;
     }
@@ -174,19 +164,19 @@ int Read_Rootcheck_Config(char * cfgfile)
     rootcheck.rootkit_files  = OS_GetOneContentforElement
                                (&xml,xml_rootkit_files);
     rootcheck.rootkit_trojans  = OS_GetOneContentforElement
-                               (&xml,xml_rootkit_trojans);
+                                 (&xml,xml_rootkit_trojans);
 
     rootcheck.unixaudit = OS_GetContents
-                                (&xml,xml_rootkit_unixaudit);
+                          (&xml,xml_rootkit_unixaudit);
 
     rootcheck.winaudit  = OS_GetOneContentforElement
-                                (&xml,xml_rootkit_winaudit);
+                          (&xml,xml_rootkit_winaudit);
 
     rootcheck.winapps  = OS_GetOneContentforElement
-                                (&xml,xml_rootkit_winapps);
+                         (&xml,xml_rootkit_winapps);
 
     rootcheck.winmalware  = OS_GetOneContentforElement
-                                (&xml,xml_rootkit_winmalware);
+                            (&xml,xml_rootkit_winmalware);
 
     rootcheck.basedir  = OS_GetOneContentforElement(&xml, xml_base_dir);
 
@@ -198,17 +188,17 @@ int Read_Rootcheck_Config(char * cfgfile)
     rootcheck.checks.rc_sys = eval_bool2(OS_GetOneContentforElement(&xml,xml_check_sys), 1);
     rootcheck.checks.rc_trojans = eval_bool2(OS_GetOneContentforElement(&xml,xml_check_trojans), 1);
 
-    #ifdef WIN32
+#ifdef WIN32
 
     rootcheck.checks.rc_winapps = eval_bool2(OS_GetOneContentforElement(&xml,xml_check_winapps), 1);
     rootcheck.checks.rc_winaudit = eval_bool2(OS_GetOneContentforElement(&xml,xml_check_winaudit), 1);
     rootcheck.checks.rc_winmalware = eval_bool2(OS_GetOneContentforElement(&xml,xml_check_winmalware), 1);
 
-    #else
+#else
 
     rootcheck.checks.rc_unixaudit = eval_bool2(OS_GetOneContentforElement(&xml,xml_check_unixaudit), 1);
 
-    #endif
+#endif
 
     OS_ClearXML(&xml);
 

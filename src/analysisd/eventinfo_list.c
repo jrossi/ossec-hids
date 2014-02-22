@@ -52,13 +52,11 @@ void OS_AddEvent(Eventinfo *lf)
 {
     EventNode *tmp_node = eventnode;
 
-    if(tmp_node)
-    {
+    if(tmp_node) {
         EventNode *new_node;
         new_node = (EventNode *)calloc(1,sizeof(EventNode));
 
-        if(new_node == NULL)
-        {
+        if(new_node == NULL) {
             ErrorExit(MEM_ERROR,ARGV0);
         }
 
@@ -78,8 +76,7 @@ void OS_AddEvent(Eventinfo *lf)
         _memoryused++;
 
         /* Need to remove the last nodes */
-        if(_memoryused > _memorymaxsize)
-        {
+        if(_memoryused > _memorymaxsize) {
             int i = 0;
             EventNode *oldlast;
 
@@ -87,8 +84,7 @@ void OS_AddEvent(Eventinfo *lf)
              * or the events that will not match anymore
              * (higher than max frequency)
              */
-            while((i < 10)||((lf->time - lastnode->event->time) > _max_freq))
-            {
+            while((i < 10)||((lf->time - lastnode->event->time) > _max_freq)) {
                 oldlast = lastnode;
                 lastnode = lastnode->prev;
                 lastnode->next = NULL;
@@ -103,12 +99,10 @@ void OS_AddEvent(Eventinfo *lf)
         }
     }
 
-    else
-    {
+    else {
         /* Adding first node */
         eventnode = (EventNode *)calloc(1,sizeof(EventNode));
-        if(eventnode == NULL)
-        {
+        if(eventnode == NULL) {
             ErrorExit(MEM_ERROR,ARGV0);
         }
 

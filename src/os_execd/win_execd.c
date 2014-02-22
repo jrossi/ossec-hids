@@ -22,7 +22,7 @@
 
 
 #ifdef ARGV0
-   #undef ARGV0
+#undef ARGV0
 #endif
 
 #define ARGV0 "ossec-execd"
@@ -31,12 +31,11 @@
 
 
 /* Timeout data structure */
-typedef struct _timeout_data
-{
+typedef struct _timeout_data {
     time_t time_of_addition;
     int time_to_block;
     char **command;
-}timeout_data;
+} timeout_data;
 
 
 /* Timeout list */
@@ -58,8 +57,7 @@ int WinExecd_Start()
 
 
     /* Reading config */
-    if((c = ExecdConfig(xmlcfg)) < 0)
-    {
+    if((c = ExecdConfig(xmlcfg)) < 0) {
         ErrorExit(CONFIG_ERROR, ARGV0, xmlcfg);
     }
 
@@ -70,8 +68,7 @@ int WinExecd_Start()
 
 
     /* Active response disabled */
-    if(c == 1)
-    {
+    if(c == 1) {
         verbose(EXEC_DISABLED, ARGV0);
         return(0);
     }
@@ -79,8 +76,7 @@ int WinExecd_Start()
 
     /* Creating list for timeout */
     timeout_list = OSList_Create();
-    if(!timeout_list)
-    {
+    if(!timeout_list) {
         ErrorExit(LIST_ERROR, ARGV0);
     }
 
@@ -99,16 +95,14 @@ void WinTimeoutRun(int curr_time)
 {
     /* Checking if there is any timeouted command to execute. */
     timeout_node = OSList_GetFirstNode(timeout_list);
-    while(timeout_node)
-    {
+    while(timeout_node) {
         timeout_data *list_entry;
 
         list_entry = (timeout_data *)timeout_node->data;
 
         /* Timeouted */
         if((curr_time - list_entry->time_of_addition) >
-            list_entry->time_to_block)
-        {
+                list_entry->time_to_block) {
             ExecCmd_Win32(list_entry->command[0]);
 
             /* Deletecurrently node already sets the pointer to next */
@@ -119,8 +113,7 @@ void WinTimeoutRun(int curr_time)
             FreeTimeoutEntry(list_entry);
         }
 
-        else
-        {
+        else {
             timeout_node = OSList_GetNextNode(timeout_list);
         }
     }
@@ -164,8 +157,7 @@ void WinExecdRun(char *exec_msg)
 
     /* Zeroing the name */
     tmp_msg = strchr(exec_msg, ' ');
-    if(!tmp_msg)
-    {
+    if(!tmp_msg) {
         merror(EXECD_INV_MSG, ARGV0, exec_msg);
         return;
     }
@@ -176,8 +168,7 @@ void WinExecdRun(char *exec_msg)
     /* Getting user. */
     cmd_user = tmp_msg;
     tmp_msg = strchr(tmp_msg, ' ');
-    if(!tmp_msg)
-    {
+    if(!tmp_msg) {
         merror(EXECD_INV_MSG, ARGV0, cmd_user);
         return;
     }
@@ -188,8 +179,7 @@ void WinExecdRun(char *exec_msg)
     /* Getting ip. */
     cmd_ip = tmp_msg;
     tmp_msg = strchr(tmp_msg, ' ');
-    if(!tmp_msg)
-    {
+    if(!tmp_msg) {
         merror(EXECD_INV_MSG, ARGV0, cmd_ip);
         return;
     }
@@ -199,12 +189,10 @@ void WinExecdRun(char *exec_msg)
 
     /* Getting the command to execute (valid name) */
     command = GetCommandbyName(name, &timeout_value);
-    if(!command)
-    {
+    if(!command) {
         ReadExecConfig();
         command = GetCommandbyName(name, &timeout_value);
-        if(!command)
-        {
+        if(!command) {
             merror(EXEC_INV_NAME, ARGV0, name);
             return;
         }
@@ -230,8 +218,7 @@ void WinExecdRun(char *exec_msg)
 
     /* Getting size for the strncmp */
     i = 0, j = 0;
-    while(buffer[i] != '\0')
-    {
+    while(buffer[i] != '\0') {
         if(buffer[i] == ' ')
             j++;
 
@@ -246,13 +233,11 @@ void WinExecdRun(char *exec_msg)
     added_before = 0;
 
 
-    while(timeout_node)
-    {
+    while(timeout_node) {
         timeout_data *list_entry;
 
         list_entry = (timeout_data *)timeout_node->data;
-        if(strncmp(list_entry->command[0], timeout_args[0], i) == 0)
-        {
+        if(strncmp(list_entry->command[0], timeout_args[0], i) == 0) {
             /* Means we executed this command before
              * and we don't need to add it again.
              */
@@ -270,17 +255,15 @@ void WinExecdRun(char *exec_msg)
 
 
     /* If it wasn't added before, do it now */
-    if(!added_before)
-    {
+    if(!added_before) {
         snprintf(buffer, OS_MAXSTR, "\"%s\" %s \"%s\" \"%s\" \"%s\"", command,
-                                    ADD_ENTRY, cmd_user, cmd_ip, tmp_msg);
+                 ADD_ENTRY, cmd_user, cmd_ip, tmp_msg);
         /* executing command */
 
         ExecCmd_Win32(buffer);
 
         /* We don't need to add to the list if the timeout_value == 0 */
-        if(timeout_value)
-        {
+        if(timeout_value) {
             /* Creating the timeout entry */
             os_calloc(1, sizeof(timeout_data), timeout_entry);
             timeout_entry->command = timeout_args;
@@ -289,19 +272,16 @@ void WinExecdRun(char *exec_msg)
 
 
             /* Adding command to the timeout list */
-            if(!OSList_AddData(timeout_list, timeout_entry))
-            {
+            if(!OSList_AddData(timeout_list, timeout_entry)) {
                 merror(LIST_ADD_ERROR, ARGV0);
                 FreeTimeoutEntry(timeout_entry);
             }
         }
 
         /* If no timeout, we still need to free it in here */
-        else
-        {
+        else {
             char **ss_ta = timeout_args;
-            while(*timeout_args)
-            {
+            while(*timeout_args) {
                 os_free(*timeout_args);
                 *timeout_args = NULL;
                 timeout_args++;
@@ -311,13 +291,11 @@ void WinExecdRun(char *exec_msg)
     }
 
     /* We didn't add it to the timeout list */
-    else
-    {
+    else {
         char **ss_ta = timeout_args;
 
         /* Clear the timeout arguments */
-        while(*timeout_args)
-        {
+        while(*timeout_args) {
             os_free(*timeout_args);
             *timeout_args = NULL;
             timeout_args++;

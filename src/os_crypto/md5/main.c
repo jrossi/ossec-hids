@@ -22,13 +22,11 @@ int main(int argc, char ** argv)
         usage(argv);
 
 
-    if(strcmp(argv[1],"file") == 0)
-    {
+    if(strcmp(argv[1],"file") == 0) {
         OS_MD5_File(argv[2], filesum);
     }
 
-    else if(strcmp(argv[1],"str") == 0)
-    {
+    else if(strcmp(argv[1],"str") == 0) {
         OS_MD5_Str(argv[2], filesum);
     }
 

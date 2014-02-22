@@ -44,7 +44,7 @@ int GlobalConf(char * cfgfile)
     Config.picviz = 0;
     Config.prelude = 0;
     Config.zeromq_output = 0;
-    Config.zeromq_output_uri = NULL; 
+    Config.zeromq_output_uri = NULL;
     Config.memorysize = 1024;
     Config.mailnotify = -1;
     Config.keeplogdate = 0;
@@ -73,8 +73,7 @@ int GlobalConf(char * cfgfile)
 
 
     /* Reading config */
-    if(ReadConfig(modules, cfgfile, &Config, NULL)< 0)
-    {
+    if(ReadConfig(modules, cfgfile, &Config, NULL)< 0) {
         return(OS_INVALID);
     }
 

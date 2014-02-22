@@ -28,17 +28,16 @@ int gen_server_info(HWND hwnd)
 {
     memset(ui_server_info, '\0', 2048 +1);
     snprintf(ui_server_info, 2048,
-            "Agent: %s (%s)  -  %s\r\n\r\n"
-            "Status: %s",
-            config_inst.agentname,
-            config_inst.agentid,
-            config_inst.agentip,
-            config_inst.status);
+             "Agent: %s (%s)  -  %s\r\n\r\n"
+             "Status: %s",
+             config_inst.agentname,
+             config_inst.agentid,
+             config_inst.agentip,
+             config_inst.status);
 
 
     /* Initializing top */
-    if(config_inst.version)
-    {
+    if(config_inst.version) {
         SetDlgItemText(hwnd, UI_SERVER_TOP, config_inst.version);
         SetDlgItemText(hwnd, UI_SERVER_INFO, ui_server_info);
     }
@@ -59,39 +58,31 @@ char *cat_file(char *file, FILE *fp2)
 {
     FILE *fp;
 
-    if(!fp2)
-    {
+    if(!fp2) {
         fp = fopen(file, "r");
-    }
-    else
-    {
+    } else {
         fp = fp2;
     }
 
-    if(fp)
-    {
+    if(fp) {
         char buf[1024 +1];
         char *ret = NULL;
 
         buf[1024] = '\0';
-        if(fgets(buf, 1024, fp) != NULL)
-        {
+        if(fgets(buf, 1024, fp) != NULL) {
             ret = strchr(buf, '\n');
-            if(ret)
-            {
+            if(ret) {
                 *ret = '\0';
             }
             ret = strchr(buf, '\r');
-            if(ret)
-            {
+            if(ret) {
                 *ret = '\0';
             }
 
             ret = strdup(buf);
         }
 
-        if(!fp2)
-        {
+        if(!fp2) {
             fclose(fp);
         }
         return(ret);
@@ -106,8 +97,7 @@ int is_file(char *file)
 {
     FILE *fp;
     fp = fopen(file, "r");
-    if(fp)
-    {
+    if(fp) {
         fclose(fp);
         return(1);
     }
@@ -118,30 +108,26 @@ int is_file(char *file)
 /* Clear configuration */
 void config_clear()
 {
-	debug2("read config 1");
-    if(config_inst.version)
-    {
+    debug2("read config 1");
+    if(config_inst.version) {
         free(config_inst.version);
     }
 
-	debug2("read config 2");
-    if(config_inst.key)
-    {
+    debug2("read config 2");
+    if(config_inst.key) {
         free(config_inst.key);
     }
 
-	debug2("read config 3");
-    if(config_inst.agentid)
-    {
+    debug2("read config 3");
+    if(config_inst.agentid) {
         free(config_inst.agentid);
     }
 
-	debug2("read config 4");
-    if(config_inst.server)
-    {
+    debug2("read config 4");
+    if(config_inst.server) {
         free(config_inst.server);
     }
-	debug2("read config 5");
+    debug2("read config 5");
 
 
     /* Initializing config instance */
@@ -159,7 +145,7 @@ void config_clear()
     config_inst.status = ST_UNKNOWN;
     config_inst.msg_sent = 0;
 
-	debug2("read config 6");
+    debug2("read config 6");
 }
 
 
@@ -184,11 +170,9 @@ void init_config()
 
 
     /* Checking if ui is on the right path */
-    if(!is_file(CONFIG))
-    {
+    if(!is_file(CONFIG)) {
         chdir(DEFDIR);
-        if(!is_file(CONFIG))
-        {
+        if(!is_file(CONFIG)) {
             config_inst.admin_access = -1;
         }
     }
@@ -201,21 +185,16 @@ void init_config()
     {
         FILE *fp;
         fp = fopen(CONFIG, "a");
-        if(fp)
-        {
+        if(fp) {
             fclose(fp);
-        }
-        else
-        {
+        } else {
             config_inst.admin_access = 0;
         }
 
 
         fp = fopen(".test-file.tst", "w");
-        if(fp)
-        {
-            if(fprintf(fp, ".test\n") == -1)
-            {
+        if(fp) {
+            if(fprintf(fp, ".test\n") == -1) {
                 config_inst.admin_access = 0;
             }
 
@@ -223,22 +202,16 @@ void init_config()
 
             /* trying to open it to read. */
             fp = fopen(".test-file.tst", "r");
-            if(fp)
-            {
+            if(fp) {
                 fclose(fp);
-            }
-            else
-            {
+            } else {
                 config_inst.admin_access = 0;
             }
 
-            if(unlink(".test-file.tst"))
-            {
+            if(unlink(".test-file.tst")) {
                 config_inst.admin_access = 0;
             }
-        }
-        else
-        {
+        } else {
             config_inst.admin_access = 0;
         }
     }
@@ -256,23 +229,18 @@ int config_read(HWND hwnd)
 
 
     /* Getting OSSEC status */
-    if(CheckServiceRunning())
-    {
+    if(CheckServiceRunning()) {
         config_inst.status = ST_RUNNING;
-    }
-    else
-    {
+    } else {
         config_inst.status = ST_STOPPED;
     }
 
 
     /* Getting version/install date */
     config_inst.version = cat_file(VERSION_FILE, NULL);
-    if(config_inst.version)
-    {
+    if(config_inst.version) {
         config_inst.install_date = strchr(config_inst.version, '-');
-        if(config_inst.install_date)
-        {
+        if(config_inst.install_date) {
             *config_inst.install_date = '\0';
             config_inst.install_date++;
         }
@@ -281,19 +249,16 @@ int config_read(HWND hwnd)
 
     /* Getting number of messages sent */
     tmp_str = cat_file(SENDER_FILE, NULL);
-    if(tmp_str)
-    {
+    if(tmp_str) {
         unsigned long int tmp_val = 0;
         char *to_free = tmp_str;
 
         tmp_val = atol(tmp_str);
-        if(tmp_val)
-        {
+        if(tmp_val) {
             config_inst.msg_sent = tmp_val * 9999;
 
             tmp_str = strchr(tmp_str, ':');
-            if(tmp_str)
-            {
+            if(tmp_str) {
                 tmp_str++;
                 tmp_val = atol(tmp_str);
                 config_inst.msg_sent += tmp_val;
@@ -306,12 +271,10 @@ int config_read(HWND hwnd)
 
     /* Getting agent id, name and ip */
     tmp_str = cat_file(AUTH_FILE, NULL);
-    if(tmp_str)
-    {
+    if(tmp_str) {
         /* Getting base 64 */
         config_inst.key = encode_base64(strlen(tmp_str),tmp_str);
-        if(config_inst.key == NULL)
-        {
+        if(config_inst.key == NULL) {
             config_inst.key = FL_NOKEY;
         }
 
@@ -319,16 +282,14 @@ int config_read(HWND hwnd)
         config_inst.agentid = tmp_str;
 
         tmp_str = strchr(tmp_str, ' ');
-        if(tmp_str)
-        {
+        if(tmp_str) {
             *tmp_str = '\0';
             tmp_str++;
 
             /* Getting name */
             config_inst.agentname = tmp_str;
             tmp_str = strchr(tmp_str, ' ');
-            if(tmp_str)
-            {
+            if(tmp_str) {
                 *tmp_str = '\0';
                 tmp_str++;
 
@@ -336,8 +297,7 @@ int config_read(HWND hwnd)
                 config_inst.agentip = tmp_str;
 
                 tmp_str = strchr(tmp_str, ' ');
-                if(tmp_str)
-                {
+                if(tmp_str) {
                     *tmp_str = '\0';
                 }
             }
@@ -345,8 +305,7 @@ int config_read(HWND hwnd)
     }
 
 
-    if(config_inst.agentip == NULL)	
-    {
+    if(config_inst.agentip == NULL) {
         config_inst.agentid = strdup(ST_NOTSET);
         config_inst.agentname = strdup("Auth key not imported.");
         config_inst.agentip = ST_NOTSET;
@@ -356,14 +315,10 @@ int config_read(HWND hwnd)
 
 
     /* Getting server ip */
-    if(!get_ossec_server())
-    {
-        if(strcmp(config_inst.status, ST_MISSING_IMPORT) == 0)
-        {
+    if(!get_ossec_server()) {
+        if(strcmp(config_inst.status, ST_MISSING_IMPORT) == 0) {
             config_inst.status = ST_MISSING_ALL;
-        }
-        else
-        {
+        } else {
             config_inst.status = ST_MISSING_SERVER;
         }
     }
@@ -381,20 +336,18 @@ int get_ossec_server()
 
 
     /* Definitions */
-    char *(xml_serverip[])={"ossec_config","client","server-ip", NULL};
-    char *(xml_serverhost[])={"ossec_config","client","server-hostname", NULL};
+    char *(xml_serverip[])= {"ossec_config","client","server-ip", NULL};
+    char *(xml_serverhost[])= {"ossec_config","client","server-hostname", NULL};
 
 
     /* Reading XML */
-    if(OS_ReadXML(CONFIG, &xml) < 0)
-    {
+    if(OS_ReadXML(CONFIG, &xml) < 0) {
         return(0);
     }
 
 
     /* We need to remove the entry for the server */
-    if(config_inst.server)
-    {
+    if(config_inst.server) {
         free(config_inst.server);
         config_inst.server = NULL;
     }
@@ -403,8 +356,7 @@ int get_ossec_server()
 
     /* Getting ip */
     str = OS_GetOneContentforElement(&xml, xml_serverip);
-    if(str && (OS_IsValidIP(str, NULL) == 1))
-    {
+    if(str && (OS_IsValidIP(str, NULL) == 1)) {
         config_inst.server_type = SERVER_IP_USED;
         config_inst.server = str;
 
@@ -412,21 +364,17 @@ int get_ossec_server()
         return(1);
     }
     /* If we dont find the ip, try the server-hostname */
-    else
-    {
-        if(str)
-        {
+    else {
+        if(str) {
             free(str);
             str = NULL;
         }
 
         str = OS_GetOneContentforElement(&xml, xml_serverhost);
-        if(str)
-        {
+        if(str) {
             char *s_ip;
             s_ip = OS_GetHost(str, 0);
-            if(s_ip)
-            {
+            if(s_ip) {
                 /* Clearing the host memory */
                 free(s_ip);
 
@@ -454,29 +402,25 @@ int get_ossec_server()
 int set_ossec_server(char *ip, HWND hwnd)
 {
     char **xml_pt = NULL;
-    char *(xml_serverip[])={"ossec_config","client","server-ip", NULL};
-    char *(xml_serverhost[])={"ossec_config","client","server-hostname", NULL};
+    char *(xml_serverip[])= {"ossec_config","client","server-ip", NULL};
+    char *(xml_serverhost[])= {"ossec_config","client","server-hostname", NULL};
 
 
     /* Verifying IP Address */
-    if(OS_IsValidIP(ip, NULL) != 1)
-    {
+    if(OS_IsValidIP(ip, NULL) != 1) {
         char *s_ip;
         s_ip = OS_GetHost(ip, 0);
 
-        if(!s_ip)
-        {
+        if(!s_ip) {
             MessageBox(hwnd, "Invalid Server IP Address.\r\n"
-                             "It must be the valid Ipv4 address of the "
-                             "OSSEC server or its resolvable hostname.",
-                             "Invalid Server IP Address.",MB_OK);
+                       "It must be the valid Ipv4 address of the "
+                       "OSSEC server or its resolvable hostname.",
+                       "Invalid Server IP Address.",MB_OK);
             return(0);
         }
         config_inst.server_type = SERVER_HOST_USED;
         xml_pt = xml_serverhost;
-    }
-    else
-    {
+    } else {
         config_inst.server_type = SERVER_IP_USED;
         xml_pt = xml_serverip;
     }
@@ -485,8 +429,7 @@ int set_ossec_server(char *ip, HWND hwnd)
 
     /* Reading the XML. Printing error and line number */
     if(OS_WriteXML(CONFIG, NEWCONFIG, xml_pt,
-                   NULL, NULL, ip, 0) != 0)
-    {
+                   NULL, NULL, ip, 0) != 0) {
         MessageBox(hwnd, "Unable to set OSSEC Server IP Address.\r\n"
                    "(Internal error on the XML Write).",
                    "Unable to set Server IP Address.",MB_OK);

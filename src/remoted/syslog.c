@@ -24,17 +24,13 @@
  */
 static int OS_IPNotAllowed(char *srcip)
 {
-    if(logr.denyips != NULL)
-    {
-        if(OS_IPFoundList(srcip, logr.denyips))
-        {
+    if(logr.denyips != NULL) {
+        if(OS_IPFoundList(srcip, logr.denyips)) {
             return(1);
         }
     }
-    if(logr.allowips != NULL)
-    {
-        if(OS_IPFoundList(srcip, logr.allowips))
-        {
+    if(logr.allowips != NULL) {
+        if(OS_IPFoundList(srcip, logr.allowips)) {
             return(0);
         }
     }
@@ -71,18 +67,16 @@ void HandleSyslog()
     /* Connecting to the message queue
      * Exit if it fails.
      */
-    if((logr.m_queue = StartMQ(DEFAULTQUEUE,WRITE)) < 0)
-    {
+    if((logr.m_queue = StartMQ(DEFAULTQUEUE,WRITE)) < 0) {
         ErrorExit(QUEUE_FATAL,ARGV0, DEFAULTQUEUE);
     }
 
 
     /* Infinite loop in here */
-    while(1)
-    {
+    while(1) {
         /* Receiving message  */
         recv_b = recvfrom(logr.sock, buffer, OS_SIZE_1024, 0,
-                (struct sockaddr *)&peer_info, &peer_size);
+                          (struct sockaddr *)&peer_info, &peer_size);
 
         /* Nothing received */
         if(recv_b <= 0)
@@ -94,8 +88,7 @@ void HandleSyslog()
 
 
         /* Removing new line */
-        if(buffer[recv_b -1] == '\n')
-        {
+        if(buffer[recv_b -1] == '\n') {
             buffer[recv_b -1] = '\0';
         }
 
@@ -105,35 +98,26 @@ void HandleSyslog()
 
 
         /* Removing syslog header */
-        if(buffer[0] == '<')
-        {
+        if(buffer[0] == '<') {
             buffer_pt = strchr(buffer+1, '>');
-            if(buffer_pt)
-            {
+            if(buffer_pt) {
                 buffer_pt++;
-            }
-            else
-            {
+            } else {
                 buffer_pt = buffer;
             }
-        }
-        else
-        {
+        } else {
             buffer_pt = buffer;
         }
 
         /* Checking if IP is allowed here */
-        if(OS_IPNotAllowed(srcip))
-        {
+        if(OS_IPNotAllowed(srcip)) {
             merror(DENYIP_WARN,ARGV0,srcip);
         }
 
         else if(SendMSG(logr.m_queue, buffer_pt, srcip,
-                        SYSLOG_MQ) < 0)
-        {
+                        SYSLOG_MQ) < 0) {
             merror(QUEUE_ERROR,ARGV0,DEFAULTQUEUE, strerror(errno));
-            if((logr.m_queue = StartMQ(DEFAULTQUEUE,READ)) < 0)
-            {
+            if((logr.m_queue = StartMQ(DEFAULTQUEUE,READ)) < 0) {
                 ErrorExit(QUEUE_FATAL,ARGV0,DEFAULTQUEUE);
             }
         }

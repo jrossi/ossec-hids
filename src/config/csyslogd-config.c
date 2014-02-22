@@ -37,8 +37,7 @@ int Read_CSyslog(XML_NODE node, void *config, void *config2)
 
 
     /* Getting Granular mail_to size */
-    if(syslog_config)
-    {
+    if(syslog_config) {
         while(syslog_config[s])
             s++;
     }
@@ -61,52 +60,36 @@ int Read_CSyslog(XML_NODE node, void *config, void *config2)
     /* local 0 facility (16) + severity 4 - warning. --default */
     syslog_config[s]->priority = (16 * 8) + 4;
 
-    while(node[i])
-    {
-        if(!node[i]->element)
-        {
+    while(node[i]) {
+        if(!node[i]->element) {
             merror(XML_ELEMNULL, ARGV0);
             return(OS_INVALID);
-        }
-        else if(!node[i]->content)
-        {
+        } else if(!node[i]->content) {
             merror(XML_VALUENULL, ARGV0, node[i]->element);
             return(OS_INVALID);
-        }
-        else if(strcmp(node[i]->element, xml_syslog_level) == 0)
-        {
-            if(!OS_StrIsNum(node[i]->content))
-            {
+        } else if(strcmp(node[i]->element, xml_syslog_level) == 0) {
+            if(!OS_StrIsNum(node[i]->content)) {
                 merror(XML_VALUEERR,ARGV0,node[i]->element,node[i]->content);
                 return(OS_INVALID);
             }
 
             syslog_config[s]->level = atoi(node[i]->content);
-        }
-        else if(strcmp(node[i]->element, xml_syslog_port) == 0)
-        {
-            if(!OS_StrIsNum(node[i]->content))
-            {
+        } else if(strcmp(node[i]->element, xml_syslog_port) == 0) {
+            if(!OS_StrIsNum(node[i]->content)) {
                 merror(XML_VALUEERR,ARGV0,node[i]->element,node[i]->content);
                 return(OS_INVALID);
             }
 
             syslog_config[s]->port = atoi(node[i]->content);
-        }
-        else if(strcmp(node[i]->element, xml_syslog_server) == 0)
-        {
+        } else if(strcmp(node[i]->element, xml_syslog_server) == 0) {
             os_strdup(node[i]->content, syslog_config[s]->server);
-        }
-        else if(strcmp(node[i]->element, xml_syslog_id) == 0)
-        {
+        } else if(strcmp(node[i]->element, xml_syslog_id) == 0) {
             int r_id = 0;
             char *str_pt = node[i]->content;
 
-            while(*str_pt != '\0')
-            {
+            while(*str_pt != '\0') {
                 /* We allow spaces in between */
-                if(*str_pt == ' ')
-                {
+                if(*str_pt == ' ') {
                     str_pt++;
                     continue;
                 }
@@ -115,16 +98,14 @@ int Read_CSyslog(XML_NODE node, void *config, void *config2)
                  * and search for the next digit
                  * available
                  */
-                else if(isdigit((int)*str_pt))
-                {
+                else if(isdigit((int)*str_pt)) {
                     int id_i = 0;
 
                     r_id = atoi(str_pt);
                     debug1("%s: DEBUG: Adding '%d' to syslog alerting",
                            ARGV0, r_id);
 
-                    if(syslog_config[s]->rule_id)
-                    {
+                    if(syslog_config[s]->rule_id) {
                         while(syslog_config[s]->rule_id[id_i])
                             id_i++;
                     }
@@ -137,81 +118,57 @@ int Read_CSyslog(XML_NODE node, void *config, void *config2)
                     syslog_config[s]->rule_id[id_i] = r_id;
 
                     str_pt = strchr(str_pt, ',');
-                    if(str_pt)
-                    {
+                    if(str_pt) {
                         str_pt++;
-                    }
-                    else
-                    {
+                    } else {
                         break;
                     }
                 }
 
                 /* Checking for duplicate commas */
-                else if(*str_pt == ',')
-                {
+                else if(*str_pt == ',') {
                     str_pt++;
                     continue;
                 }
 
-                else
-                {
+                else {
                     break;
                 }
             }
 
-        }
-        else if(strcmp(node[i]->element, xml_syslog_format) == 0)
-        {
-            if(strcmp(node[i]->content, "default") == 0)
-            {
+        } else if(strcmp(node[i]->element, xml_syslog_format) == 0) {
+            if(strcmp(node[i]->content, "default") == 0) {
                 /* Default is full format */
-            }
-            else if (strcmp(node[i]->content, "cef") == 0)
-            {
+            } else if (strcmp(node[i]->content, "cef") == 0) {
                 /* Enable the CEF format */
                 syslog_config[s]->format = CEF_CSYSLOG;
-            }
-            else if (strcmp(node[i]->content, "json") == 0)
-            {
+            } else if (strcmp(node[i]->content, "json") == 0) {
                 /* Enable the JSON format */
                 syslog_config[s]->format = JSON_CSYSLOG;
-            }
-            else if (strcmp(node[i]->content, "splunk") == 0)
-            {
+            } else if (strcmp(node[i]->content, "splunk") == 0) {
                 /* Enable the Splunk Key/Value format */
                 syslog_config[s]->format = SPLUNK_CSYSLOG;
-            }
-            else
-            {
+            } else {
                 merror(XML_VALUEERR,ARGV0,node[i]->element,node[i]->content);
                 return(OS_INVALID);
             }
-        }
-        else if(strcmp(node[i]->element, xml_syslog_location) == 0)
-        {
+        } else if(strcmp(node[i]->element, xml_syslog_location) == 0) {
             os_calloc(1, sizeof(OSMatch),syslog_config[s]->location);
             if(!OSMatch_Compile(node[i]->content,
-                                syslog_config[s]->location, 0))
-            {
+                                syslog_config[s]->location, 0)) {
                 merror(REGEX_COMPILE, ARGV0, node[i]->content,
                        syslog_config[s]->location->error);
                 return(-1);
             }
-        }
-        else if(strcmp(node[i]->element, xml_syslog_group) == 0)
-        {
+        } else if(strcmp(node[i]->element, xml_syslog_group) == 0) {
             os_calloc(1, sizeof(OSMatch),syslog_config[s]->group);
             if(!OSMatch_Compile(node[i]->content,
-                                syslog_config[s]->group, 0))
-            {
+                                syslog_config[s]->group, 0)) {
                 merror(REGEX_COMPILE, ARGV0, node[i]->content,
                        syslog_config[s]->group->error);
                 return(-1);
             }
-        }
-        else
-        {
+        } else {
             merror(XML_INVELEM, ARGV0, node[i]->element);
             return(OS_INVALID);
         }
@@ -220,8 +177,7 @@ int Read_CSyslog(XML_NODE node, void *config, void *config2)
 
 
     /* We must have at least one entry set */
-    if(!syslog_config[s]->server)
-    {
+    if(!syslog_config[s]->server) {
         merror(XML_INV_CSYSLOG, ARGV0);
         return(OS_INVALID);
     }

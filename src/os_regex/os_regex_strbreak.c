@@ -35,30 +35,25 @@ char **OS_StrBreak(char match, char *str, int size)
 
     ret = (char **)calloc(size+1, sizeof(char *));
 
-    if(ret == NULL)
-    {
+    if(ret == NULL) {
         /* Memory error. Should provice a better way to detect it */
         return(NULL);
     }
 
     /* Allocating memory to null */
-    while(i <= size)
-    {
+    while(i <= size) {
         ret[i] = NULL;
         i++;
     }
     i = 0;
 
     /* */
-    while(*str != '\0')
-    {
+    while(*str != '\0') {
         i++;
-        if((count < size-1)&&(*str == match))
-        {
+        if((count < size-1)&&(*str == match)) {
             ret[count] = (char *)calloc(i,sizeof(char));
 
-            if(ret[count] == NULL)
-            {
+            if(ret[count] == NULL) {
                 goto error;
             }
 
@@ -77,12 +72,10 @@ char **OS_StrBreak(char match, char *str, int size)
 
 
     /* Just do it if count < size */
-    if(count < size)
-    {
+    if(count < size) {
         ret[count] = (char *)calloc(i+1,sizeof(char));
 
-        if(ret[count] == NULL)
-        {
+        if(ret[count] == NULL) {
             goto error;
         }
 
@@ -102,18 +95,17 @@ char **OS_StrBreak(char match, char *str, int size)
      * Just let "error" handle that
      */
 
-    error:
-        i = 0;
+error:
+    i = 0;
 
-        /* Deallocating the memory whe can */
-        while(i < count)
-        {
-            free(ret[i]);
-            i++;
-        }
+    /* Deallocating the memory whe can */
+    while(i < count) {
+        free(ret[i]);
+        i++;
+    }
 
-        free(ret);
-        return(NULL);
+    free(ret);
+    return(NULL);
 
 }
 

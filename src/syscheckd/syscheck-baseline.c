@@ -37,13 +37,10 @@ void sb_help(char *argv0)
  */
 void read_internal(no_stop)
 {
-    if(no_stop)
-    {
+    if(no_stop) {
         syscheck.tsleep = 0;
         syscheck.sleep_after = 9999;
-    }
-    else
-    {
+    } else {
         syscheck.tsleep = getDefine_Int("syscheck","sleep",1,64);
         syscheck.sleep_after = getDefine_Int("syscheck","sleep_after",1,128);
     }
@@ -73,48 +70,46 @@ int main(int argc, char **argv)
     OS_SetName(ARGV0);
 
 
-    while((c = getopt(argc, argv, "VtdshD:c:i:o:")) != -1)
-    {
-        switch(c)
-        {
-            case 'V':
-                print_version();
-                break;
-            case 'h':
-                sb_help(ARGV0);
-                break;
-            case 's':
-                no_stop = 0;
-                break;
-            case 'd':
-                nowDebug();
-                break;
-            case 'i':
-                if(!optarg)
-                    ErrorExit("%s: -i needs an argument",ARGV0);
-                input_f = optarg;
-                break;
-            case 'o':
-                if(!optarg)
-                    ErrorExit("%s: -o needs an argument",ARGV0);
-                output_f = optarg;
-                break;
-            case 'D':
-                if(!optarg)
-                    ErrorExit("%s: -D needs an argument",ARGV0);
-                syscheck.workdir = optarg;
-                break;
-            case 'c':
-                if(!optarg)
-                    ErrorExit("%s: -c needs an argument",ARGV0);
-                cfg = optarg;
-                break;
-            case 't':
-                test_config = 1;
-                break;
-            default:
-                help(ARGV0);
-                break;
+    while((c = getopt(argc, argv, "VtdshD:c:i:o:")) != -1) {
+        switch(c) {
+        case 'V':
+            print_version();
+            break;
+        case 'h':
+            sb_help(ARGV0);
+            break;
+        case 's':
+            no_stop = 0;
+            break;
+        case 'd':
+            nowDebug();
+            break;
+        case 'i':
+            if(!optarg)
+                ErrorExit("%s: -i needs an argument",ARGV0);
+            input_f = optarg;
+            break;
+        case 'o':
+            if(!optarg)
+                ErrorExit("%s: -o needs an argument",ARGV0);
+            output_f = optarg;
+            break;
+        case 'D':
+            if(!optarg)
+                ErrorExit("%s: -D needs an argument",ARGV0);
+            syscheck.workdir = optarg;
+            break;
+        case 'c':
+            if(!optarg)
+                ErrorExit("%s: -c needs an argument",ARGV0);
+            cfg = optarg;
+            break;
+        case 't':
+            test_config = 1;
+            break;
+        default:
+            help(ARGV0);
+            break;
         }
     }
 
@@ -125,15 +120,11 @@ int main(int argc, char **argv)
 
 
     /* Read syscheck config */
-    if((r = Read_Syscheck_Config(cfg)) < 0)
-    {
+    if((r = Read_Syscheck_Config(cfg)) < 0) {
         ErrorExit(CONFIG_ERROR, ARGV0, cfg);
-    }
-    else if((r == 1) || (syscheck.disabled == 1))
-    {
+    } else if((r == 1) || (syscheck.disabled == 1)) {
         syscheck.dir[0] = NULL;
-        if(!test_config)
-        {
+        if(!test_config) {
             merror("%s: WARN: Syscheck disabled.", ARGV0);
         }
     }
@@ -162,19 +153,17 @@ int main(int argc, char **argv)
 
 
     /* Printing options */
-    #ifdef WIN32
+#ifdef WIN32
     r = 0;
-    while(syscheck.registry[r] != NULL)
-    {
+    while(syscheck.registry[r] != NULL) {
         verbose("%s: INFO: Monitoring registry entry: '%s'.",
                 ARGV0, syscheck.registry[r]);
         r++;
     }
-    #endif
+#endif
 
     r = 0;
-    while(syscheck.dir[r] != NULL)
-    {
+    while(syscheck.dir[r] != NULL) {
         verbose("%s: INFO: Monitoring directory: '%s'.",
                 ARGV0, syscheck.dir[r]);
         r++;

@@ -25,17 +25,13 @@ void os_setwait()
     __wait_lock = 1;
 
 
-    if(isChroot())
-    {
+    if(isChroot()) {
         fp = fopen(WAIT_FILE, "w");
-    }
-    else
-    {
+    } else {
         fp = fopen(WAIT_FILE_PATH, "w");
     }
 
-    if(fp)
-    {
+    if(fp) {
         fprintf(fp, "l");
         fclose(fp);
     }
@@ -49,12 +45,9 @@ void os_delwait()
 {
     __wait_lock = 0;
 
-    if(isChroot())
-    {
+    if(isChroot()) {
         unlink(WAIT_FILE);
-    }
-    else
-    {
+    } else {
         unlink(WAIT_FILE_PATH);
     }
     return;
@@ -75,8 +68,7 @@ void os_wait()
 
     /* Wait until the lock is gone. */
     verbose(WAITING_MSG, __local_name);
-    while(1)
-    {
+    while(1) {
         if(!__wait_lock)
             break;
 
@@ -99,13 +91,10 @@ void os_wait()
 
     /* If the wait file is not present, keep going.
      */
-    if(isChroot())
-    {
+    if(isChroot()) {
         if(stat(WAIT_FILE, &file_status) == -1)
             return;
-    }
-    else
-    {
+    } else {
         if(stat(WAIT_FILE_PATH, &file_status) == -1)
             return;
     }
@@ -113,15 +102,11 @@ void os_wait()
 
     /* Wait until the lock is gone. */
     verbose(WAITING_MSG, __local_name);
-    while(1)
-    {
-        if(isChroot())
-        {
+    while(1) {
+        if(isChroot()) {
             if(stat(WAIT_FILE, &file_status) == -1)
                 break;
-        }
-        else
-        {
+        } else {
             if(stat(WAIT_FILE_PATH, &file_status) == -1)
                 break;
         }

@@ -25,10 +25,12 @@
 #include "headers/debug_op.h"
 
 
-char *(weekdays[])={"Sunday","Monday","Tuesday","Wednesday","Thursday",
-		            "Friday","Saturday"};
-char *(l_month[])={"Jan","Feb","Mar","Apr","May","Jun","Jul","Aug",
-                 "Sep","Oct","Nov","Dec"};
+char *(weekdays[])= {"Sunday","Monday","Tuesday","Wednesday","Thursday",
+                     "Friday","Saturday"
+                    };
+char *(l_month[])= {"Jan","Feb","Mar","Apr","May","Jun","Jul","Aug",
+                    "Sep","Oct","Nov","Dec"
+                   };
 
 
 
@@ -67,8 +69,7 @@ void print_totals()
     /* Creating the path for the logs */
     snprintf(logfile, OS_FLSIZE,"%s/%d/", STATSAVED, prev_year);
     if(IsDir(logfile) == -1)
-        if(mkdir(logfile,0770) == -1)
-        {
+        if(mkdir(logfile,0770) == -1) {
             merror(MKDIR_ERROR,ARGV0,logfile);
             return;
         }
@@ -76,8 +77,7 @@ void print_totals()
     snprintf(logfile,OS_FLSIZE,"%s/%d/%s", STATSAVED, prev_year, prev_month);
 
     if(IsDir(logfile) == -1)
-        if(mkdir(logfile,0770) == -1)
-        {
+        if(mkdir(logfile,0770) == -1) {
             merror(MKDIR_ERROR, ARGV0, logfile);
             return;
         }
@@ -85,22 +85,20 @@ void print_totals()
 
     /* Creating the logfile name */
     snprintf(logfile,OS_FLSIZE,"%s/%d/%s/ossec-%s-%02d.log",
-            STATSAVED,
-            prev_year,
-            prev_month,
-            "totals",
-            today);
+             STATSAVED,
+             prev_year,
+             prev_month,
+             "totals",
+             today);
 
     flog = fopen(logfile, "a");
-    if(!flog)
-    {
+    if(!flog) {
         merror(FOPEN_ERROR, ARGV0, logfile);
         return;
     }
 
     /* Printing the hourly stats */
-    for(i=0;i<=23;i++)
-    {
+    for(i=0; i<=23; i++) {
         fprintf(flog,"Hour totals - %d:%d\n", i, _CHour[i]);
         totals+=_CHour[i];
     }
@@ -149,14 +147,12 @@ void Update_Hour()
     if(inter > 7)
         inter = 7;
 
-    for(i=0;i<=24;i++)
-    {
+    for(i=0; i<=24; i++) {
         char _hourly[128]; /* _hourly file */
 
         FILE *fp;
 
-        if(i != 24)
-        {
+        if(i != 24) {
             /* If saved hourly = 0, just copy the current hourly rate */
             if(_CHour[i] == 0)
                 continue;
@@ -164,16 +160,13 @@ void Update_Hour()
             if(_RHour[i] == 0)
                 _RHour[i]=_CHour[i] + 20;
 
-            else
-            {
+            else {
                 /* If we had too many errors this day */
-                if(_daily_errors >= 3)
-                {
+                if(_daily_errors >= 3) {
                     _RHour[i]=(((3*_CHour[i])+(inter*_RHour[i]))/(inter+3))+25;
                 }
 
-                else
-                {
+                else {
                     /* The average is going to be the number of interactions +
                      * the currently hourly rate, divided by 4 */
                     _RHour[i]=((_CHour[i]+(inter*_RHour[i]))/(inter+1))+5;
@@ -183,14 +176,12 @@ void Update_Hour()
 
         snprintf(_hourly,128,"%s/%d",STATQUEUE,i);
         fp = fopen(_hourly, "w");
-        if(fp)
-        {
+        if(fp) {
             fprintf(fp,"%d",_RHour[i]);
             fclose(fp);
         }
-        	
-        else
-        {
+
+        else {
             merror(FOPEN_ERROR, "logstats", _hourly);
         }
 
@@ -198,8 +189,7 @@ void Update_Hour()
     }
 
     /* Weekly */
-    for(i=0;i <= 6;i++)
-    {
+    for(i=0; i <= 6; i++) {
         char _weekly[128];
         FILE *fp;
 
@@ -208,42 +198,33 @@ void Update_Hour()
         if(inter > 7)
             inter = 7;
 
-        for(j=0;j<=24;j++)
-        {
-            if(j != 24)
-            {
+        for(j=0; j<=24; j++) {
+            if(j != 24) {
                 if(_CWHour[i][j] == 0)
-                   continue;
+                    continue;
 
                 if(_RWHour[i][j] == 0)
-                   _RWHour[i][j] = _CWHour[i][j] + 20;
+                    _RWHour[i][j] = _CWHour[i][j] + 20;
 
-                else
-                {
-                    if(_daily_errors >= 3)
-                    {
+                else {
+                    if(_daily_errors >= 3) {
                         _RWHour[i][j]=(((3*_CWHour[i][j])+(inter*_RWHour[i][j]))/(inter+3))+25;
-                    }
-                    else
-                    {
-                        _RWHour[i][j]=((_CWHour[i][j]+(inter*_RWHour[i][j]))/(inter+1))+5;	
+                    } else {
+                        _RWHour[i][j]=((_CWHour[i][j]+(inter*_RWHour[i][j]))/(inter+1))+5;
                     }
                 }
             }
 
             snprintf(_weekly,128,"%s/%d/%d",STATWQUEUE,i,j);
             fp = fopen(_weekly, "w");
-            if(fp)
-            {
+            if(fp) {
                 fprintf(fp,"%d",_RWHour[i][j]);
                 fclose(fp);
-            }
-            else
-            {
+            } else {
                 merror(FOPEN_ERROR, "logstats", _weekly);
             }
 
-            _CWHour[i][j] = 0;	
+            _CWHour[i][j] = 0;
         }
     }
 
@@ -256,10 +237,9 @@ void Update_Hour()
 int Check_Hour(Eventinfo *lf)
 {
     _CHour[__crt_hour]++;
-    _CWHour[__crt_wday][__crt_hour]++;	
+    _CWHour[__crt_wday][__crt_hour]++;
 
-    if(_RHour[24] <= 2)
-    {
+    if(_RHour[24] <= 2) {
         return(0);
     }
 
@@ -267,26 +247,22 @@ int Check_Hour(Eventinfo *lf)
     if((_daily_errors >= 3)||((_fired == 1)&&(_cignorehour == __crt_hour)))
         return(0);
 
-    else if(_cignorehour != __crt_hour)
-    {
+    else if(_cignorehour != __crt_hour) {
         _cignorehour=__crt_hour;
         _fired = 0;
     }
 
 
     /* checking if passed the threshold */
-    if(_RHour[__crt_hour] != 0)
-    {
-        if(_CHour[__crt_hour] > (_RHour[__crt_hour]))
-        {
-            if(_CHour[__crt_hour] > (gethour(_RHour[__crt_hour])))
-            {
+    if(_RHour[__crt_hour] != 0) {
+        if(_CHour[__crt_hour] > (_RHour[__crt_hour])) {
+            if(_CHour[__crt_hour] > (gethour(_RHour[__crt_hour]))) {
                 /* snprintf will null terminate */
                 snprintf(__stats_comment, 191,
-                                     "The average number of logs"
-                                     " between %d:00 and %d:00 is %d. We "
-                                     "reached %d.",__crt_hour,__crt_hour+1,
-                                     _RHour[__crt_hour],_CHour[__crt_hour]);
+                         "The average number of logs"
+                         " between %d:00 and %d:00 is %d. We "
+                         "reached %d.",__crt_hour,__crt_hour+1,
+                         _RHour[__crt_hour],_CHour[__crt_hour]);
 
 
                 _fired = 1;
@@ -302,20 +278,17 @@ int Check_Hour(Eventinfo *lf)
         return(0);
 
     /* checking for the hour during a specific day of the week */
-    if(_RWHour[__crt_wday][__crt_hour] != 0)
-    {
-        if(_CWHour[__crt_wday][__crt_hour] > _RWHour[__crt_wday][__crt_hour])
-        {
+    if(_RWHour[__crt_wday][__crt_hour] != 0) {
+        if(_CWHour[__crt_wday][__crt_hour] > _RWHour[__crt_wday][__crt_hour]) {
             if(_CWHour[__crt_wday][__crt_hour] >
-                    gethour(_RWHour[__crt_wday][__crt_hour]))
-            {
+                    gethour(_RWHour[__crt_wday][__crt_hour])) {
                 snprintf(__stats_comment, 191,
-                                     "The average number of logs"
-                                     " between %d:00 and %d:00 on %s is %d. We"
-                                     " reached %d.",__crt_hour,__crt_hour+1,
-                                     weekdays[__crt_wday],
-                                     _RWHour[__crt_wday][__crt_hour],
-                                     _CWHour[__crt_wday][__crt_hour]);
+                         "The average number of logs"
+                         " between %d:00 and %d:00 on %s is %d. We"
+                         " reached %d.",__crt_hour,__crt_hour+1,
+                         weekdays[__crt_wday],
+                         _RWHour[__crt_wday][__crt_hour],
+                         _CWHour[__crt_wday][__crt_hour]);
 
 
                 _fired = 1;
@@ -324,7 +297,7 @@ int Check_Hour(Eventinfo *lf)
             }
         }
     }
-    return(0);	
+    return(0);
 }
 
 /* Starting hourly stats and other necessary variables */
@@ -382,94 +355,83 @@ int Start_Hour()
 
     /* Creating the stat queue directories */
     if(IsDir(STATWQUEUE) == -1)
-        if(mkdir(STATWQUEUE,0770) == -1)
-        {
+        if(mkdir(STATWQUEUE,0770) == -1) {
             merror("%s: logstat: Unable to create stat queue: %s",
-                            ARGV0, STATWQUEUE);
+                   ARGV0, STATWQUEUE);
             return(-1);
         }
 
     if(IsDir(STATQUEUE) == -1)
-        if(mkdir(STATQUEUE,0770) == -1)
-        {
+        if(mkdir(STATQUEUE,0770) == -1) {
             merror("%s: logstat: Unable to create stat queue: %s",
-                            ARGV0, STATQUEUE);
+                   ARGV0, STATQUEUE);
             return(-1);
         }
 
     /* Creating store dir */
     if(IsDir(STATSAVED) == -1)
-        if(mkdir(STATSAVED,0770) == -1)
-        {
+        if(mkdir(STATSAVED,0770) == -1) {
             merror("%s: logstat: Unable to create stat directory: %s",
-                        ARGV0, STATQUEUE);
+                   ARGV0, STATQUEUE);
             return(-1);
         }
 
     /* Creating hourly directory (24 hour is the stats) */
-    for(i=0;i<=24;i++)
-    {
+    for(i=0; i<=24; i++) {
         char _hourly[128];
         snprintf(_hourly,128,"%s/%d",STATQUEUE,i);
 
-        _CHour[i]=0;	
+        _CHour[i]=0;
         if(File_DateofChange(_hourly) < 0)
             _RHour[i] = 0;
 
-        else
-        {
+        else {
             FILE *fp;
             fp = fopen(_hourly, "r");
             if(!fp)
                 _RHour[i] = 0;
-            else
-            {
+            else {
                 if(fscanf(fp,"%d",&_RHour[i]) <= 0)
                     _RHour[i] = 0;
 
                 if(_RHour[i] < 0)
                     _RHour[i] = 0;
                 fclose(fp);
-            }	
+            }
         }
     }
 
     /* Creating weekly/hourly directories */
-    for(i=0;i<=6;i++)
-    {
+    for(i=0; i<=6; i++) {
         char _weekly[128];
         snprintf(_weekly,128,"%s/%d",STATWQUEUE,i);
         if(IsDir(_weekly) == -1)
-            if(mkdir(_weekly,0770) == -1)
-            {
+            if(mkdir(_weekly,0770) == -1) {
                 merror("%s: logstat: Unable to create stat queue: %s",
-                        ARGV0, _weekly);
+                       ARGV0, _weekly);
                 return(-1);
             }
 
-        for(j=0;j<=24;j++)
-        {
+        for(j=0; j<=24; j++) {
             _CWHour[i][j]=0;
             snprintf(_weekly,128,"%s/%d/%d",STATWQUEUE,i,j);
             if(File_DateofChange(_weekly) < 0)
                 _RWHour[i][j] = 0;
-            else
-            {
+            else {
                 FILE *fp;
                 fp = fopen(_weekly, "r");
                 if(!fp)
                     _RWHour[i][j] = 0;
-                else
-                {
+                else {
                     if(fscanf(fp,"%d",&_RWHour[i][j]) <= 0)
                         _RWHour[i][j] = 0;
 
                     if(_RWHour[i][j] < 0)
                         _RWHour[i][j] = 0;
                     fclose(fp);
-                }	
-            }	
-        }	
+                }
+            }
+        }
     }
     return(0);
 }
@@ -483,16 +445,16 @@ int Start_Hour()
  */
 int LastMsg_Stats(char *log)
 {
-	if(strcmp(log,_lastmsg) == 0)
-		return(1);		
-		
-	else if(strcmp(log,_prevlast) == 0)
-		return(1);
+    if(strcmp(log,_lastmsg) == 0)
+        return(1);
 
-	else if(strcmp(log,_pprevlast) == 0)
-		return(1);
-	
-	return(0);
+    else if(strcmp(log,_prevlast) == 0)
+        return(1);
+
+    else if(strcmp(log,_pprevlast) == 0)
+        return(1);
+
+    return(0);
 }
 
 /* LastMsg_Change: v0.3: 2006/03/21

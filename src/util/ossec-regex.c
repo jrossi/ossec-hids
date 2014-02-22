@@ -41,40 +41,37 @@ int main(int argc, char **argv)
 
 
     /* user arguments */
-    if(argc != 2)
-    {
+    if(argc != 2) {
         helpmsg();
         return(-1);
     }
 
     /* User options */
-    if(strcmp(argv[1], "-h") == 0)
-    {
+    if(strcmp(argv[1], "-h") == 0) {
         helpmsg();
         return(-1);
     }
 
     os_strdup(argv[1], pattern);
-    if(!OSRegex_Compile(pattern, &regex, 0))
-    {
+    if(!OSRegex_Compile(pattern, &regex, 0)) {
         printf("pattern does not compile with OSRegex_Compile\n");
         return(-1);
     }
-    if(!OSMatch_Compile(pattern, &matcher, 0))
-    {
+    if(!OSMatch_Compile(pattern, &matcher, 0)) {
         printf("pattern does not compile with OSMatch_Compile\n");
         return(-1);
     }
 
 
-    while((fgets(msg, OS_MAXSTR, stdin)) != NULL)
-    {
+    while((fgets(msg, OS_MAXSTR, stdin)) != NULL) {
         /* Removing new line. */
         if(msg[strlen(msg) -1] == '\n')
             msg[strlen(msg) -1] = '\0';
 
         /* Make sure we ignore blank lines. */
-        if(strlen(msg) < 2) { continue; }
+        if(strlen(msg) < 2) {
+            continue;
+        }
 
         if(OSRegex_Execute(msg, &regex))
             printf("+OSRegex_Execute: %s\n",msg);

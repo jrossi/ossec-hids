@@ -41,46 +41,39 @@ void *read_multiline(int pos, int *rc, int drop_it)
     /* Getting initial file location */
     fgetpos(logff[pos].fp, &fp_pos);
 
-    while(fgets(str, OS_MAXSTR - OS_LOG_HEADER, logff[pos].fp) != NULL)
-    {
+    while(fgets(str, OS_MAXSTR - OS_LOG_HEADER, logff[pos].fp) != NULL) {
         linesgot++;
 
         /* Getting the last occurence of \n */
-        if ((p = strrchr(str, '\n')) != NULL)
-        {
+        if ((p = strrchr(str, '\n')) != NULL) {
             *p = '\0';
         }
 
         /* If we didn't get the new line, because the
          * size is large, send what we got so far.
          */
-        else if(strlen(str) >= (OS_MAXSTR - OS_LOG_HEADER - 2))
-        {
+        else if(strlen(str) >= (OS_MAXSTR - OS_LOG_HEADER - 2)) {
             /* Message size > maximum allowed */
             __ms = 1;
-        }
-        else
-        {
+        } else {
             /* Message not complete. Return. */
             debug1("%s: Message not complete. Trying again: '%s'", ARGV0,str);
             fsetpos(logff[pos].fp, &fp_pos);
             break;
         }
 
-        #ifdef WIN32
-        if ((p = strrchr(str, '\r')) != NULL)
-        {
+#ifdef WIN32
+        if ((p = strrchr(str, '\r')) != NULL) {
             *p = '\0';
         }
-        #endif
+#endif
 
         debug2("%s: DEBUG: Reading message: '%s'", ARGV0, str);
 
 
         /* Adding to buffer. */
         buffer_size = strlen(buffer);
-        if(buffer[0] != '\0')
-        {
+        if(buffer[0] != '\0') {
             buffer[buffer_size] = ' ';
             buffer_size++;
         }
@@ -88,21 +81,17 @@ void *read_multiline(int pos, int *rc, int drop_it)
         strncpy(buffer + buffer_size, str, OS_MAXSTR - buffer_size -2);
 
 
-        if(linesgot < linecount)
-        {
+        if(linesgot < linecount) {
             continue;
         }
 
 
         /* Sending message to queue */
-        if(drop_it == 0)
-        {
+        if(drop_it == 0) {
             if(SendMSG(logr_queue, buffer, logff[pos].file,
-                        LOCALFILE_MQ) < 0)
-            {
+                       LOCALFILE_MQ) < 0) {
                 merror(QUEUE_SEND, ARGV0);
-                if((logr_queue = StartMQ(DEFAULTQPATH,WRITE)) < 0)
-                {
+                if((logr_queue = StartMQ(DEFAULTQPATH,WRITE)) < 0) {
                     ErrorExit(QUEUE_FATAL, ARGV0, DEFAULTQPATH);
                 }
             }
@@ -112,14 +101,11 @@ void *read_multiline(int pos, int *rc, int drop_it)
 
 
         /* Incorrectly message size */
-        if(__ms)
-        {
+        if(__ms) {
             merror("%s: Large message size: '%s'", ARGV0, str);
-            while(fgets(str, OS_MAXSTR - 2, logff[pos].fp) != NULL)
-            {
+            while(fgets(str, OS_MAXSTR - 2, logff[pos].fp) != NULL) {
                 /* Getting the last occurence of \n */
-                if ((p = strrchr(str, '\n')) != NULL)
-                {
+                if ((p = strrchr(str, '\n')) != NULL) {
                     break;
                 }
             }
