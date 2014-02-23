@@ -12,8 +12,8 @@
 
 #include "shared.h"
 #include "rules.h"
-#include "cdb/cdb.h"
-#include "cdb/cdb_make.h"
+#include "tinycdb/cdb.h"
+#include "tinycdb/cdb_make.h"
 #include <fcntl.h>
 #include <stdlib.h>
 #include <string.h>

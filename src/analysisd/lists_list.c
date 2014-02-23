@@ -13,7 +13,7 @@
 
 #include "shared.h"
 #include "rules.h"
-#include "cdb/cdb.h"
+#include "tinycdb/cdb.h"
 #include <fcntl.h>
 #include <stdlib.h>
 #include <string.h>

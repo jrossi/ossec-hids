@@ -13,8 +13,8 @@
 
 /* Rules are needed for lists */
 
-#include "cdb/cdb.h"
-#include "cdb/uint32.h"
+#include "tinycdb/cdb.h"
+#include "tinycdb/uint32.h"
 
 #define LR_STRING_MATCH 0
 #define LR_STRING_NOT_MATCH 1

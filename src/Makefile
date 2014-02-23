@@ -27,12 +27,12 @@ clean:
 		rm -f isbigendian
 		rm -rf win-pkg/
 		rm Config.OS
-		rm win32/LICENSE.txt
-		rm win32/help_win.txt
-		rm win32/internal_options-win.conf
-		rm win32/ossec-win.conf
-		rm win32/restart-ossec.cmd
-		rm win32/route-null.cmd
+		rm -f win32/LICENSE.txt
+		rm -f win32/help_win.txt
+		rm -f win32/internal_options-win.conf
+		rm -f win32/ossec-win.conf
+		rm -f win32/restart-ossec.cmd
+		rm -f win32/route-null.cmd
 
 all:
 		@/bin/sh ./Makeall all
