@@ -32,7 +32,7 @@ before_script:
 
 script:
 - ( cd src && sudo make $OSSEC_TYPE )
-- ( sh ./.travis-test.sh $OSSEC_TYPE )
+- ( bash ./.travis-test.sh $OSSEC_TYPE )
 
 before_deploy:
 - mkdir travis-builds
