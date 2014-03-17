@@ -1,13 +1,9 @@
 
-function die() {
-  echo "ERROR: $1"
-  exit 1
-}
 
 if [[ $OSSEC_TYPE == "all" ]]; then 
-  cp ./etc/travis-preloaded-vars.conf ./etc/preloaded-vars.conf || die "create preloaded-vars.conf failed"
-  sudo ./install.sh || die "sudo ./install.sh: Failed"
-  (cd contrib/ossec-testing && sudo python runtests.py ) || die"runtests failed"
+  cp ./etc/travis-preloaded-vars.conf ./etc/preloaded-vars.conf || echo "ERROR: create preloaded-vars.conf failed" && exit 1
+  sudo ./install.sh || echo "ERROR: sudo ./install.sh: Failed" && exit 1
+  (cd contrib/ossec-testing && sudo python runtests.py ) || echo "FAILURE: runtests failed" && exit 1
 else 
   exit 0
 fi
