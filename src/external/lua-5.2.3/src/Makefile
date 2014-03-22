@@ -4,7 +4,12 @@
 # == CHANGE THE SETTINGS BELOW TO SUIT YOUR ENVIRONMENT =======================
 
 # Your platform. See PLATS for possible values.
+#
+
 PLAT= none
+PT=../../../
+include ../../../Config.Make 
+
 
 CC= gcc
 CFLAGS= -O2 -Wall -DLUA_COMPAT_ALL $(SYSCFLAGS) $(MYCFLAGS)
@@ -19,7 +24,7 @@ SYSCFLAGS=
 SYSLDFLAGS=
 SYSLIBS=
 
-MYCFLAGS=
+MYCFLAGS= -DLUA_ROOT=\"${DIR}\"
 MYLDFLAGS=
 MYLIBS=
 MYOBJS=

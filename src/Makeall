@@ -28,7 +28,7 @@ fi
 
 
 CJSONV="external/cJSON/"
-LUAV="external/lua/"
+LUAV="external/lua/src"
 LUA_PLAT="posix"
 
 # CPU information
@@ -210,7 +210,7 @@ if [ "X${DO_LUA}" = "Xx" ]; then
         echo "Error Making cJSON"
         exit 1;
     fi
-    cd ../../
+    cd ../../../
     echo ""
 fi    
 
