@@ -164,6 +164,9 @@ chown -R ${USER}:${GROUP} ${DIR}/queue/agentless
 chmod -R 750 ${DIR}/queue/agentless
 chmod 740 ${DIR}/queue/agentless/* > /dev/null 2>&1
 
+chmod 550 ${DIR}/share/
+chmod 550 ${DIR}/share/lua/
+chmod 550 ${DIR}/share/lua/5.2/
 
 # For the stats directory
 chown -R ${USER}:${GROUP} ${DIR}/stats
@@ -296,7 +299,7 @@ chown root:${GROUP} ${DIR}/etc/client.keys >/dev/null 2>&1
 chown root:${GROUP} ${DIR}/etc/shared/*
 chown root:${GROUP} ${DIR}/agentless/*
 chown ${USER}:${GROUP} ${DIR}/.ssh
-chown -R root:${GROUP} ${DIR}/share/lua/5.2
+chown -R root:${GROUP} ${DIR}/share
 
 chmod 440 ${DIR}/etc/decoder.xml
 chmod 440 ${DIR}/etc/local_decoder.xml >/dev/null 2>&1

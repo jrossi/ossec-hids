@@ -125,6 +125,8 @@ chown -R ${USER}:${GROUP} ${DIR}/queue/diff
 chmod -R 750 ${DIR}/queue/diff
 chmod 740 ${DIR}/queue/diff/* > /dev/null 2>&1
 
+chown -R ${USER}:${GROUP} ${DIR}/share 
+
 
 
 
@@ -175,7 +177,7 @@ chown root:${GROUP} ${DIR}/etc/client.keys > /dev/null 2>&1
 chown root:${GROUP} ${DIR}/agentless/*
 chown ${USER}:${GROUP} ${DIR}/.ssh
 chown -R root:${GROUP} ${DIR}/etc/shared
-chown -R root:${GROUP} ${DIR}/share/lua/5.2/
+chown -R root:${GROUP} ${DIR}/share
 
 chmod 550 ${DIR}/etc
 chmod 440 ${DIR}/etc/internal_options.conf
@@ -184,6 +186,9 @@ chmod 440 ${DIR}/etc/client.keys > /dev/null 2>&1
 chmod -R 770 ${DIR}/etc/shared # ossec must be able to write to it
 chmod 550 ${DIR}/agentless/*
 chmod 700 ${DIR}/.ssh
+chmod 550 ${DIR}/share/
+chmod 550 ${DIR}/share/lua/
+chmod 550 ${DIR}/share/lua/5.2/
 
 
 # For the /var/run
