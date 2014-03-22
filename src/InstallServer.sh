@@ -23,7 +23,7 @@ GROUP="ossec"
 USER="ossec"
 USER_MAIL="ossecm"
 USER_REM="ossecr"
-subdirs="logs logs/archives logs/alerts logs/firewall bin stats rules queue queue/alerts queue/ossec queue/fts queue/syscheck queue/rootcheck queue/diff queue/agent-info queue/agentless queue/rids tmp var var/run etc etc/shared active-response active-response/bin agentless .ssh"
+subdirs="logs logs/archives logs/alerts logs/firewall bin stats rules queue queue/alerts queue/ossec queue/fts queue/syscheck queue/rootcheck queue/diff queue/agent-info queue/agentless queue/rids tmp var var/run etc etc/shared active-response active-response/bin agentless .ssh share/lua/5.2"
 
 # ${DIR} must be set 
 if [ "X${DIR}" = "X" ]; then
@@ -277,6 +277,7 @@ cp -pr ../etc/client.keys ${DIR}/etc/ > /dev/null 2>&1
 
 # Copying agentless files.
 cp -pr agentlessd/scripts/* ${DIR}/agentless/
+cp -pr external/penlight/lua/* ${DIR}/share/lua/5.2/
 
 
 # Backup currently internal_options file.
@@ -295,6 +296,8 @@ chown root:${GROUP} ${DIR}/etc/client.keys >/dev/null 2>&1
 chown root:${GROUP} ${DIR}/etc/shared/*
 chown root:${GROUP} ${DIR}/agentless/*
 chown ${USER}:${GROUP} ${DIR}/.ssh
+chown -R root:${GROUP} ${DIR}/share/lua/5.2
+
 chmod 440 ${DIR}/etc/decoder.xml
 chmod 440 ${DIR}/etc/local_decoder.xml >/dev/null 2>&1
 chmod 440 ${DIR}/etc/internal_options.conf

@@ -15,7 +15,7 @@ UNAME=`uname`;
 DIR=`grep DIR ${LOCATION} | cut -f2 -d\"`
 GROUP="ossec"
 USER="ossec"
-subdirs="logs bin queue queue/ossec queue/alerts queue/syscheck queue/rids queue/diff var var/run etc etc/shared active-response active-response/bin agentless .ssh"
+subdirs="logs bin queue queue/ossec queue/alerts queue/syscheck queue/rids queue/diff var var/run etc etc/shared active-response active-response/bin agentless .ssh share/lua/5.2"
 
 
 # ${DIR} must be set 
@@ -167,6 +167,7 @@ cp -pr ../etc/internal_options.conf ${DIR}/etc/
 cp -pr ../etc/local_internal_options.conf ${DIR}/etc/ > /dev/null 2>&1
 cp -pr ../etc/client.keys ${DIR}/etc/ > /dev/null 2>&1
 cp -pr agentlessd/scripts/* ${DIR}/agentless/
+cp -pr external/penlight/lua/pl ${DIR}/share/lua/5.2/
 
 chown root:${GROUP} ${DIR}/etc/internal_options.conf
 chown root:${GROUP} ${DIR}/etc/local_internal_options.conf > /dev/null 2>&1
@@ -174,6 +175,7 @@ chown root:${GROUP} ${DIR}/etc/client.keys > /dev/null 2>&1
 chown root:${GROUP} ${DIR}/agentless/*
 chown ${USER}:${GROUP} ${DIR}/.ssh
 chown -R root:${GROUP} ${DIR}/etc/shared
+chown -R root:${GROUP} ${DIR}/share/lua/5.2/
 
 chmod 550 ${DIR}/etc
 chmod 440 ${DIR}/etc/internal_options.conf
