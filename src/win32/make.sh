@@ -21,9 +21,11 @@ ${MING_BASE}-gcc -o setup-syscheck.exe -Wall os_regex/*.c os_xml/*.c setup/setup
 ${MING_BASE}-gcc -o setup-iis.exe -Wall os_regex/*.c setup/setup-iis.c -I./
 ${MING_BASE}-gcc -o add-localfile.exe -Wall os_regex/*.c setup/add-localfile.c -I./
 
+echo "Building LUA"
 cd lua 
 make -f Makefile.mingw mingw 
 cd ../ 
+echo "Copying LUA"
 cp lua/ossec-lua.exe ossec-lua.exe
 cp lua/ossec-luac.exe ossec-luac.exe
 

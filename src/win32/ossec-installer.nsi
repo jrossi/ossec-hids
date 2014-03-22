@@ -103,6 +103,7 @@ CreateDirectory "$INSTDIR\syscheck"
 CreateDirectory "$INSTDIR\shared"
 CreateDirectory "$INSTDIR\active-response"
 CreateDirectory "$INSTDIR\active-response\bin"
+CreateDirectory "$INSTDIR\lua52"
 
 ; install files
 File ossec-lua.exe 
@@ -129,6 +130,7 @@ File help.txt
 File vista_sec.csv
 File /oname=active-response\bin\route-null.cmd route-null.cmd
 File /oname=active-response\bin\restart-ossec.cmd restart-ossec.cmd
+File /r lua52\*.*
 
 ; Use appropriate version of "ossec-agent.exe"
 ${If} ${AtLeastWinVista}
