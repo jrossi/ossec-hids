@@ -10,7 +10,7 @@ LOCAL = execd.c exec.c config.c
 
 OBJS = ${OS_SHARED} ${OS_NET} ${OS_REGEX} ${OS_XML}
 
-all: addclient lua_tester 
+all: addclient ossec-execd-luatest
 
 addclient:
 		${CC} ${CFLAGS} ${OS_LINK} ${LOCAL} ${OBJS} -o ${NAME}
@@ -18,10 +18,10 @@ addclient:
 
 
 lua_handler.o: lua_tester.c 
-		${CC}  -I../external/lua/src/   lua_handler.c -c -o lua_handler.o 
+		${CC}  ${OS_SHARED} -I../external/lua/src/   lua_handler.c -c -o lua_handler.o 
 
-lua_tester: lua_handler.o 
-		${CC}  -I../external/lua/src/   lua_handler.o lua_tester.c -o lua_test ../external/lua/src/liblua.a -lm
+ossec-execd-luatest: lua_handler.o 
+		${CC}  ${CFLAGS} ${OS_LINK} ${OS_SHARED} -I../external/lua/src/   lua_handler.o lua_tester.c -o ossec-execd-luatest ../external/lua/src/liblua.a -lm
 
 clean:
 		${CLEAN} lua_tester 
