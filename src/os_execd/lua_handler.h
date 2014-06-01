@@ -15,6 +15,8 @@ typedef struct _lua_handler_t {
     int startup;
     int shutdown; 
     int timer;
+    int limit_count; 
+    lua_Debug *ar;
     double timer_freq;
 } lua_handler_t;
 

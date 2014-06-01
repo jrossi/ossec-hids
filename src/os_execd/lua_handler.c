@@ -151,10 +151,16 @@ int lua_handler_load(lua_handler_t *self, const char *fname)
 
 error:
     return -1;
-
 }
-/* Free's up all state.
- */
+
+int lua_handler_limit_count(lua_handler_t *self, lua_Debug *ar, int count) 
+{
+    self->ar = ar; 
+    self->limit_count = count; 
+    return lua_sethook(self->L, &ar, LUA_MASKCOUNT, count);
+}
+
+
 void lua_handler_destroy(lua_handler_t **self_p)
 {
     assert (self_p);
