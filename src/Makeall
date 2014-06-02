@@ -230,6 +230,10 @@ fi
 
 # Make and run tests if intended
 if [ "X${ARGV}" = "Xtest" ]; then
+    cd os_execd 
+    make check
+    cd ..
+
     cd tests/
     make
     exit $?
