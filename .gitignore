@@ -44,6 +44,10 @@ src/analysisd/ossec-makelists
 src/isbigendian
 src/util/ossec-regex
 src/util/verify-agent-conf
+src/external/lua-5.2.3/src/ossec-lua
+src/external/lua-5.2.3/src/ossec-luac
+src/os_execd/ossec-execd-luatest
+
 
 # Eclipse files
 .cproject
