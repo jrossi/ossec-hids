@@ -35,7 +35,7 @@ lua_handler_t *getself(lua_State *L)
 }
 
 
-static int *ar_register_timer(lua_State *L)
+static int ar_register_timer(lua_State *L)
 {
     lua_handler_t *self = getself(L);
 
@@ -45,7 +45,7 @@ static int *ar_register_timer(lua_State *L)
     return 0;
 
 }
-static int *ar_register_init(lua_State *L)
+static int ar_register_init(lua_State *L)
 {
     int l_fun = luaL_ref(L, LUA_REGISTRYINDEX);
     lua_handler_t *self = getself(L);
@@ -53,7 +53,7 @@ static int *ar_register_init(lua_State *L)
 
     return 0;
 }
-static int *ar_register_add(lua_State *L)
+static int ar_register_add(lua_State *L)
 {
     int l_fun = luaL_ref(L, LUA_REGISTRYINDEX);
     lua_handler_t *self = getself(L);
@@ -61,16 +61,15 @@ static int *ar_register_add(lua_State *L)
 
     return 0;
 }
-static int *ar_register_delete(lua_State *L)
+static int ar_register_delete(lua_State *L)
 {
     int l_fun = luaL_ref(L, LUA_REGISTRYINDEX);
     lua_handler_t *self = getself(L);
     self->deleter = l_fun;
-
     return 0;
 }
 
-static int *ar_register_startup(lua_State *L)
+static int ar_register_startup(lua_State *L)
 {
     int l_fun = luaL_ref(L, LUA_REGISTRYINDEX);
     lua_handler_t *self = getself(L);
@@ -78,7 +77,7 @@ static int *ar_register_startup(lua_State *L)
     return 0;
 }
 
-static int *ar_register_shutdown(lua_State *L)
+static int ar_register_shutdown(lua_State *L)
 {
     int l_fun = luaL_ref(L, LUA_REGISTRYINDEX);
     lua_handler_t *self = getself(L);
@@ -88,12 +87,12 @@ static int *ar_register_shutdown(lua_State *L)
 
 
 static const struct luaL_Reg ar_functs[] = {
-    {"register_timer",   &ar_register_timer},
-    {"register_add",     &ar_register_add},
-    {"register_delete",  &ar_register_delete},
-    {"register_init",    &ar_register_init},
-    {"register_startup", &ar_register_startup},
-    {"register_shutdown",&ar_register_shutdown},
+    {"register_timer",   ar_register_timer},
+    {"register_add",     ar_register_add},
+    {"register_delete",  ar_register_delete},
+    {"register_init",    ar_register_init},
+    {"register_startup", ar_register_startup},
+    {"register_shutdown",ar_register_shutdown},
     {NULL, NULL},
 };
 
