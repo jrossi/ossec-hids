@@ -29,7 +29,7 @@ static void stack_dump(lua_State *L)
 
 lua_handler_t *getself(lua_State *L)
 {
-    lua_getfield(L, LUA_REGISTRYINDEX, "_ar_self");
+    lua_getfield(L, LUA_REGISTRYINDEX, LUA_HANDLER_REG_NAME);
     lua_handler_t *self = lua_touserdata(L, -1);
     return self;
 }
@@ -104,6 +104,9 @@ lua_handler_t *lua_handler_new(const char *name)
     self->deleter = 0;
     self->adder = 0;
     self->timer = 0;
+    self->failure_max = LUA_HANDLE_DEFAULT_FAILURE_MAX;
+    self->failure_count = 0; 
+
     self->timer_freq = 0;
 
     if (self == NULL) {
@@ -114,13 +117,8 @@ lua_handler_t *lua_handler_new(const char *name)
 
     luaL_openlibs(self->L);
     lua_pushlightuserdata(self->L, self);
-    lua_setfield(self->L, LUA_REGISTRYINDEX, "_ar_self");
-    luaL_newlib(self->L, ar_functs);
-    lua_setglobal(self->L, "ar");
-
-    if(name == NULL) {
-        goto error;
-    }
+    lua_setfield(self->L, LUA_REGISTRYINDEX, LUA_HANDLER_REG_NAME);
+    lua_handler_lib_add(self, "ar", ar_functs);
 
     return self;
 
@@ -130,6 +128,13 @@ error:
         lua_handler_destroy(&self);
     }
     return NULL;
+}
+
+int lua_handler_lib_add(lua_handler_t *self, const char *lib_name, const luaL_Reg *lib_functs)
+{
+    luaL_newlib(self->L, lib_functs);
+    lua_setglobal(self->L, lib_name);
+    return 0; 
 }
 
 int lua_handler_load(lua_handler_t *self, const char *fname) 
@@ -152,12 +157,14 @@ error:
     return -1;
 }
 
+/*
 int lua_handler_limit_count(lua_handler_t *self, lua_Debug *ar, int count) 
 {
     self->ar = ar; 
     self->limit_count = count; 
     return lua_sethook(self->L, &ar, LUA_MASKCOUNT, count);
 }
+*/
 
 
 void lua_handler_destroy(lua_handler_t **self_p)
