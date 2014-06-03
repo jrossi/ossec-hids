@@ -21,7 +21,7 @@ lua_handler.o: lua_handler.c
 		${CC}  ${OS_SHARED} -I../external/lua/src/   lua_handler.c -c -o lua_handler.o 
 
 ossec-execd-luatest: lua_tester.c lua_handler.o 
-		${CC}  ${CFLAGS} ${OS_LINK} ${OS_SHARED} -I../external/lua/src/   lua_handler.o lua_tester.c -o ossec-execd-luatest ../external/lua/src/liblua.a -lm
+		${CC}  ${CFLAGS} ${OS_CJSON} ${OS_LINK} ${OS_SHARED} -I../external/lua/src/   lua_handler.o lua_tester.c -o ossec-execd-luatest ../external/lua/src/liblua.a -lm
 
 check: all 
 		./ossec-execd-luatest -l test/test_1.lua -t test/test_1.script

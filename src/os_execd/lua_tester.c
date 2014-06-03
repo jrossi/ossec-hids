@@ -25,22 +25,6 @@ void print_help(const char *prog)
     printf(" \n");
     exit(1);
 }
-void doit(char *text)
-{
-    char *out;cJSON *json;
-
-      json=cJSON_Parse(text);
-        if (!json) {printf("Error before: [%s]\n",cJSON_GetErrorPtr());}
-          else
-          {
-                out=cJSON_Print(json);
-                    cJSON_Delete(json);
-                        printf("%s\n",out);
-                            free(out);
-                              
-          }
-
-}
 
 
 char *dofile(char *filename)
@@ -54,10 +38,19 @@ char *dofile(char *filename)
 int main(int argc, char **argv)
 {
     int c; 
+    int i;
     char *test_script = NULL;
     char *lua_script = NULL; 
+    char *action = NULL;
+    char *user; 
+    char *ipaddr; 
+    char *raw_str;
+    //int tick; 
     cJSON *json; 
     cJSON *current; 
+    cJSON *subitem;
+
+    cJSON *t;
 
     while((c = getopt(argc, argv, "Vht:l:")) != -1){
         switch(c) {
@@ -83,8 +76,8 @@ int main(int argc, char **argv)
         return 1; 
     }
 
-    lua_handler_load(tester, lua_script);
     lua_handler_t *tester = lua_handler_new("test-script");
+    lua_handler_load(tester, lua_script);
     if (!tester) {
         printf("lua_script failed"); 
         return 1; 
@@ -101,7 +94,39 @@ int main(int argc, char **argv)
     } 
 
 
-    cJSON *
+    lua_handler_init(tester); 
+    lua_handler_startup(tester);
+
+
+    for (i = 0;i < cJSON_GetArraySize(json); i++) {
+        current =  cJSON_GetArrayItem(json, i); 
+        subitem = cJSON_GetObjectItem(current, "action");
+        action = subitem->valuestring;
+        if ((strcmp(action, "add") == 0) || (strcmp(action, "del") == 0)) {
+            printf("-----------------------------> %s\n", action);
+            if (strcmp(action, "add") == 0) {
+                subitem =  cJSON_GetObjectItem(current, "user");
+                user = subitem->valuestring;
+                subitem =  cJSON_GetObjectItem(current, "ipaddr");
+                ipaddr = subitem->valuestring; 
+                lua_handler_add(tester, user, ipaddr);
+            } else {
+                subitem =  cJSON_GetObjectItem(current, "user");
+                user = subitem->valuestring;
+                subitem =  cJSON_GetObjectItem(current, "ipaddr");
+                ipaddr = subitem->valuestring; 
+                lua_handler_delete(tester, user, ipaddr); 
+            }
+        } else if (strcmp(action, "tick")) {
+            return 0;
+            
+            //cJSON *t = cJSON_GetObjectItem(current, "time");
+            //lua_handler_tick(t->valueint); 
+        }
+
+    }
+
+    lua_handler_shutdown(tester); 
 
 
 
@@ -110,14 +135,6 @@ int main(int argc, char **argv)
 
 
 
-    printf ("tester-starting init\n");
-    lua_handler_init(tester);
-    printf ("tester-starting add\n");
-    lua_handler_add(tester, "jrossi","1.1.1.1");
-    printf ("tester-starting delete\n");
-    lua_handler_delete(tester, "jrossi", "1.1.1.1");
-    printf ("tester-starting destory\n");
-    lua_handler_destroy(&tester);
     return 0;
 
 }
