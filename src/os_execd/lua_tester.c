@@ -27,10 +27,15 @@ void print_help(const char *prog)
 }
 
 
-char *dofile(char *filename)
+char *slurp(char *filename)
 {
-    FILE *f=fopen(filename,"rb");fseek(f,0,SEEK_END);long len=ftell(f);fseek(f,0,SEEK_SET);
-    char *data=(char*)malloc(len+1);fread(data,1,len,f);fclose(f);
+    FILE *f=fopen(filename,"rb");
+    fseek(f,0,SEEK_END);
+    long len=ftell(f);
+    fseek(f,0,SEEK_SET);
+    char *data=(char*)malloc(len+1);
+    fread(data,1,len,f);
+    fclose(f);
     return data; 
 }
 
@@ -82,7 +87,7 @@ int main(int argc, char **argv)
         printf("lua_script failed"); 
         return 1; 
     }
-    raw_str = dofile(test_script);
+    raw_str = slurp(test_script);
 
     json=cJSON_Parse(raw_str);
     if (!json) {
