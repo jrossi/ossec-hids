@@ -3,7 +3,9 @@
 #include <stdlib.h>
 #include <assert.h>
 
+#include "ar_action.h"
 #include "lua_handler.h"
+
 
 static void stack_dump(lua_State *L)
 {
@@ -187,63 +189,32 @@ int lua_handler_json(lua_handler_t *self, cJSON *json_ar) {
 }
 */
 
-int lua_handler_action(lua_handler_t *self, ar_action_t *action) {
 
-}
-int lua_handler_add(lua_handler_t *self, 
-                    const char *user, 
-                    const char *ipaddr,
-                    const char *alert_id,
-                    const char *rule_id, 
-                    const char *agent_detail)
-{
-    
-    if (self->adder) {
+int lua_handler_event(lua_handler_t *self, ar_action_t *action) {
+    int run = 0;
+
+    if(self->adder && action->action == AR_ACTION_ADD) {
         lua_rawgeti(self->L, LUA_REGISTRYINDEX, self->adder);
-        stack_dump(self->L);
-        lua_newtable(self->L);
-        if(user != NULL) {
-            lua_pushstring(self->L, "user");
-            lua_pushstring(self->L, user);
-            lua_rawset(self->L, -3);
-        }
-        if(ipaddr != NULL) {
-            lua_pushstring(self->L, "ipaddr");
-            lua_pushstring(self->L, ipaddr);
-            lua_rawset(self->L, -3);
+        ar_action_asluatable(action, self->L);
+        run = 1;
+    } else if (self->deleter && action->action == AR_ACTION_DEL) {
+        lua_rawgeti(self->L, LUA_REGISTRYINDEX, self->deleter);
+        ar_action_asluatable(action, self->L);
+        run = 1;
+    }
 
-        }
+    if (run) {
         if(lua_pcall(self->L, 1, 0, 0 ) != 0 ) {
             printf("lau_handler_add error for %s in pcall: %s\n", 
-                   self->name, 
-                   lua_tostring(self->L, -1));
+                    self->name, 
+                    lua_tostring(self->L, -1));
             //pcall failed exit error
             return 1;
+        } else {
+            return 0;
         }
-        //no error 
-        return 0;
-    } 
 
-    return 1;
-}
-
-int lua_handler_delete(lua_handler_t *self, const char *user, const char *ipaddr)
-{
-    if (self->deleter) {
-        lua_rawgeti(self->L, LUA_REGISTRYINDEX, self->deleter);
-        stack_dump(self->L);
-        lua_pushstring(self->L, user);
-        lua_pushstring(self->L, ipaddr);
-        if(lua_pcall(self->L, 2, 0, 0 ) != 0 ) {
-            printf("lau_handler_delete error for %s in pcall: %s\n", 
-                   self->name, 
-                   lua_tostring(self->L, -1));
-            //pcal failed exit error
-            return 1;
-        }
-        //no error
-        return 0; 
-    } 
+    }
     return 0;
 }
 

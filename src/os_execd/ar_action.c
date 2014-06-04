@@ -1,10 +1,9 @@
 
 #include <stdlib.h>
-#include <lua.h>
-#include <lauxlib.h>
-#include <lualib.h>
 #include "shared.h"
 #include "debug_op.h"
+
+#include "lua_handler.h"
 #include "ar_action.h"
 
 

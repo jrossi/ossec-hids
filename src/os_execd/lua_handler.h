@@ -6,6 +6,7 @@
 #include <lauxlib.h>
 #include <lualib.h>
 
+
 #define LUA_HANDLER_REG_NAME "__lua_handler"
 #define LUA_HANDLE_DEFAULT_FAILURE_MAX 5
 
@@ -30,9 +31,7 @@ void lua_handler_destroy(lua_handler_t **self);
 
 lua_handler_t *lua_handler_new(const char *name);
 
-int lua_handler_add(lua_handler_t *self, const char *user, const char *ipaddr);
-
-int lua_handler_delete(lua_handler_t *self, const char *user, const char *ipaddr);
+int lua_handler_event(lua_handler_t *self, ar_action_t *action);
 
 int lua_handler_lib_add(lua_handler_t *self, const char *lib_name, const luaL_Reg *lib_functs);
 
