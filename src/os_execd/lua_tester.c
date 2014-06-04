@@ -108,7 +108,6 @@ int main(int argc, char **argv)
         subitem = cJSON_GetObjectItem(current, "action");
         action = subitem->valuestring;
         if ((strcmp(action, "add") == 0) || (strcmp(action, "del") == 0)) {
-            printf("-----------------------------> %s\n", action);
             if (strcmp(action, "add") == 0) {
                 subitem =  cJSON_GetObjectItem(current, "user");
                 user = subitem->valuestring;

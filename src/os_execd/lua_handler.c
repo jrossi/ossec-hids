@@ -179,14 +179,41 @@ void lua_handler_destroy(lua_handler_t **self_p)
     }
 }
 
-int lua_handler_add(lua_handler_t *self, const char *user, const char *ipaddr)
+
+/*
+int lua_handler_json(lua_handler_t *self, cJSON *json_ar) {
+
+
+}
+*/
+
+int lua_handler_action(lua_handler_t *self, ar_action_t *action) {
+
+}
+int lua_handler_add(lua_handler_t *self, 
+                    const char *user, 
+                    const char *ipaddr,
+                    const char *alert_id,
+                    const char *rule_id, 
+                    const char *agent_detail)
 {
+    
     if (self->adder) {
         lua_rawgeti(self->L, LUA_REGISTRYINDEX, self->adder);
         stack_dump(self->L);
-        lua_pushstring(self->L, user);
-        lua_pushstring(self->L, ipaddr);
-        if(lua_pcall(self->L, 2, 0, 0 ) != 0 ) {
+        lua_newtable(self->L);
+        if(user != NULL) {
+            lua_pushstring(self->L, "user");
+            lua_pushstring(self->L, user);
+            lua_rawset(self->L, -3);
+        }
+        if(ipaddr != NULL) {
+            lua_pushstring(self->L, "ipaddr");
+            lua_pushstring(self->L, ipaddr);
+            lua_rawset(self->L, -3);
+
+        }
+        if(lua_pcall(self->L, 1, 0, 0 ) != 0 ) {
             printf("lau_handler_add error for %s in pcall: %s\n", 
                    self->name, 
                    lua_tostring(self->L, -1));

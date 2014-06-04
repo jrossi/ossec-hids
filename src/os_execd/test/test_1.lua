@@ -1,14 +1,15 @@
 
 print("---LUA: lua starting")
 
-function adder(...) 
+function adder(T) 
   print("---LUA: adder -> LUA")
-  print(...)
+  for key,value in pairs(T) do print(key,value) end
+
 end
 
-function deleter(...)
+function deleter(user, ipaddr)
   print("---LUA: delete -> LUA")
-  print(...)
+  print("---LUA: deleter user:"..user.." ipaddr:"..ipaddr)
 end
 
 function init()
