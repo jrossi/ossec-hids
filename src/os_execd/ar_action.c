@@ -24,26 +24,26 @@ ar_action_t * ar_action_new(int action,
     self->action = action;
 
     if(user != NULL) { os_strdup(user, self->user); } 
-    else { self->user = NULL; }
+    else { os_strdup("-", self->user); }
 
     if(ipaddr != NULL) {  os_strdup(ipaddr, self->ipaddr); }
-    else { self->ipaddr = NULL; }
+    else { os_strdup("-", self->ipaddr); }
 
     if(alert_id != NULL) {  os_strdup(alert_id, self->alert_id); }
-    else { self->alert_id = NULL; }
+    else { os_strdup("-", self->alert_id); }
 
     if(rule_id != NULL) { os_strdup(rule_id, self->rule_id); }
-    else { self->rule_id = NULL; }
+    else { os_strdup("-", self->rule_id); }
 
-    if(agent_detail != NULL) os_strdup(agent_detail, self->agent_detail); 
-    snprintf(self->name, 127, "%d-%s-%s-%s-%s", 
+    if(agent_detail != NULL)  { os_strdup(agent_detail, self->agent_detail); }
+    else { os_strdup("-", self->agent_detail); }
+
+    snprintf(&self->name, 127, "%d-%s-%s-%s-%s", 
                               self->action,
-                              self->user ? self->user : "#",
-                              self->ipaddr ? self->ipaddr : "#", 
-                              self->alert_id ? self->alert_id : "#",
-                              self->rule_id ? self->rule_id : "#",
-                              self->agent_detail ? self->agent_detail : "#",
-    )
+                              self->user,
+                              self->ipaddr ,
+                              self->alert_id ,
+                              self->rule_id );
 
 error:
     if (self) {
@@ -55,7 +55,6 @@ error:
 
 void ar_action_destroy(ar_action_t **self_p)
 {
-    assert (self_p);
     if (*self_p) {
         ar_action_t *self = *self_p;
         if(self->user)         { free(self->user); }

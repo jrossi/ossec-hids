@@ -2,6 +2,9 @@
 #ifndef __AR_ACTION_H_INCLUDED__
 #define __AR_ACTION_H_INCLUDED__
 
+#include <lua.h>
+#include <lauxlib.h>
+#include <lualib.h>
 
 #define AR_ACTION_ADD 1
 #define AR_ACTION_DEL 2
@@ -16,14 +19,14 @@ typedef struct _ar_action_t {
     char *name;
 } ar_action_t;
 
-ar_action_t * ar_action_new(const char *action, 
+ar_action_t * ar_action_new(int action, 
                             const char *user, 
                             const char *ipaddr,
                             const char *alert_id,
                             const char *rule_id, 
                             const char *agent_detail);
 
-void ar_action_destroy(lua_handler_t **self_p);
+void ar_action_destroy(ar_action_t **self_p);
 
 
 /* 

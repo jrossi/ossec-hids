@@ -2,6 +2,7 @@
 #include <stdio.h>
 #include "shared.h"
 #include "debug_op.h"
+#include "ar_action.h"
 #include "lua_handler.h"
 #include "cJSON.h" 
 
@@ -50,6 +51,8 @@ int main(int argc, char **argv)
     char *user; 
     char *ipaddr; 
     char *raw_str;
+
+    ar_action_t *a;
     //int tick; 
     cJSON *json; 
     cJSON *current; 
@@ -108,19 +111,17 @@ int main(int argc, char **argv)
         subitem = cJSON_GetObjectItem(current, "action");
         action = subitem->valuestring;
         if ((strcmp(action, "add") == 0) || (strcmp(action, "del") == 0)) {
+            subitem =  cJSON_GetObjectItem(current, "user");
+            user = subitem->valuestring;
+            subitem =  cJSON_GetObjectItem(current, "ipaddr");
+            ipaddr = subitem->valuestring; 
             if (strcmp(action, "add") == 0) {
-                subitem =  cJSON_GetObjectItem(current, "user");
-                user = subitem->valuestring;
-                subitem =  cJSON_GetObjectItem(current, "ipaddr");
-                ipaddr = subitem->valuestring; 
-                lua_handler_add(tester, user, ipaddr);
+                a = ar_action_new(AR_ACTION_ADD, user, ipaddr, "-", "-", "-");
             } else {
-                subitem =  cJSON_GetObjectItem(current, "user");
-                user = subitem->valuestring;
-                subitem =  cJSON_GetObjectItem(current, "ipaddr");
-                ipaddr = subitem->valuestring; 
-                lua_handler_delete(tester, user, ipaddr); 
+                a = ar_action_new(AR_ACTION_DEL, user, ipaddr, "-", "-", "-");
             }
+            lua_handler_event(tester, a);
+            ar_action_destroy(&a); 
         } else if (strcmp(action, "tick")) {
             return 0;
             
