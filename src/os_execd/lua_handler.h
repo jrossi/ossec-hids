@@ -32,7 +32,8 @@ void lua_handler_destroy(lua_handler_t **self);
 
 lua_handler_t *lua_handler_new(const char *name);
 
-int lua_handler_event(lua_handler_t *self, ar_action_t  *action);
+//int lua_handler_event(lua_handler_t *self, ar_action_t  *action);
+int lua_handler_pcall(lua_handler_t *self, int action_func, int nargs, int nresults, int errfunc);
 
 int lua_handler_lib_add(lua_handler_t *self, const char *lib_name, const luaL_Reg *lib_functs);
 

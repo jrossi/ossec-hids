@@ -2,8 +2,8 @@
 #include <stdio.h>
 #include "shared.h"
 #include "debug_op.h"
-#include "ar_action.h"
 #include "lua_handler.h"
+#include "ar_action.h"
 #include "cJSON.h" 
 
 
@@ -124,7 +124,7 @@ int main(int argc, char **argv)
                 a = ar_action_new(AR_ACTION_DEL, user, ipaddr, "-", "-", "-");
             }
             printf ("running event\n");
-            lua_handler_event(tester, a);
+            ar_action_run_lua_handler(a, tester);
             ar_action_destroy(&a); 
         } else if (strcmp(action, "tick")) {
             return 0;

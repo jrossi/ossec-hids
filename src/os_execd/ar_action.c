@@ -18,6 +18,7 @@ ar_action_t * ar_action_new(int action,
 
     printf("starting malloc\n");
     ar_action_t *self = (ar_action_t *)malloc(sizeof(ar_action_t));
+    printf("ending malloc\n");
     if (self == NULL) {
         printf("malloc failed\n");
         goto error;
@@ -48,12 +49,14 @@ ar_action_t * ar_action_new(int action,
     else { os_strdup("-", self->agent_detail); }
 
     printf("self-name");
-    snprintf(self->name, 127, "%d-%s-%s-%s-%s", 
+    /*snprintf(self->name, 127, "%d-%s-%s-%s-%s", 
                               self->action,
                               self->user,
                               self->ipaddr ,
                               self->alert_id ,
                               self->rule_id );
+                              */
+    return self; 
 
 error:
     if (self) {
@@ -107,4 +110,19 @@ int ar_action_asluatable(ar_action_t *self, lua_handler_t *handler)
         lua_rawset(handler->L, -3);
     }
     return 0;
+}
+
+int ar_action_run_lua(ar_action_t *self, lua_handler_t *handler) 
+{
+    int action;
+    if(self->action == AR_ACTION_ADD) {
+        action = handler->adder;
+    } else if (self->action == AR_ACTION_DEL) {
+        action = handler->deleter; 
+    }
+    lua_rawgeti(handler->L, LUA_REGISTRYINDEX, action);
+    if((ar_action_asluatable(self, handler) == 0)) {
+        return lua_handler_pcall(handler, action, 1, 0, 0);
+    }
+    return -1; 
 }

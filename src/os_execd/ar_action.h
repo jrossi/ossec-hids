@@ -2,9 +2,8 @@
 #ifndef __AR_ACTION_H_INCLUDED__
 #define __AR_ACTION_H_INCLUDED__
 
-#include <lua.h>
-#include <lauxlib.h>
-#include <lualib.h>
+#include "lua_handler.h"
+#include <cJSON.h>
 
 #define AR_ACTION_ADD 1
 #define AR_ACTION_DEL 2
@@ -32,6 +31,8 @@ void ar_action_destroy(ar_action_t **self_p);
 /* 
  * Push onto the LUA stack the ar_action details.  
  */
-int ar_action_asluatable(ar_action_t *self, lua_State *L);
+int ar_action_asluatable(ar_action_t *self, lua_handler_t *handler);
+
+int ar_action_run_lua(ar_action_t *self, lua_handler_t *handler);
 
 #endif 

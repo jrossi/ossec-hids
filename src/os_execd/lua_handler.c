@@ -143,7 +143,7 @@ int lua_handler_load(lua_handler_t *self, const char *fname)
 {
     // Loadfile **********************************************
     //
-    printf("\n\n");
+    //printf("\n\n");
     if(luaL_loadfile(self->L, fname)) {
         printf("Could not load the file: %s\n", lua_tostring(self->L, -1));
         goto error;
@@ -190,7 +190,7 @@ int lua_handler_json(lua_handler_t *self, cJSON *json_ar) {
 */
 
 
-int lua_handler_event(lua_handler_t *self, ar_action_t *action) {
+/*int lua_handler_event(lua_handler_t *self, ar_action_t *action) {
     int run = 0;
 
     if(self->adder && action->action == AR_ACTION_ADD) {
@@ -217,6 +217,7 @@ int lua_handler_event(lua_handler_t *self, ar_action_t *action) {
     }
     return 0;
 }
+*/
 
 int lua_handler_init(lua_handler_t *self)
 {
@@ -228,6 +229,7 @@ int lua_handler_init(lua_handler_t *self)
                    self->name, 
                    lua_tostring(self->L, -1));
             //pcal failed exit error
+            lua_pop(self->L, 1);
             return 1;
         }
         //no error
@@ -236,16 +238,34 @@ int lua_handler_init(lua_handler_t *self)
     return 0;
 }
 
+int lua_handler_pcall(lua_handler_t *self, int action_func, int nargs, int nresults, int errfunc) {
+    //stack_dump(self->L);
+    //lua_rawgeti(self->L, LUA_REGISTRYINDEX, action_func);
+    //stack_dump(self->L);
+    if(lua_pcall(self->L, nargs, nresults, errfunc ) != 0 ) {
+        printf("lau_handler_pcall error for %s in pcall: %s\n", 
+                self->name, 
+                lua_tostring(self->L, -1));
+        //pcall failed exit error
+        lua_pop(self->L, 1);
+        return 1;
+    } else {
+        return 0;
+    }
+}
+
 int lua_handler_startup(lua_handler_t *self)
 {
     if (self->startup) {
         lua_rawgeti(self->L, LUA_REGISTRYINDEX, self->startup);
-        stack_dump(self->L);
+        //stack_dump(self->L);
         if(lua_pcall(self->L, 0, 0, 0 ) != 0 ) {
             printf("lau_handler_startup error for %s in pcall: %s\n", 
                    self->name, 
                    lua_tostring(self->L, -1));
             //pcal failed exit error
+            lua_pop(self->L, 1);
+
             return 1;
         }
         //no error
@@ -260,12 +280,13 @@ int lua_handler_shutdown(lua_handler_t *self)
 {
     if (self->shutdown) {
         lua_rawgeti(self->L, LUA_REGISTRYINDEX, self->shutdown);
-        stack_dump(self->L);
+        //stack_dump(self->L);
         if(lua_pcall(self->L, 0, 0, 0 ) != 0 ) {
             printf("lau_handler_shutdown error for %s in pcall: %s\n", 
                    self->name, 
                    lua_tostring(self->L, -1));
             //pcal failed exit error
+            lua_pop(self->L, 1);
             return 1;
         }
         //no error
