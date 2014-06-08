@@ -16,28 +16,38 @@ ar_action_t * ar_action_new(int action,
                             const char *agent_detail) 
 {
 
+    printf("starting malloc\n");
     ar_action_t *self = (ar_action_t *)malloc(sizeof(ar_action_t));
     if (self == NULL) {
+        printf("malloc failed\n");
         goto error;
     }
 
+
+    printf("creating action");
     self->action = action;
 
+    printf("user");
     if(user != NULL) { os_strdup(user, self->user); } 
     else { os_strdup("-", self->user); }
 
+    printf("ipaddr");
     if(ipaddr != NULL) {  os_strdup(ipaddr, self->ipaddr); }
     else { os_strdup("-", self->ipaddr); }
 
+    printf("alert_id");
     if(alert_id != NULL) {  os_strdup(alert_id, self->alert_id); }
     else { os_strdup("-", self->alert_id); }
 
+    printf("rule_id");
     if(rule_id != NULL) { os_strdup(rule_id, self->rule_id); }
     else { os_strdup("-", self->rule_id); }
 
+    printf("agent_detail");
     if(agent_detail != NULL)  { os_strdup(agent_detail, self->agent_detail); }
     else { os_strdup("-", self->agent_detail); }
 
+    printf("self-name");
     snprintf(self->name, 127, "%d-%s-%s-%s-%s", 
                               self->action,
                               self->user,
@@ -68,32 +78,33 @@ void ar_action_destroy(ar_action_t **self_p)
     }
 }
 
-int ar_action_asluatable(ar_action_t *self, lua_State *L)
+int ar_action_asluatable(ar_action_t *self, lua_handler_t *handler)
 {
-    lua_newtable(L);
+    lua_newtable(handler->L);
     if(self->user != NULL) {
-        lua_pushstring(L, "user");
-        lua_pushstring(L, self->user);
-        lua_rawset(L, -3);
+        lua_pushstring(handler->L, "user");
+        lua_pushstring(handler->L, self->user);
+        lua_rawset(handler->L, -3);
     }
     if(self->ipaddr != NULL) {
-        lua_pushstring(L, "ipaddr");
-        lua_pushstring(L, self->ipaddr);
-        lua_rawset(L, -3);
+        lua_pushstring(handler->L, "ipaddr");
+        lua_pushstring(handler->L, self->ipaddr);
+        lua_rawset(handler->L, -3);
     }
     if(self->alert_id != NULL) {
-        lua_pushstring(L, "alert-id");
-        lua_pushstring(L, self->alert_id);
-        lua_rawset(L, -3);
+        lua_pushstring(handler->L, "alert-id");
+        lua_pushstring(handler->L, self->alert_id);
+        lua_rawset(handler->L, -3);
     }
     if(self->rule_id != NULL) {
-        lua_pushstring(L, "rule-id");
-        lua_pushstring(L, self->rule_id);
-        lua_rawset(L, -3);
+        lua_pushstring(handler->L, "rule-id");
+        lua_pushstring(handler->L, self->rule_id);
+        lua_rawset(handler->L, -3);
     }
     if(self->agent_detail != NULL) {
-        lua_pushstring(L, "agent-detail");
-        lua_pushstring(L, self->agent_detail);
-        lua_rawset(L, -3);
+        lua_pushstring(handler->L, "agent-detail");
+        lua_pushstring(handler->L, self->agent_detail);
+        lua_rawset(handler->L, -3);
     }
+    return 0;
 }

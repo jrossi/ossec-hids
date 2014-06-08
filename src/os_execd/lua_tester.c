@@ -58,7 +58,6 @@ int main(int argc, char **argv)
     cJSON *current; 
     cJSON *subitem;
 
-    cJSON *t;
 
     while((c = getopt(argc, argv, "Vht:l:")) != -1){
         switch(c) {
@@ -115,11 +114,16 @@ int main(int argc, char **argv)
             user = subitem->valuestring;
             subitem =  cJSON_GetObjectItem(current, "ipaddr");
             ipaddr = subitem->valuestring; 
+            printf("createing event\n");
             if (strcmp(action, "add") == 0) {
+                printf("before\n");
+
                 a = ar_action_new(AR_ACTION_ADD, user, ipaddr, "-", "-", "-");
+                printf("after\n");
             } else {
                 a = ar_action_new(AR_ACTION_DEL, user, ipaddr, "-", "-", "-");
             }
+            printf ("running event\n");
             lua_handler_event(tester, a);
             ar_action_destroy(&a); 
         } else if (strcmp(action, "tick")) {

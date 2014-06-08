@@ -1,6 +1,4 @@
 [
-{"action":"add","user":"jrossi","ipaddr":"1.1.1.1"},
-{"action":"add","user":"jrossi","ipaddr":"1.1.1.2"},
 {"action":"add","user":"jrossi","ipaddr":"1.1.1.3"},
 {"action":"add","user":"jrossi","ipaddr":"1.1.1.4"},
 {"action":"add","user":"jrossi","ipaddr":"1.1.1.5"},
