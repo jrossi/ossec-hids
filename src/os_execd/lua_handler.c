@@ -44,9 +44,6 @@ static int ar_register_timer(lua_State *L)
     self->timer_freq  = lua_tointeger(L, 1);
     lua_pop(L, 1);
     self->timer = luaL_ref(L, LUA_REGISTRYINDEX);
-
-
-
     return 0;
 
 }
@@ -205,42 +202,7 @@ void lua_handler_destroy(lua_handler_t **self_p)
 }
 
 
-/*
-int lua_handler_json(lua_handler_t *self, cJSON *json_ar) {
 
-
-}
-*/
-
-
-/*int lua_handler_event(lua_handler_t *self, ar_action_t *action) {
-    int run = 0;
-
-    if(self->adder && action->action == AR_ACTION_ADD) {
-        lua_rawgeti(self->L, LUA_REGISTRYINDEX, self->adder);
-        ar_action_asluatable(action, self->L);
-        run = 1;
-    } else if (self->deleter && action->action == AR_ACTION_DEL) {
-        lua_rawgeti(self->L, LUA_REGISTRYINDEX, self->deleter);
-        ar_action_asluatable(action, self->L);
-        run = 1;
-    }
-
-    if (run) {
-        if(lua_pcall(self->L, 1, 0, 0 ) != 0 ) {
-            printf("lau_handler_add error for %s in pcall: %s\n", 
-                    self->name, 
-                    lua_tostring(self->L, -1));
-            //pcall failed exit error
-            return 1;
-        } else {
-            return 0;
-        }
-
-    }
-    return 0;
-}
-*/
 
 int lua_handler_pcall(lua_handler_t *self, int action_func, int nargs, int nresults, int errfunc) {
     //stack_dump(self->L);

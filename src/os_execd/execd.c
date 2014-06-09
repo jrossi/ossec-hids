@@ -16,6 +16,8 @@
 #include "list_op.h"
 #include "os_regex/os_regex.h"
 #include "os_net/os_net.h"
+#include "lua_handler.h"
+#include "ar_action.h"
 
 #include "execd.h"
 
