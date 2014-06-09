@@ -41,8 +41,11 @@ static int ar_register_timer(lua_State *L)
 {
     lua_handler_t *self = getself(L);
 
+    self->timer_freq  = lua_tointeger(L, 1);
+    lua_pop(L, 1);
     self->timer = luaL_ref(L, LUA_REGISTRYINDEX);
-    self->timer_freq  = luaL_checknumber(L, 1);
+
+
 
     return 0;
 
@@ -52,6 +55,7 @@ static int ar_register_init(lua_State *L)
     int l_fun = luaL_ref(L, LUA_REGISTRYINDEX);
     lua_handler_t *self = getself(L);
     self->init = l_fun;
+
 
     return 0;
 }
@@ -97,6 +101,25 @@ static const struct luaL_Reg ar_functs[] = {
     {"register_shutdown",ar_register_shutdown},
     {NULL, NULL},
 };
+
+/*
+static int ossec_log_debug(lua_State, *L)
+{
+    
+}
+
+static int ossec_log_info(lua_State, *L)
+{
+    
+}
+
+static const struct luaL_Reg ossec_log_functs[] = {
+    {"debug",    ossec_log_debug},
+    {"info",     ossec_log_info},
+    {NULL, NULL},
+};
+
+*/
 
 
 lua_handler_t *lua_handler_new(const char *name)
@@ -219,25 +242,6 @@ int lua_handler_json(lua_handler_t *self, cJSON *json_ar) {
 }
 */
 
-int lua_handler_init(lua_handler_t *self)
-{
-    if (self->init) {
-        lua_rawgeti(self->L, LUA_REGISTRYINDEX, self->init);
-        stack_dump(self->L);
-        if(lua_pcall(self->L, 0, 0, 0 ) != 0 ) {
-            printf("lau_handler_init error for %s in pcall: %s\n", 
-                   self->name, 
-                   lua_tostring(self->L, -1));
-            //pcal failed exit error
-            lua_pop(self->L, 1);
-            return 1;
-        }
-        //no error
-        return 0; 
-    } 
-    return 0;
-}
-
 int lua_handler_pcall(lua_handler_t *self, int action_func, int nargs, int nresults, int errfunc) {
     //stack_dump(self->L);
     //lua_rawgeti(self->L, LUA_REGISTRYINDEX, action_func);
@@ -254,22 +258,30 @@ int lua_handler_pcall(lua_handler_t *self, int action_func, int nargs, int nresu
     }
 }
 
+int lua_handler_tick(lua_handler_t *self) 
+{
+
+    if (self->timer) {
+        lua_rawgeti(self->L, LUA_REGISTRYINDEX, self->timer);
+        return lua_handler_pcall(self, self->timer, 0, 0, 0);
+    }
+    return 0;
+}
+
+int lua_handler_init(lua_handler_t *self)
+{
+    if (self->init) {
+        lua_rawgeti(self->L, LUA_REGISTRYINDEX, self->init);
+        return lua_handler_pcall(self, self->startup, 0, 0, 0);
+    } 
+    return 0;
+}
+
 int lua_handler_startup(lua_handler_t *self)
 {
     if (self->startup) {
         lua_rawgeti(self->L, LUA_REGISTRYINDEX, self->startup);
-        //stack_dump(self->L);
-        if(lua_pcall(self->L, 0, 0, 0 ) != 0 ) {
-            printf("lau_handler_startup error for %s in pcall: %s\n", 
-                   self->name, 
-                   lua_tostring(self->L, -1));
-            //pcal failed exit error
-            lua_pop(self->L, 1);
-
-            return 1;
-        }
-        //no error
-        return 0; 
+        return lua_handler_pcall(self, self->startup, 0, 0, 0);
     } 
     return 0;
 }
@@ -280,17 +292,7 @@ int lua_handler_shutdown(lua_handler_t *self)
 {
     if (self->shutdown) {
         lua_rawgeti(self->L, LUA_REGISTRYINDEX, self->shutdown);
-        //stack_dump(self->L);
-        if(lua_pcall(self->L, 0, 0, 0 ) != 0 ) {
-            printf("lau_handler_shutdown error for %s in pcall: %s\n", 
-                   self->name, 
-                   lua_tostring(self->L, -1));
-            //pcal failed exit error
-            lua_pop(self->L, 1);
-            return 1;
-        }
-        //no error
-        return 0; 
+        return lua_handler_pcall(self, self->shutdown, 0, 0, 0);
     } 
     return 0;
 }

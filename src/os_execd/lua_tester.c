@@ -45,6 +45,7 @@ int main(int argc, char **argv)
 {
     int c; 
     int i;
+    int rc;
     char *test_script = NULL;
     char *lua_script = NULL; 
     char *action = NULL;
@@ -84,11 +85,16 @@ int main(int argc, char **argv)
     }
 
     lua_handler_t *tester = lua_handler_new("test-script");
-    lua_handler_load(tester, lua_script);
     if (!tester) {
         printf("lua_script failed"); 
         return 1; 
     }
+    rc = lua_handler_load(tester, lua_script);
+    if(rc) {
+        printf("loading lua_script failed\n");
+        return 1;
+    }
+
     raw_str = slurp(test_script);
 
     json=cJSON_Parse(raw_str);
@@ -109,6 +115,7 @@ int main(int argc, char **argv)
         current =  cJSON_GetArrayItem(json, i); 
         subitem = cJSON_GetObjectItem(current, "action");
         action = subitem->valuestring;
+        printf ("\n------------------------------------------------------\n\naction: %s\n", action);
         if ((strcmp(action, "add") == 0) || (strcmp(action, "del") == 0)) {
             subitem =  cJSON_GetObjectItem(current, "user");
             user = subitem->valuestring;
@@ -126,8 +133,8 @@ int main(int argc, char **argv)
             printf ("running event\n");
             ar_action_run_lua(a, tester);
             ar_action_destroy(&a); 
-        } else if (strcmp(action, "tick")) {
-            return 0;
+        } else if (strcmp(action, "tick") == 0) {
+            lua_handler_tick(tester);
             
             //cJSON *t = cJSON_GetObjectItem(current, "time");
             //lua_handler_tick(t->valueint); 

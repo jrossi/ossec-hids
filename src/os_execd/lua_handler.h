@@ -41,6 +41,8 @@ int lua_handler_load(lua_handler_t *self, const char *fname);
 
 int lua_handler_init(lua_handler_t *self); 
 
+int lua_handler_tick(lua_handler_t *self);
+
 int lua_handler_startup(lua_handler_t *self); 
 
 int lua_handler_shutdown(lua_handler_t *self); 

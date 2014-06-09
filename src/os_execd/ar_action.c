@@ -40,7 +40,7 @@ ar_action_t * ar_action_new(int action,
     if(agent_detail != NULL)  { os_strdup(agent_detail, self->agent_detail); }
     else { self->agent_detail = NULL; }
 
-    printf("self-name");
+    //printf("self-name");
     /*snprintf(self->name, 127, "%d-%s-%s-%s-%s", 
                               self->action,
                               self->user,

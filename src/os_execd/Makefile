@@ -28,7 +28,7 @@ ossec-execd-luatest: lua_tester.c lua_handler.o ar_action.o
 
 check: all 
 		./ossec-execd-luatest -l test/test_1.lua -t test/test_1.json
-		#./ossec-execd-luatest -l test/test_2.lua -t test/test_2.json
+		./ossec-execd-luatest -l test/test_2.lua -t test/test_2.json
 		
 clean:
 		${CLEAN} 
