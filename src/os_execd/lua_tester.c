@@ -118,13 +118,13 @@ int main(int argc, char **argv)
             if (strcmp(action, "add") == 0) {
                 printf("before\n");
 
-                a = ar_action_new(AR_ACTION_ADD, user, ipaddr, "-", "-", "-");
+                a = ar_action_new(AR_ACTION_ADD, user, ipaddr, NULL, NULL, NULL);
                 printf("after\n");
             } else {
-                a = ar_action_new(AR_ACTION_DEL, user, ipaddr, "-", "-", "-");
+                a = ar_action_new(AR_ACTION_DEL, user, ipaddr, NULL, NULL, NULL);
             }
             printf ("running event\n");
-            ar_action_run_lua_handler(a, tester);
+            ar_action_run_lua(a, tester);
             ar_action_destroy(&a); 
         } else if (strcmp(action, "tick")) {
             return 0;

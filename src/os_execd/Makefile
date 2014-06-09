@@ -17,10 +17,11 @@ ${NAME}:
 		${CC} ${CFLAGS} -c ${LOCAL}
 
 ar_action.o: ar_action.c ar_action.h
-		${CC}  ${CFLAGS} ${OS_SHARED} ${OS_CJSON} -I../external/lua/src/   ar_action.c -c -o ar_action.o 
+		#${CC}  ${CFLAGS} ${OS_SHARED} ${OS_CJSON} -I../external/lua/src/   ar_action.c -c -o ar_action.o 
+		${CC}  ${CFLAGS} -I../external/lua/src/   ar_action.c -c -o ar_action.o 
 
 lua_handler.o: lua_handler.c lua_handler.h
-		${CC}  ${CFLAGS} ${OS_SHARED} ${OS_CJSON} -I../external/lua/src/   lua_handler.c -c -o lua_handler.o 
+		${CC}  ${CFLAGS}  -I../external/lua/src/   lua_handler.c -c -o lua_handler.o 
 
 ossec-execd-luatest: lua_tester.c lua_handler.o ar_action.o
 		${CC}  ${CFLAGS} ${OS_SHARED} ${OS_CJSON} ${OS_LINK} ${OS_SHARED} -I../external/lua/src/   ar_action.o lua_handler.o lua_tester.c -o ossec-execd-luatest ../external/lua/src/liblua.a -lm  ../shared/lib_shared.a ../external/libcJSON.a

@@ -16,37 +16,29 @@ ar_action_t * ar_action_new(int action,
                             const char *agent_detail) 
 {
 
-    printf("starting malloc\n");
     ar_action_t *self = (ar_action_t *)malloc(sizeof(ar_action_t));
-    printf("ending malloc\n");
     if (self == NULL) {
         printf("malloc failed\n");
         goto error;
     }
 
 
-    printf("creating action");
     self->action = action;
 
-    printf("user");
     if(user != NULL) { os_strdup(user, self->user); } 
-    else { os_strdup("-", self->user); }
+    else { self->user = NULL; }
 
-    printf("ipaddr");
     if(ipaddr != NULL) {  os_strdup(ipaddr, self->ipaddr); }
-    else { os_strdup("-", self->ipaddr); }
+    else { self->ipaddr = NULL; }
 
-    printf("alert_id");
     if(alert_id != NULL) {  os_strdup(alert_id, self->alert_id); }
-    else { os_strdup("-", self->alert_id); }
+    else { self->alert_id = NULL; }
 
-    printf("rule_id");
     if(rule_id != NULL) { os_strdup(rule_id, self->rule_id); }
-    else { os_strdup("-", self->rule_id); }
+    else { self->rule_id = NULL; }
 
-    printf("agent_detail");
     if(agent_detail != NULL)  { os_strdup(agent_detail, self->agent_detail); }
-    else { os_strdup("-", self->agent_detail); }
+    else { self->agent_detail = NULL; }
 
     printf("self-name");
     /*snprintf(self->name, 127, "%d-%s-%s-%s-%s", 
