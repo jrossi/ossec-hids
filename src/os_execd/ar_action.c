@@ -107,12 +107,16 @@ int ar_action_asluatable(ar_action_t *self, lua_handler_t *handler)
 int ar_action_run_lua(ar_action_t *self, lua_handler_t *handler) 
 {
     int action;
-    if(self->action == AR_ACTION_ADD) {
-        action = handler->adder;
-    } else if (self->action == AR_ACTION_DEL) {
-        action = handler->deleter; 
+    switch (self->action) {
+        case AR_ACTION_ADD:
+            action = handler->adder;
+            break;
+        case AR_ACTION_DEL:
+            action = handler->deleter;
+            break;
+        default:
+            return -1;
     }
-
     lua_rawgeti(handler->L, LUA_REGISTRYINDEX, action);
     if((ar_action_asluatable(self, handler) == 0)) {
         return lua_handler_pcall(handler, action, 1, 0, 0);
