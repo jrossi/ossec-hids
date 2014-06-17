@@ -29,6 +29,7 @@ static void stack_dump(lua_State *L)
 }
 
 
+
 lua_handler_t *lua_handler_getself(lua_State *L)
 {
     lua_getfield(L, LUA_REGISTRYINDEX, LUA_HANDLER_REG_NAME);
