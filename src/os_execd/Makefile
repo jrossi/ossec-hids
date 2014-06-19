@@ -25,8 +25,12 @@ ar_action.o: ar_action.c ar_action.h
 lua_handler.o: lua_handler.c lua_handler.h
 		${CC}  ${CFLAGS}  ${OS_LUA}  lua_handler.c -c -o lua_handler.o 
 
-ossec-execd-luatest: lua_tester.c lua_handler.o ar_action.o
-		${CC}  ${CFLAGS} ${OS_LUA} ${OS_SHARED} ${OS_CJSON} ${OS_LINK} ${OS_SHARED} ar_action.o lua_handler.o lua_tester.c -o ossec-execd-luatest ${OS_LUA_LINK} ../shared/lib_shared.a ../external/libcJSON.a
+lua_ar_lib.o: lua_ar_lib.c lua_ar_lib.h 
+		${CC}  ${CFLAGS}  ${OS_LUA}  lua_ar_lib.c -c -o lua_ar_lib.o
+
+
+ossec-execd-luatest: lua_tester.c lua_handler.o ar_action.o lua_ar_lib.o 
+		${CC}  ${CFLAGS} ${OS_LUA} ${OS_SHARED} ${OS_CJSON} ${OS_LINK} ${OS_SHARED} ar_action.o lua_ar_lib.o lua_handler.o  lua_tester.c -o ossec-execd-luatest ${OS_LUA_LINK} ../shared/lib_shared.a ../external/libcJSON.a
 
 check: all 
 		./ossec-execd-luatest -l test/test_1.lua -t test/test_1.json

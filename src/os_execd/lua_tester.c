@@ -4,6 +4,7 @@
 #include "debug_op.h"
 #include "lua_handler.h"
 #include "ar_action.h"
+#include "lua_ar_lib.h"
 #include "cJSON.h" 
 
 
@@ -88,6 +89,11 @@ int main(int argc, char **argv)
     if (!tester) {
         printf("lua_script failed"); 
         return 1; 
+    }
+    rc = lua_lib_ar(tester);
+    if(rc) {
+        printf("loading ar lib failed\n");
+        return 1;
     }
     rc = lua_handler_load(tester, lua_script);
     if(rc) {
