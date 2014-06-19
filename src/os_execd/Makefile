@@ -9,8 +9,8 @@ include ../Config.Make
 LOCAL = execd.c exec.c config.c
 
 OBJS = ${OS_SHARED} ${OS_NET} ${OS_REGEX} ${OS_XML}
-OS_LUA = -I${PT}external/lua/src 
-OS_LUA_LINK = ${PT}external/lua/src/liblua.a -lm
+OS_LUA = -I${PT}external/lua/src  -I${PT}os_lua 
+OS_LUA_LINK = ${PT}external/lua/src/liblua.a -lm ${PT}os_lua/os_lua.a
 
 all: ${NAME} ossec-execd-luatest
 
@@ -20,17 +20,14 @@ ${NAME}:
 
 ar_action.o: ar_action.c ar_action.h
 		#${CC}  ${CFLAGS} ${OS_SHARED} ${OS_CJSON} -I../external/lua/src/   ar_action.c -c -o ar_action.o 
-		${CC}  ${CFLAGS} -I../external/lua/src/   ar_action.c -c -o ar_action.o 
-
-lua_handler.o: lua_handler.c lua_handler.h
-		${CC}  ${CFLAGS}  ${OS_LUA}  lua_handler.c -c -o lua_handler.o 
+		${CC}  ${CFLAGS} ${OS_LUA}  ar_action.c -c -o ar_action.o 
 
 lua_ar_lib.o: lua_ar_lib.c lua_ar_lib.h 
 		${CC}  ${CFLAGS}  ${OS_LUA}  lua_ar_lib.c -c -o lua_ar_lib.o
 
 
-ossec-execd-luatest: lua_tester.c lua_handler.o ar_action.o lua_ar_lib.o 
-		${CC}  ${CFLAGS} ${OS_LUA} ${OS_SHARED} ${OS_CJSON} ${OS_LINK} ${OS_SHARED} ar_action.o lua_ar_lib.o lua_handler.o  lua_tester.c -o ossec-execd-luatest ${OS_LUA_LINK} ../shared/lib_shared.a ../external/libcJSON.a
+ossec-execd-luatest: lua_tester.c ar_action.o lua_ar_lib.o 
+		${CC}  ${CFLAGS} ${OS_LUA} ${OS_SHARED} ${OS_CJSON} ${OS_LINK} ${OS_SHARED} ar_action.o lua_ar_lib.o lua_tester.c -o ossec-execd-luatest ${OS_LUA_LINK} ../shared/lib_shared.a ../external/libcJSON.a
 
 check: all 
 		./ossec-execd-luatest -l test/test_1.lua -t test/test_1.json

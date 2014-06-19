@@ -3,11 +3,14 @@
 #include <stdlib.h>
 #include <assert.h>
 
-#include "ar_action.h"
+#include <lua.h>
+#include <lauxlib.h>
+#include <lualib.h>
+
 #include "lua_handler.h"
-#include "lua_ar_lib.h"
 
 
+/*
 static void stack_dump(lua_State *L)
 {
     int i;
@@ -28,6 +31,7 @@ static void stack_dump(lua_State *L)
         }
     }
 }
+ */
 
 
 
