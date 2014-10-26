@@ -32,7 +32,7 @@
 
 
 /* Read logcollector config */
-int LogCollectorConfig(const char * cfgfile, int accept_remote);
+int LogCollectorConfig(const char *cfgfile, int accept_remote);
 
 /* Stary log collector daemon */
 void LogCollectorStart(void) __attribute__((noreturn));

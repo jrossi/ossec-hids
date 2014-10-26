@@ -30,7 +30,7 @@ START_TEST(test_tcpv4_local)
 
     ck_assert_int_ge((server_root_socket = OS_Bindporttcp(PORT, IPV4, 0)), 0);
 
-    ck_assert_int_ge((client_socket = OS_ConnectTCP(PORT, IPV4, 0)) ,0);
+    ck_assert_int_ge((client_socket = OS_ConnectTCP(PORT, IPV4, 0)) , 0);
 
     ck_assert_int_ge((server_client_socket = OS_AcceptTCP(server_root_socket, ipbuffer, BUFFERSIZE)), 0);
 
@@ -65,7 +65,7 @@ START_TEST(test_tcpv4_inet)
 
     ck_assert_int_ge((server_root_socket = OS_Bindporttcp(PORT, NULL, 0)), 0);
 
-    ck_assert_int_ge((client_socket = OS_ConnectTCP(PORT, IPV4, 0)) ,0);
+    ck_assert_int_ge((client_socket = OS_ConnectTCP(PORT, IPV4, 0)) , 0);
 
     ck_assert_int_ge((server_client_socket = OS_AcceptTCP(server_root_socket, ipbuffer, BUFFERSIZE)), 0);
 
@@ -100,7 +100,7 @@ START_TEST(test_tcpv6)
 
     ck_assert_int_ge((server_root_socket = OS_Bindporttcp(PORT, IPV6, 1)), 0);
 
-    ck_assert_int_ge((client_socket = OS_ConnectTCP(PORT, IPV6, 1)) ,0);
+    ck_assert_int_ge((client_socket = OS_ConnectTCP(PORT, IPV6, 1)) , 0);
 
     ck_assert_int_ge((server_client_socket = OS_AcceptTCP(server_root_socket, ipbuffer, BUFFERSIZE)), 0);
 
@@ -151,7 +151,7 @@ START_TEST(test_udpv4)
 
     ck_assert_int_ge((server_socket = OS_Bindportudp(PORT, IPV4, 0)), 0);
 
-    ck_assert_int_ge((client_socket = OS_ConnectUDP(PORT, IPV4, 0)) ,0);
+    ck_assert_int_ge((client_socket = OS_ConnectUDP(PORT, IPV4, 0)) , 0);
 
     //TODO: ck_assert_int_eq(OS_SendUDP(client_socket, SENDSTRING), 0);
     ck_assert_int_eq(OS_SendUDPbySize(client_socket, strlen(SENDSTRING), SENDSTRING), 0);
@@ -182,7 +182,7 @@ START_TEST(test_udpv6)
 
     ck_assert_int_ge((server_socket = OS_Bindportudp(PORT, IPV6, 1)), 0);
 
-    ck_assert_int_ge((client_socket = OS_ConnectUDP(PORT, IPV6, 1)) ,0);
+    ck_assert_int_ge((client_socket = OS_ConnectUDP(PORT, IPV6, 1)) , 0);
 
     //TODO: ck_assert_int_eq(OS_SendUDP(client_socket, SENDSTRING), 0);
     ck_assert_int_eq(OS_SendUDPbySize(client_socket, strlen(SENDSTRING), SENDSTRING), 0);
@@ -237,7 +237,7 @@ START_TEST(test_unix)
 
     ck_assert_int_ge(OS_getsocketsize(server_socket), msg_size);
 
-    ck_assert_int_ge((client_socket= OS_ConnectUnixDomain(socket_path, msg_size)), 0);
+    ck_assert_int_ge((client_socket = OS_ConnectUnixDomain(socket_path, msg_size)), 0);
 
     ck_assert_int_eq(OS_SendUnix(client_socket, SENDSTRING, 5), 0);
 

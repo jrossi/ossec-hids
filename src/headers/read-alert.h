@@ -22,8 +22,7 @@
 
 
 /* File queue */
-typedef struct _alert_data
-{
+typedef struct _alert_data {
     unsigned int rule;
     unsigned int level;
     char *alertid;
@@ -42,11 +41,11 @@ typedef struct _alert_data
     char *old_sha1;
     char *new_sha1;
     char **log;
-#ifdef GEOIP
+    #ifdef GEOIP
     char *geoipdatasrc;
     char *geoipdatadst;
-#endif
-}alert_data;
+    #endif
+} alert_data;
 
 
 alert_data *GetAlertData(int flag, FILE *fp) __attribute__((nonnull));

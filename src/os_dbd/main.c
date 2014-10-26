@@ -15,7 +15,7 @@
 
 
 #ifndef ARGV0
-   #define ARGV0 "ossec-dbd"
+#define ARGV0 "ossec-dbd"
 #endif
 
 #include "shared.h"
@@ -87,8 +87,8 @@ int main(int argc, char **argv)
     OS_SetName(ARGV0);
 
 
-    while((c = getopt(argc, argv, "Vdhtfu:g:D:c:")) != -1){
-        switch(c){
+    while((c = getopt(argc, argv, "Vdhtfu:g:D:c:")) != -1) {
+        switch(c) {
             case 'V':
                 print_version();
                 break;
@@ -102,23 +102,27 @@ int main(int argc, char **argv)
                 run_foreground = 1;
                 break;
             case 'u':
-                if(!optarg)
-                    ErrorExit("%s: -u needs an argument",ARGV0);
-                user=optarg;
+                if(!optarg) {
+                    ErrorExit("%s: -u needs an argument", ARGV0);
+                }
+                user = optarg;
                 break;
             case 'g':
-                if(!optarg)
-                    ErrorExit("%s: -g needs an argument",ARGV0);
-                group=optarg;
+                if(!optarg) {
+                    ErrorExit("%s: -g needs an argument", ARGV0);
+                }
+                group = optarg;
                 break;
             case 'D':
-                if(!optarg)
-                    ErrorExit("%s: -D needs an argument",ARGV0);
-                dir=optarg;
+                if(!optarg) {
+                    ErrorExit("%s: -D needs an argument", ARGV0);
+                }
+                dir = optarg;
                 break;
             case 'c':
-                if(!optarg)
-                    ErrorExit("%s: -c needs an argument",ARGV0);
+                if(!optarg) {
+                    ErrorExit("%s: -c needs an argument", ARGV0);
+                }
                 cfg = optarg;
                 break;
             case 't':
@@ -139,26 +143,24 @@ int main(int argc, char **argv)
     /* Check if the user/group given are valid */
     uid = Privsep_GetUser(user);
     gid = Privsep_GetGroup(group);
-    if(uid == (uid_t)-1 || gid == (gid_t)-1)
-    {
+    if(uid == (uid_t) - 1 || gid == (gid_t) - 1) {
         ErrorExit(USER_ERROR, ARGV0, user, group);
     }
 
 
     /* Reading configuration */
-    if((c = OS_ReadDBConf(test_config, cfg, &db_config)) < 0)
-    {
+    if((c = OS_ReadDBConf(test_config, cfg, &db_config)) < 0) {
         ErrorExit(CONFIG_ERROR, ARGV0, cfg);
     }
 
 
     /* Exit here if test config is set */
-    if(test_config)
+    if(test_config) {
         exit(0);
+    }
 
 
-    if(!run_foreground)
-    {
+    if(!run_foreground) {
         /* Going on daemon mode */
         nowDaemon();
         goDaemon();
@@ -167,8 +169,7 @@ int main(int argc, char **argv)
 
 
     /* Not configured */
-    if(c == 0)
-    {
+    if(c == 0) {
         verbose("%s: Database not configured. Clean exit.", ARGV0);
         exit(0);
     }
@@ -177,7 +178,7 @@ int main(int argc, char **argv)
     /* Maybe disable this debug? */
     debug1("%s: DEBUG: Connecting to '%s', using '%s', '%s', '%s', %d,'%s'.",
            ARGV0, db_config.host, db_config.user,
-           db_config.pass, db_config.db,db_config.port,db_config.sock);
+           db_config.pass, db_config.db, db_config.port, db_config.sock);
 
 
     /* Setting config pointer */
@@ -186,20 +187,18 @@ int main(int argc, char **argv)
 
     /* Getting maximum reconned attempts */
     db_config.maxreconnect = (unsigned int) getDefine_Int("dbd",
-                                           "reconnect_attempts", 1, 9999);
+                             "reconnect_attempts", 1, 9999);
 
 
     /* Connecting to the database */
     d = 0;
-    while(d <= (db_config.maxreconnect * 10))
-    {
+    while(d <= (db_config.maxreconnect * 10)) {
         db_config.conn = osdb_connect(db_config.host, db_config.user,
                                       db_config.pass, db_config.db,
-                                      db_config.port,db_config.sock);
+                                      db_config.port, db_config.sock);
 
         /* If we are able to reconnect, keep going */
-        if(db_config.conn)
-        {
+        if(db_config.conn) {
             break;
         }
 
@@ -210,8 +209,7 @@ int main(int argc, char **argv)
 
 
     /* If after the maxreconnect attempts, it still didn't work, exit here. */
-    if(!db_config.conn)
-    {
+    if(!db_config.conn) {
         merror(DB_CONFIGERR, ARGV0);
         ErrorExit(CONFIG_ERROR, ARGV0, cfg);
     }
@@ -223,13 +221,15 @@ int main(int argc, char **argv)
 
 
     /* Privilege separation */
-    if(Privsep_SetGroup(gid) < 0)
-        ErrorExit(SETGID_ERROR,ARGV0,group, errno, strerror(errno));
+    if(Privsep_SetGroup(gid) < 0) {
+        ErrorExit(SETGID_ERROR, ARGV0, group, errno, strerror(errno));
+    }
 
 
     /* chrooting */
-    if(Privsep_Chroot(dir) < 0)
-        ErrorExit(CHROOT_ERROR,ARGV0,dir, errno, strerror(errno));
+    if(Privsep_Chroot(dir) < 0) {
+        ErrorExit(CHROOT_ERROR, ARGV0, dir, errno, strerror(errno));
+    }
 
 
     /* Now on chroot */
@@ -238,26 +238,25 @@ int main(int argc, char **argv)
 
     /* Inserting server info into the db */
     db_config.server_id = OS_Server_ReadInsertDB(&db_config);
-    if(db_config.server_id <= 0)
-    {
+    if(db_config.server_id <= 0) {
         ErrorExit(CONFIG_ERROR, ARGV0, cfg);
     }
 
 
     /* Read rules and insert into the db */
-    if(OS_InsertRulesDB(&db_config) < 0)
-    {
+    if(OS_InsertRulesDB(&db_config) < 0) {
         ErrorExit(CONFIG_ERROR, ARGV0, cfg);
     }
 
 
     /* Changing user */
-    if(Privsep_SetUser(uid) < 0)
-        ErrorExit(SETUID_ERROR,ARGV0,user, errno, strerror(errno));
+    if(Privsep_SetUser(uid) < 0) {
+        ErrorExit(SETUID_ERROR, ARGV0, user, errno, strerror(errno));
+    }
 
 
     /* Basic start up completed. */
-    debug1(PRIVSEP_MSG,ARGV0,dir,user);
+    debug1(PRIVSEP_MSG, ARGV0, dir, user);
 
 
     /* Signal manipulation */
@@ -265,8 +264,9 @@ int main(int argc, char **argv)
 
 
     /* Creating PID files */
-    if(CreatePID(ARGV0, getpid()) < 0)
-        ErrorExit(PID_ERROR,ARGV0);
+    if(CreatePID(ARGV0, getpid()) < 0) {
+        ErrorExit(PID_ERROR, ARGV0);
+    }
 
 
     /* Start up message */

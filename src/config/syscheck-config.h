@@ -35,17 +35,15 @@
 
 #include "os_regex/os_regex.h"
 
-typedef struct _rtfim
-{
+typedef struct _rtfim {
     int fd;
     OSHash *dirtb;
     #ifdef WIN32
     HANDLE evt;
     #endif
-}rtfim;
+} rtfim;
 
-typedef struct _config
-{
+typedef struct _config {
     unsigned int tsleep;            /* sleep for sometime for daemon to settle */
     int sleep_after;
     int rootcheck;         /* set to 0 when rootcheck is disabled */
@@ -84,9 +82,9 @@ typedef struct _config
 
     char *prefilter_cmd;
 
-}syscheck_config;
+} syscheck_config;
 
-int dump_syscheck_entry(syscheck_config *syscheck, const char *entry, int vals, int reg, const char *restrictfile) __attribute__((nonnull(1,2)));
+int dump_syscheck_entry(syscheck_config *syscheck, const char *entry, int vals, int reg, const char *restrictfile) __attribute__((nonnull(1, 2)));
 
 #endif
 

@@ -37,10 +37,10 @@ static int __DBSelectServer(const char *server, const DBConfig *db_config)
 
 
     /* Generating SQL */
-    snprintf(sql_query, OS_SIZE_1024 -1,
-            "SELECT id FROM "
-            "server WHERE hostname = '%s'",
-            server);
+    snprintf(sql_query, OS_SIZE_1024 - 1,
+             "SELECT id FROM "
+             "server WHERE hostname = '%s'",
+             server);
 
 
     /* Checking return code. */
@@ -60,39 +60,35 @@ static int __DBInsertServer(const char *server, const char *info, const DBConfig
     memset(sql_query, '\0', OS_SIZE_1024);
 
     /* Checking if the server is present */
-    snprintf(sql_query, OS_SIZE_1024 -1,
-            "SELECT id from server where hostname = '%s'",
-            server);
+    snprintf(sql_query, OS_SIZE_1024 - 1,
+             "SELECT id from server where hostname = '%s'",
+             server);
 
     /* If not present, we insert */
-    if(osdb_query_select(db_config->conn, sql_query) == 0)
-    {
-        snprintf(sql_query, OS_SIZE_1024 -1,
-                "INSERT INTO "
-                "server(last_contact, version, hostname, information) "
-                "VALUES ('%u', '%s', '%s', '%s')",
-                (unsigned int)time(0), __version, server, info);
+    if(osdb_query_select(db_config->conn, sql_query) == 0) {
+        snprintf(sql_query, OS_SIZE_1024 - 1,
+                 "INSERT INTO "
+                 "server(last_contact, version, hostname, information) "
+                 "VALUES ('%u', '%s', '%s', '%s')",
+                 (unsigned int)time(0), __version, server, info);
 
         /* Checking return code. */
-        if(!osdb_query_insert(db_config->conn, sql_query))
-        {
+        if(!osdb_query_insert(db_config->conn, sql_query)) {
             merror(DB_GENERROR, ARGV0);
         }
     }
 
     /* If it is, we update it */
-    else
-    {
+    else {
 
-        snprintf(sql_query, OS_SIZE_1024 -1,
-                "UPDATE server SET "
-                "last_contact='%u',version='%s',information='%s' "
-                "WHERE hostname = '%s'",
-                (unsigned int)time(0), __version, info, server);
+        snprintf(sql_query, OS_SIZE_1024 - 1,
+                 "UPDATE server SET "
+                 "last_contact='%u',version='%s',information='%s' "
+                 "WHERE hostname = '%s'",
+                 (unsigned int)time(0), __version, info, server);
 
         /* Checking return code. */
-        if(!osdb_query_insert(db_config->conn, sql_query))
-        {
+        if(!osdb_query_insert(db_config->conn, sql_query)) {
             merror(DB_GENERROR, ARGV0);
         }
     }
@@ -117,8 +113,7 @@ int OS_Server_ReadInsertDB(const DBConfig *db_config)
 
     /* Getting servers hostname */
     memset(__shost, '\0', 512);
-    if(gethostname(__shost, 512 -1) != 0)
-    {
+    if(gethostname(__shost, 512 - 1) != 0) {
         merror("%s: Error: gethostname() failed", ARGV0);
         return(0);
     }
@@ -126,8 +121,7 @@ int OS_Server_ReadInsertDB(const DBConfig *db_config)
 
     /* Getting system uname */
     info = getuname();
-    if(!info)
-    {
+    if(!info) {
         merror(MEM_ERROR, ARGV0, errno, strerror(errno));
         return(0);
     }

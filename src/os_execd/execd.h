@@ -52,19 +52,18 @@ void ExecCmd(char *const *cmd) __attribute__((nonnull));
 
 void ExecCmd_Win32(char *cmd);
 
-int ExecdConfig(const char * cfgfile) __attribute__((nonnull));
+int ExecdConfig(const char *cfgfile) __attribute__((nonnull));
 
 int WinExecd_Start(void);
 
 void WinTimeoutRun(int timeout);
 
 /* Timeout data structure */
-typedef struct _timeout_data
-{
+typedef struct _timeout_data {
     time_t time_of_addition;
     int time_to_block;
     char **command;
-}timeout_data;
+} timeout_data;
 
 void FreeTimeoutEntry(timeout_data *timeout_entry);
 

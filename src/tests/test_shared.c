@@ -33,8 +33,8 @@ START_TEST(test_searchAndReplace)
         {NULL, NULL, NULL, NULL}
     };
 
-    for(i=0; tests[i][0] != NULL ; i++) {
-        char *result = searchAndReplace(tests[i][0],tests[i][1], tests[i][2]);
+    for(i = 0; tests[i][0] != NULL ; i++) {
+        char *result = searchAndReplace(tests[i][0], tests[i][1], tests[i][2]);
         ck_assert_str_eq(result, tests[i][3]);
         free(result);
     }

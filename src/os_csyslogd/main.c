@@ -40,7 +40,7 @@ static void help_csyslogd()
 
 int main(int argc, char **argv)
 {
-    int c, test_config = 0,run_foreground = 0;
+    int c, test_config = 0, run_foreground = 0;
     uid_t uid;
     gid_t gid;
 
@@ -59,8 +59,8 @@ int main(int argc, char **argv)
     OS_SetName(ARGV0);
 
 
-    while((c = getopt(argc, argv, "Vdhtfu:g:D:c:")) != -1){
-        switch(c){
+    while((c = getopt(argc, argv, "Vdhtfu:g:D:c:")) != -1) {
+        switch(c) {
             case 'V':
                 print_version();
                 break;
@@ -74,23 +74,27 @@ int main(int argc, char **argv)
                 run_foreground = 1;
                 break;
             case 'u':
-                if(!optarg)
-                    ErrorExit("%s: -u needs an argument",ARGV0);
-                user=optarg;
+                if(!optarg) {
+                    ErrorExit("%s: -u needs an argument", ARGV0);
+                }
+                user = optarg;
                 break;
             case 'g':
-                if(!optarg)
-                    ErrorExit("%s: -g needs an argument",ARGV0);
-                group=optarg;
+                if(!optarg) {
+                    ErrorExit("%s: -g needs an argument", ARGV0);
+                }
+                group = optarg;
                 break;
             case 'D':
-                if(!optarg)
-                    ErrorExit("%s: -D needs an argument",ARGV0);
-                dir=optarg;
+                if(!optarg) {
+                    ErrorExit("%s: -D needs an argument", ARGV0);
+                }
+                dir = optarg;
                 break;
             case 'c':
-                if(!optarg)
-                    ErrorExit("%s: -c needs an argument",ARGV0);
+                if(!optarg) {
+                    ErrorExit("%s: -c needs an argument", ARGV0);
+                }
                 cfg = optarg;
                 break;
             case 't':
@@ -111,8 +115,7 @@ int main(int argc, char **argv)
     /* Check if the user/group given are valid */
     uid = Privsep_GetUser(user);
     gid = Privsep_GetGroup(group);
-    if(uid == (uid_t)-1 || gid == (gid_t)-1)
-    {
+    if(uid == (uid_t) - 1 || gid == (gid_t) - 1) {
         ErrorExit(USER_ERROR, ARGV0, user, group);
     }
 
@@ -123,28 +126,26 @@ int main(int argc, char **argv)
 
     /* Getting servers hostname */
     memset(__shost, '\0', 512);
-    if(gethostname(__shost, 512 -1) != 0)
-    {
+    if(gethostname(__shost, 512 - 1) != 0) {
         ErrorExit("%s: ERROR: gethostname() failed", ARGV0);
-    }
-    else
-    {
+    } else {
         char *ltmp;
 
         /* Remove domain part if available */
         ltmp = strchr(__shost, '.');
-        if(ltmp)
+        if(ltmp) {
             *ltmp = '\0';
+        }
     }
 
 
     /* Exit here if test config is set */
-    if(test_config)
+    if(test_config) {
         exit(0);
+    }
 
 
-    if (!run_foreground)
-    {
+    if (!run_foreground) {
         /* Going on daemon mode */
         nowDaemon();
         goDaemon();
@@ -153,8 +154,7 @@ int main(int argc, char **argv)
 
 
     /* Not configured */
-    if(!syslog_config || !syslog_config[0])
-    {
+    if(!syslog_config || !syslog_config[0]) {
         verbose("%s: INFO: Remote syslog server not configured. "
                 "Clean exit.", ARGV0);
         exit(0);
@@ -163,13 +163,15 @@ int main(int argc, char **argv)
 
 
     /* Privilege separation */
-    if(Privsep_SetGroup(gid) < 0)
-        ErrorExit(SETGID_ERROR,ARGV0,group, errno, strerror(errno));
+    if(Privsep_SetGroup(gid) < 0) {
+        ErrorExit(SETGID_ERROR, ARGV0, group, errno, strerror(errno));
+    }
 
 
     /* chrooting */
-    if(Privsep_Chroot(dir) < 0)
-        ErrorExit(CHROOT_ERROR,ARGV0,dir, errno, strerror(errno));
+    if(Privsep_Chroot(dir) < 0) {
+        ErrorExit(CHROOT_ERROR, ARGV0, dir, errno, strerror(errno));
+    }
 
 
     /* Now on chroot */
@@ -178,12 +180,13 @@ int main(int argc, char **argv)
 
 
     /* Changing user */
-    if(Privsep_SetUser(uid) < 0)
-        ErrorExit(SETUID_ERROR,ARGV0,user, errno, strerror(errno));
+    if(Privsep_SetUser(uid) < 0) {
+        ErrorExit(SETUID_ERROR, ARGV0, user, errno, strerror(errno));
+    }
 
 
     /* Basic start up completed. */
-    debug1(PRIVSEP_MSG,ARGV0,dir,user);
+    debug1(PRIVSEP_MSG, ARGV0, dir, user);
 
 
     /* Signal manipulation */
@@ -191,8 +194,9 @@ int main(int argc, char **argv)
 
 
     /* Creating PID files */
-    if(CreatePID(ARGV0, getpid()) < 0)
+    if(CreatePID(ARGV0, getpid()) < 0) {
         ErrorExit(PID_ERROR, ARGV0);
+    }
 
 
     /* Start up message */

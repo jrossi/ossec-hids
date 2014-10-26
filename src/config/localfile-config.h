@@ -26,8 +26,7 @@
 
 
 /* Logreader config */
-typedef struct _logreader
-{
+typedef struct _logreader {
     off_t size;
     int ign;
 
@@ -55,13 +54,12 @@ typedef struct _logreader
     void *(*read)(int i, int *rc, int drop_it);
 
     FILE *fp;
-}logreader;
+} logreader;
 
-typedef struct _logreader_config
-{
+typedef struct _logreader_config {
     int agent_cfg;
     int accept_remote;
     logreader *config;
-}logreader_config;
+} logreader_config;
 
 #endif

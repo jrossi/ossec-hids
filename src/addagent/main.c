@@ -20,9 +20,10 @@ static void print_banner(void);
 static void manage_shutdown(int sig) __attribute__((noreturn));
 
 #if defined(__MINGW32__)
-static int setenv(const char * name, const char * val, int overwrite) {
+static int setenv(const char *name, const char *val, int overwrite)
+{
     int len = strlen(name) + strlen(val) + 2;
-    char * str = (char *)malloc(len);
+    char *str = (char *)malloc(len);
     snprintf(str, len, "%s=%s", name, val);
     putenv(str);
     return 0;
@@ -66,12 +67,9 @@ static void print_banner()
 static void manage_shutdown(__attribute__((unused)) int sig)
 {
     /* Checking if restart message is necessary */
-    if(restart_necessary)
-    {
+    if(restart_necessary) {
         printf(MUST_RESTART);
-    }
-    else
-    {
+    } else {
         printf("\n");
     }
     printf(EXIT);
@@ -106,8 +104,8 @@ int main(int argc, char **argv)
     OS_SetName(ARGV0);
 
 
-    while((c = getopt(argc, argv, "Vhle:r:i:f:")) != -1){
-        switch(c){
+    while((c = getopt(argc, argv, "Vhle:r:i:f:")) != -1) {
+        switch(c) {
             case 'V':
                 print_version();
                 break;
@@ -118,16 +116,18 @@ int main(int argc, char **argv)
                 #ifdef CLIENT
                 ErrorExit("%s: Key export only available on a master.", ARGV0);
                 #endif
-                if(!optarg)
+                if(!optarg) {
                     ErrorExit("%s: -e needs an argument.", ARGV0);
+                }
                 cmdexport = optarg;
                 break;
             case 'r':
                 #ifdef CLIENT
                 ErrorExit("%s: Key removal only available on a master.", ARGV0);
                 #endif
-                if(!optarg)
+                if(!optarg) {
                     ErrorExit("%s: -r needs an argument.", ARGV0);
+                }
 
                 /* Use environment variables already available to remove_agent() */
                 setenv("OSSEC_ACTION", "r", 1);
@@ -138,16 +138,18 @@ int main(int argc, char **argv)
                 #ifndef CLIENT
                 ErrorExit("%s: Key import only available on an agent.", ARGV0);
                 #endif
-                if(!optarg)
+                if(!optarg) {
                     ErrorExit("%s: -i needs an argument.", ARGV0);
+                }
                 cmdimport = optarg;
                 break;
             case 'f':
                 #ifdef CLIENT
                 ErrorExit("%s: Bulk generate keys only available on a master.", ARGV0);
                 #endif
-                if(!optarg)
+                if(!optarg) {
                     ErrorExit("%s: -f needs an argument.", ARGV0);
+                }
                 cmdbulk = optarg;
                 printf("Bulk load file: %s\n", cmdbulk);
                 break;
@@ -171,22 +173,19 @@ int main(int argc, char **argv)
     #ifndef WIN32
     /* Getting the group name */
     gid = Privsep_GetGroup(group);
-    if(gid == (gid_t)-1)
-    {
+    if(gid == (gid_t) - 1) {
         ErrorExit(USER_ERROR, ARGV0, "", group);
     }
 
 
     /* Setting the group */
-    if(Privsep_SetGroup(gid) < 0)
-    {
+    if(Privsep_SetGroup(gid) < 0) {
         ErrorExit(SETGID_ERROR, ARGV0, group, errno, strerror(errno));
     }
 
 
     /* Chrooting to the default directory */
-    if(Privsep_Chroot(dir) < 0)
-    {
+    if(Privsep_Chroot(dir) < 0) {
         ErrorExit(CHROOT_ERROR, ARGV0, dir, errno, strerror(errno));
     }
 
@@ -206,8 +205,7 @@ int main(int argc, char **argv)
     ret = GetModuleFileName(NULL, path, sizeof(path));
 
     /* check for errors */
-    if(!ret)
-    {
+    if(!ret) {
         ErrorExit(GMF_ERROR);
     }
 
@@ -215,14 +213,10 @@ int main(int argc, char **argv)
     last_error = GetLastError();
 
     /* Look for errors */
-    if(last_error != ERROR_SUCCESS)
-    {
-        if(last_error == ERROR_INSUFFICIENT_BUFFER)
-        {
+    if(last_error != ERROR_SUCCESS) {
+        if(last_error == ERROR_INSUFFICIENT_BUFFER) {
             ErrorExit(GMF_BUFF_ERROR, ret, sizeof(path));
-        }
-        else
-        {
+        } else {
             ErrorExit(GMF_UNKN_ERROR, last_error);
         }
     }
@@ -231,41 +225,30 @@ int main(int argc, char **argv)
     PathRemoveFileSpec(path);
 
     /* Move to correct directory */
-    if(chdir(path))
-    {
+    if(chdir(path)) {
         ErrorExit(CHDIR_ERROR_2, path, errno, strerror(errno));
     }
 
     /* Check permissions */
     fp = fopen(OSSECCONF, "r");
-    if(fp)
-    {
+    if(fp) {
         fclose(fp);
-    }
-    else
-    {
+    } else {
         ErrorExit(CONF_ERROR, OSSECCONF);
     }
 
     #endif
 
-    if(cmdlist == 1)
-    {
+    if(cmdlist == 1) {
         list_agents(cmdlist);
         exit(0);
-    }
-    else if(cmdimport)
-    {
+    } else if(cmdimport) {
         k_import(cmdimport);
         exit(0);
-    }
-    else if(cmdexport)
-    {
+    } else if(cmdexport) {
         k_extract(cmdexport);
         exit(0);
-    }
-    else if(cmdbulk)
-    {
+    } else if(cmdbulk) {
         k_bulkload(cmdbulk);
         exit(0);
     }
@@ -273,8 +256,7 @@ int main(int argc, char **argv)
 
 
     /* Little shell */
-    while(1)
-    {
+    while(1) {
         int leave_s = 0;
         print_banner();
 
@@ -282,15 +264,13 @@ int main(int argc, char **argv)
          * we must set leave_s = 1 to ensure that the loop will end */
         user_msg = getenv("OSSEC_ACTION");
         if (user_msg == NULL) {
-          user_msg = read_from_user();
-        }
-        else{
-          leave_s = 1;
+            user_msg = read_from_user();
+        } else {
+            leave_s = 1;
         }
 
         /* All the allowed actions */
-        switch(user_msg[0])
-        {
+        switch(user_msg[0]) {
             case 'A':
             case 'a':
                 add_agent();
@@ -315,16 +295,15 @@ int main(int argc, char **argv)
             case 'Q':
                 leave_s = 1;
                 break;
-	        case 'V':
-		        print_version();
-		        break;
+            case 'V':
+                print_version();
+                break;
             default:
                 printf("\n ** Invalid Action ** \n\n");
                 break;
         }
 
-        if(leave_s)
-        {
+        if(leave_s) {
             break;
         }
 
@@ -333,12 +312,9 @@ int main(int argc, char **argv)
     }
 
     /* Checking if restart message is necessary */
-    if(restart_necessary)
-    {
+    if(restart_necessary) {
         printf(MUST_RESTART);
-    }
-    else
-    {
+    } else {
         printf("\n");
     }
     printf(EXIT);

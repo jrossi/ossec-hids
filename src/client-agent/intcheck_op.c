@@ -30,7 +30,7 @@ int intcheck_file(const char *file_name, const char *dir)
     os_md5 mf_sum;
     os_sha1 sf_sum;
 
-    char newsum[912 +1];
+    char newsum[912 + 1];
 
     newsum[0] = '\0';
     newsum[912] = '\0';
@@ -43,8 +43,8 @@ int intcheck_file(const char *file_name, const char *dir)
     if(lstat(file_name, &statbuf) < 0)
     #endif
     {
-        snprintf(newsum, 911,"%c:%s:-1 %s%s", SYSCHECK_MQ, SYSCHECK,
-                                              dir, file_name);
+        snprintf(newsum, 911, "%c:%s:-1 %s%s", SYSCHECK_MQ, SYSCHECK,
+                 dir, file_name);
         send_msg(0, newsum);
 
         return(1);
@@ -59,27 +59,25 @@ int intcheck_file(const char *file_name, const char *dir)
     #endif
     {
         /* generating md5 of the file */
-        if(OS_SHA1_File(file_name, sf_sum) < 0)
-        {
+        if(OS_SHA1_File(file_name, sf_sum) < 0) {
             strncpy(sf_sum, "xxx", 4);
         }
 
         /* generating md5 of the file */
-        if(OS_MD5_File(file_name, mf_sum) < 0)
-        {
+        if(OS_MD5_File(file_name, mf_sum) < 0) {
             strncpy(mf_sum, "xxx", 4);
         }
     }
 
 
-    snprintf(newsum,911,"%c:%s:%d:%d:%d:%d:%s:%s %s%s",
-            SYSCHECK_MQ, SYSCHECK,
-            (int)statbuf.st_size,
-            (int)statbuf.st_mode,
-            (int)statbuf.st_uid,
-            (int)statbuf.st_gid,
-            mf_sum,
-            sf_sum, dir, file_name);
+    snprintf(newsum, 911, "%c:%s:%d:%d:%d:%d:%s:%s %s%s",
+             SYSCHECK_MQ, SYSCHECK,
+             (int)statbuf.st_size,
+             (int)statbuf.st_mode,
+             (int)statbuf.st_uid,
+             (int)statbuf.st_gid,
+             mf_sum,
+             sf_sum, dir, file_name);
 
 
     send_msg(0, newsum);

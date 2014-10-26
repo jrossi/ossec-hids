@@ -17,8 +17,7 @@
 
 
 /* Mail config structure */
-typedef struct _MailConfig
-{
+typedef struct _MailConfig {
     int mn;
     int maxperhour;
     int strict_checking;
@@ -38,14 +37,14 @@ typedef struct _MailConfig
     int *gran_format;
     char **gran_to;
 
-#ifdef GEOIP
+    #ifdef GEOIP
     /* Use GeoIP */
     int geoip;
-#endif
+    #endif
 
     OSMatch **gran_location;
     OSMatch **gran_group;
-}MailConfig;
+} MailConfig;
 
 
 /** Email message formats **/

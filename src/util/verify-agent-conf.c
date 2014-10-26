@@ -41,8 +41,8 @@ static void helpmsg()
 /* main: v0.3: 2005/04/04 */
 int main(int argc, char **argv)
 {
-    const char* ar=AGENTCONFIG;
-    int c=0;
+    const char *ar = AGENTCONFIG;
+    int c = 0;
     int modules = 0;
     logreader_config log_config;
 
@@ -54,11 +54,9 @@ int main(int argc, char **argv)
     /* printf ("Agrc [%d], Argv [%s]\n", argc, *argv); */
 
     /* user arguments */
-    if(argc > 1)
-    {
-        while((c = getopt(argc, argv, "Vdhf:")) != -1)
-        {
-            switch(c){
+    if(argc > 1) {
+        while((c = getopt(argc, argv, "Vdhf:")) != -1) {
+            switch(c) {
                 case 'V':
                     print_version();
                     break;
@@ -69,9 +67,8 @@ int main(int argc, char **argv)
                     nowDebug();
                     break;
                 case 'f':
-                    if(!optarg)
-                    {
-                        merror("%s: -f needs an argument",ARGV0);
+                    if(!optarg) {
+                        merror("%s: -f needs an argument", ARGV0);
                         helpmsg();
                     }
                     ar = optarg;
@@ -88,11 +85,10 @@ int main(int argc, char **argv)
 
     printf("\n%s: Verifying [%s].\n\n", ARGV0, ar);
 
-    modules|= CLOCALFILE;
-    modules|= CAGENT_CONFIG;
+    modules |= CLOCALFILE;
+    modules |= CAGENT_CONFIG;
     log_config.config = NULL;
-    if(ReadConfig(modules, ar, &log_config, NULL) < 0)
-    {
+    if(ReadConfig(modules, ar, &log_config, NULL) < 0) {
         return(OS_INVALID);
     }
 

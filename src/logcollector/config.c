@@ -24,23 +24,24 @@
  * Read the config file (the localfiles)
  * v0.3: Changed for the new OS_XML
  */
-int LogCollectorConfig(const char * cfgfile, int accept_remote)
+int LogCollectorConfig(const char *cfgfile, int accept_remote)
 {
     int modules = 0;
 
     logreader_config log_config;
 
-    modules|= CLOCALFILE;
+    modules |= CLOCALFILE;
 
     log_config.config = NULL;
     log_config.agent_cfg = 0;
     log_config.accept_remote = accept_remote;
 
-    if(ReadConfig(modules, cfgfile, &log_config, NULL) < 0)
+    if(ReadConfig(modules, cfgfile, &log_config, NULL) < 0) {
         return(OS_INVALID);
+    }
 
     #ifdef CLIENT
-    modules|= CAGENT_CONFIG;
+    modules |= CAGENT_CONFIG;
     log_config.agent_cfg = 1;
     ReadConfig(modules, AGENTCONFIG, &log_config, NULL);
     log_config.agent_cfg = 0;

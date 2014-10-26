@@ -31,13 +31,12 @@ SyslogConfig **OS_ReadSyslogConf(__attribute__((unused)) int test_config, const 
 
 
     /* Modules for the configuration */
-    modules|= CSYSLOGD;
+    modules |= CSYSLOGD;
     config.data = syslog_config;
 
 
     /* Reading configuration */
-    if(ReadConfig(modules, cfgfile, &config, NULL) < 0)
-    {
+    if(ReadConfig(modules, cfgfile, &config, NULL) < 0) {
         ErrorExit(CONFIG_ERROR, ARGV0, cfgfile);
         return(NULL);
     }

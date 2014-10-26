@@ -56,8 +56,8 @@ int main(int argc, char **argv)
     OS_SetName(ARGV0);
 
 
-    while((c = getopt(argc, argv, "Vdhtfu:g:D:c:")) != -1){
-        switch(c){
+    while((c = getopt(argc, argv, "Vdhtfu:g:D:c:")) != -1) {
+        switch(c) {
             case 'V':
                 print_version();
                 break;
@@ -71,23 +71,27 @@ int main(int argc, char **argv)
                 run_foreground = 1;
                 break;
             case 'u':
-                if(!optarg)
-                    ErrorExit("%s: -u needs an argument",ARGV0);
-                user=optarg;
+                if(!optarg) {
+                    ErrorExit("%s: -u needs an argument", ARGV0);
+                }
+                user = optarg;
                 break;
             case 'g':
-                if(!optarg)
-                    ErrorExit("%s: -g needs an argument",ARGV0);
-                group=optarg;
+                if(!optarg) {
+                    ErrorExit("%s: -g needs an argument", ARGV0);
+                }
+                group = optarg;
                 break;
             case 'D':
-                if(!optarg)
-                    ErrorExit("%s: -D needs an argument",ARGV0);
-                dir=optarg;
+                if(!optarg) {
+                    ErrorExit("%s: -D needs an argument", ARGV0);
+                }
+                dir = optarg;
                 break;
             case 'c':
-                if(!optarg)
-                    ErrorExit("%s: -c needs an argument",ARGV0);
+                if(!optarg) {
+                    ErrorExit("%s: -c needs an argument", ARGV0);
+                }
                 cfg = optarg;
                 break;
             case 't':
@@ -101,25 +105,26 @@ int main(int argc, char **argv)
     }
 
     /* Starting daemon */
-    debug1(STARTED_MSG,ARGV0);
+    debug1(STARTED_MSG, ARGV0);
 
     /*Check if the user/group given are valid */
     uid = Privsep_GetUser(user);
     gid = Privsep_GetGroup(group);
-    if(uid == (uid_t)-1 || gid == (gid_t)-1)
-        ErrorExit(USER_ERROR,ARGV0,user,group);
+    if(uid == (uid_t) - 1 || gid == (gid_t) - 1) {
+        ErrorExit(USER_ERROR, ARGV0, user, group);
+    }
 
 
     /* Getting config options */
     mond.day_wait = (unsigned short) getDefine_Int("monitord",
-                                  "day_wait",
-                                  5,240);
+                    "day_wait",
+                    5, 240);
     mond.compress = (short) getDefine_Int("monitord",
-                                  "compress",
-                                  0,1);
-    mond.sign = (short) getDefine_Int("monitord","sign",0,1);
+                                          "compress",
+                                          0, 1);
+    mond.sign = (short) getDefine_Int("monitord", "sign", 0, 1);
 
-    mond.monitor_agents = (short) getDefine_Int("monitord","monitor_agents",0,1);
+    mond.monitor_agents = (short) getDefine_Int("monitord", "monitor_agents", 0, 1);
 
     mond.agents = NULL;
     mond.smtpserver = NULL;
@@ -128,46 +133,45 @@ int main(int argc, char **argv)
 
 
     c = 0;
-    c|= CREPORTS;
-    if(ReadConfig(c, cfg, &mond, NULL) < 0)
-    {
+    c |= CREPORTS;
+    if(ReadConfig(c, cfg, &mond, NULL) < 0) {
         ErrorExit(CONFIG_ERROR, ARGV0, cfg);
     }
 
     /* If we have any reports configured, read smtp/emailfrom */
-    if(mond.reports)
-    {
+    if(mond.reports) {
         OS_XML xml;
         char *tmpsmtp;
 
-        const char *(xml_smtp[])={"ossec_config", "global", "smtp_server", NULL};
-        const char *(xml_from[])={"ossec_config", "global", "email_from", NULL};
-        const char *(xml_idsname[])={"ossec_config", "global", "email_idsname", NULL};
+        const char *(xml_smtp[]) = {"ossec_config", "global", "smtp_server", NULL};
+        const char *(xml_from[]) = {"ossec_config", "global", "email_from", NULL};
+        const char *(xml_idsname[]) = {"ossec_config", "global", "email_idsname", NULL};
 
-        if(OS_ReadXML(cfg, &xml) < 0)
-        {
+        if(OS_ReadXML(cfg, &xml) < 0) {
             ErrorExit(CONFIG_ERROR, ARGV0, cfg);
         }
 
-        tmpsmtp = OS_GetOneContentforElement(&xml,xml_smtp);
-        mond.emailfrom = OS_GetOneContentforElement(&xml,xml_from);
-        mond.emailidsname = OS_GetOneContentforElement(&xml,xml_idsname);
+        tmpsmtp = OS_GetOneContentforElement(&xml, xml_smtp);
+        mond.emailfrom = OS_GetOneContentforElement(&xml, xml_from);
+        mond.emailidsname = OS_GetOneContentforElement(&xml, xml_idsname);
 
-        if(tmpsmtp && mond.emailfrom)
-        {
+        if(tmpsmtp && mond.emailfrom) {
             mond.smtpserver = OS_GetHost(tmpsmtp, 5);
-            if(!mond.smtpserver)
-            {
+            if(!mond.smtpserver) {
                 merror(INVALID_SMTP, ARGV0, tmpsmtp);
-                if(mond.emailfrom) free(mond.emailfrom);
+                if(mond.emailfrom) {
+                    free(mond.emailfrom);
+                }
                 mond.emailfrom = NULL;
                 merror("%s: Invalid SMTP server.  Disabling email reports.", ARGV0);
             }
-        }
-        else
-        {
-            if(tmpsmtp) free(tmpsmtp);
-            if(mond.emailfrom) free(mond.emailfrom);
+        } else {
+            if(tmpsmtp) {
+                free(tmpsmtp);
+            }
+            if(mond.emailfrom) {
+                free(mond.emailfrom);
+            }
 
             mond.emailfrom = NULL;
 
@@ -179,12 +183,12 @@ int main(int argc, char **argv)
 
 
     /* Exit here if test config is set */
-    if(test_config)
+    if(test_config) {
         exit(0);
+    }
 
 
-    if (!run_foreground)
-    {
+    if (!run_foreground) {
         /* Going on daemon mode */
         nowDaemon();
         goDaemon();
@@ -192,24 +196,27 @@ int main(int argc, char **argv)
 
 
     /* Privilege separation */
-    if(Privsep_SetGroup(gid) < 0)
-        ErrorExit(SETGID_ERROR,ARGV0,group, errno, strerror(errno));
+    if(Privsep_SetGroup(gid) < 0) {
+        ErrorExit(SETGID_ERROR, ARGV0, group, errno, strerror(errno));
+    }
 
 
     /* chrooting */
-    if(Privsep_Chroot(dir) < 0)
-        ErrorExit(CHROOT_ERROR,ARGV0,dir, errno, strerror(errno));
+    if(Privsep_Chroot(dir) < 0) {
+        ErrorExit(CHROOT_ERROR, ARGV0, dir, errno, strerror(errno));
+    }
 
     nowChroot();
 
 
 
     /* Changing user */
-    if(Privsep_SetUser(uid) < 0)
-        ErrorExit(SETUID_ERROR,ARGV0,user, errno, strerror(errno));
+    if(Privsep_SetUser(uid) < 0) {
+        ErrorExit(SETUID_ERROR, ARGV0, user, errno, strerror(errno));
+    }
 
 
-    debug1(PRIVSEP_MSG,ARGV0,dir,user);
+    debug1(PRIVSEP_MSG, ARGV0, dir, user);
 
 
 
@@ -219,8 +226,9 @@ int main(int argc, char **argv)
 
 
     /* Creating PID files */
-    if(CreatePID(ARGV0, getpid()) < 0)
-        ErrorExit(PID_ERROR,ARGV0);
+    if(CreatePID(ARGV0, getpid()) < 0) {
+        ErrorExit(PID_ERROR, ARGV0);
+    }
 
 
     /* Start up message */

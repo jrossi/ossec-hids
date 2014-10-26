@@ -30,8 +30,7 @@
 
 
 
-typedef struct _report_filter
-{
+typedef struct _report_filter {
     const char *report_name;
 
     const char *group;
@@ -63,7 +62,7 @@ typedef struct _report_filter
     int show_alerts;
     FILE *fp;
 
-}report_filter;
+} report_filter;
 
 
 

@@ -143,7 +143,7 @@ void check_open_ports(void);
 
 void check_rc_if(void);
 
-int Read_Rootcheck_Config(const char * cfgfile);
+int Read_Rootcheck_Config(const char *cfgfile);
 
 
 /* Global vars */
@@ -153,16 +153,15 @@ extern int rk_sys_count;
 
 
 /* All the ports */
-extern char total_ports_udp[65535 +1];
-extern char total_ports_tcp[65535 +1];
+extern char total_ports_udp[65535 + 1];
+extern char total_ports_tcp[65535 + 1];
 
 
 /* Process struct */
-typedef struct _Proc_Info
-{
+typedef struct _Proc_Info {
     char *p_name;
     char *p_path;
-}Proc_Info;
+} Proc_Info;
 
 
 #endif

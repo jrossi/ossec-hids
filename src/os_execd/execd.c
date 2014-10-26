@@ -18,7 +18,7 @@
 #include "os_net/os_net.h"
 
 #include "execd.h"
-int repeated_offenders_timeout[] = {0,0,0,0,0,0,0};
+int repeated_offenders_timeout[] = {0, 0, 0, 0, 0, 0, 0};
 
 
 #ifndef WIN32
@@ -63,8 +63,7 @@ static void execd_shutdown(int sig)
     merror(EXEC_SHUTDOWN, ARGV0);
 
     timeout_node = OSList_GetFirstNode(timeout_list);
-    while(timeout_node)
-    {
+    while(timeout_node) {
         timeout_data *list_entry;
 
         list_entry = (timeout_data *)timeout_node->data;
@@ -88,7 +87,7 @@ static void execd_shutdown(int sig)
 int main(int argc, char **argv)
 {
     int c;
-    int test_config = 0,run_foreground = 0;
+    int test_config = 0, run_foreground = 0;
     gid_t gid;
     int m_queue = 0;
 
@@ -100,8 +99,8 @@ int main(int argc, char **argv)
     OS_SetName(ARGV0);
 
 
-    while((c = getopt(argc, argv, "Vtdhfg:c:")) != -1){
-        switch(c){
+    while((c = getopt(argc, argv, "Vtdhfg:c:")) != -1) {
+        switch(c) {
             case 'V':
                 print_version();
                 break;
@@ -115,13 +114,15 @@ int main(int argc, char **argv)
                 run_foreground = 1;
                 break;
             case 'g':
-                if(!optarg)
-                    ErrorExit("%s: -g needs an argument.",ARGV0);
+                if(!optarg) {
+                    ErrorExit("%s: -g needs an argument.", ARGV0);
+                }
                 group = optarg;
                 break;
             case 'c':
-                if(!optarg)
-                    ErrorExit("%s: -c needs an argument.",ARGV0);
+                if(!optarg) {
+                    ErrorExit("%s: -c needs an argument.", ARGV0);
+                }
                 cfg = optarg;
                 break;
             case 't':
@@ -138,33 +139,34 @@ int main(int argc, char **argv)
 
     /* Check if the group given are valid */
     gid = Privsep_GetGroup(group);
-    if(gid == (gid_t)-1)
-        ErrorExit(USER_ERROR,ARGV0,"",group);
+    if(gid == (gid_t) - 1) {
+        ErrorExit(USER_ERROR, ARGV0, "", group);
+    }
 
 
     /* Privilege separation */
-    if(Privsep_SetGroup(gid) < 0)
-        ErrorExit(SETGID_ERROR,ARGV0,group, errno, strerror(errno));
+    if(Privsep_SetGroup(gid) < 0) {
+        ErrorExit(SETGID_ERROR, ARGV0, group, errno, strerror(errno));
+    }
 
 
     /* Reading config */
-    if((c = ExecdConfig(cfg)) < 0)
-    {
+    if((c = ExecdConfig(cfg)) < 0) {
         ErrorExit(CONFIG_ERROR, ARGV0, cfg);
     }
 
 
     /* Exit if test_config */
-    if(test_config)
+    if(test_config) {
         exit(0);
+    }
 
 
     /* Signal manipulation */
     StartSIG2(ARGV0, execd_shutdown);
 
 
-    if (!run_foreground)
-    {
+    if (!run_foreground) {
         /* Going daemon */
         nowDaemon();
         goDaemon();
@@ -172,20 +174,21 @@ int main(int argc, char **argv)
 
 
     /* Active response disabled */
-    if(c == 1)
-    {
+    if(c == 1) {
         verbose(EXEC_DISABLED, ARGV0);
         exit(0);
     }
 
     /* Creating the PID file */
-    if(CreatePID(ARGV0, getpid()) < 0)
+    if(CreatePID(ARGV0, getpid()) < 0) {
         merror(PID_ERROR, ARGV0);
+    }
 
 
     /* Starting queue (exec queue) */
-    if((m_queue = StartMQ(EXECQUEUEPATH,READ)) < 0)
+    if((m_queue = StartMQ(EXECQUEUEPATH, READ)) < 0) {
         ErrorExit(QUEUE_ERROR, ARGV0, EXECQUEUEPATH, strerror(errno));
+    }
 
 
     /* Start up message */
@@ -211,18 +214,15 @@ void FreeTimeoutEntry(timeout_data *timeout_entry)
 {
     char **tmp_str;
 
-    if(!timeout_entry)
-    {
+    if(!timeout_entry) {
         return;
     }
 
     tmp_str = timeout_entry->command;
 
     /* Clearing the command arguments */
-    if(tmp_str)
-    {
-        while(*tmp_str)
-        {
+    if(tmp_str) {
+        while(*tmp_str) {
             os_free(*tmp_str);
             *tmp_str = NULL;
             tmp_str++;
@@ -250,7 +250,7 @@ static void ExecdStart(int q)
     char *tmp_msg = NULL;
     char *name;
     char *command;
-    char *cmd_args[MAX_ARGS +2];
+    char *cmd_args[MAX_ARGS + 2];
 
 
     /* Select */
@@ -259,38 +259,32 @@ static void ExecdStart(int q)
 
 
     /* Clearing the buffer */
-    memset(buffer, '\0', OS_MAXSTR +1);
+    memset(buffer, '\0', OS_MAXSTR + 1);
 
 
     /* Initializing the cmd arguments */
-    for(i = 0; i<= MAX_ARGS +1; i++)
-    {
+    for(i = 0; i <= MAX_ARGS + 1; i++) {
         cmd_args[i] = NULL;
     }
 
 
     /* Creating list for timeout */
     timeout_list = OSList_Create();
-    if(!timeout_list)
-    {
+    if(!timeout_list) {
         ErrorExit(LIST_ERROR, ARGV0);
     }
 
 
-    if(repeated_offenders_timeout[0] != 0)
-    {
+    if(repeated_offenders_timeout[0] != 0) {
         repeated_hash = OSHash_Create();
-    }
-    else
-    {
+    } else {
         repeated_hash = NULL;
     }
 
 
 
     /* Main loop. */
-    while(1)
-    {
+    while(1) {
         int timeout_value;
         int added_before = 0;
 
@@ -299,24 +293,20 @@ static void ExecdStart(int q)
 
 
         /* Cleaning up any child. */
-        while (childcount)
-        {
+        while (childcount) {
             int wp;
-            wp = waitpid((pid_t) -1, NULL, WNOHANG);
-            if (wp < 0)
-            {
+            wp = waitpid((pid_t) - 1, NULL, WNOHANG);
+            if (wp < 0) {
                 merror(WAITPID_ERROR, ARGV0, errno, strerror(errno));
                 break;
             }
 
             /* if = 0, we still need to wait for the child process */
-            else if (wp == 0)
-            {
+            else if (wp == 0) {
                 break;
             }
             /* Child completed if wp > 0 */
-            else
-            {
+            else {
                 childcount--;
             }
         }
@@ -328,16 +318,14 @@ static void ExecdStart(int q)
 
         /* Checking if there is any timeouted command to execute. */
         timeout_node = OSList_GetFirstNode(timeout_list);
-        while(timeout_node)
-        {
+        while(timeout_node) {
             timeout_data *list_entry;
 
             list_entry = (timeout_data *)timeout_node->data;
 
             /* Timeouted */
             if((curr_time - list_entry->time_of_addition) >
-                    list_entry->time_to_block)
-            {
+                    list_entry->time_to_block) {
                 ExecCmd(list_entry->command);
 
                 /* Deletecurrently node already sets the pointer to next */
@@ -350,8 +338,7 @@ static void ExecdStart(int q)
                 childcount++;
             }
 
-            else
-            {
+            else {
                 timeout_node = OSList_GetNextNode(timeout_list);
             }
         }
@@ -359,7 +346,7 @@ static void ExecdStart(int q)
 
         /* Setting timeout to EXECD_TIMEOUT */
         socket_timeout.tv_sec = EXECD_TIMEOUT;
-        socket_timeout.tv_usec= 0;
+        socket_timeout.tv_usec = 0;
 
 
 
@@ -368,24 +355,21 @@ static void ExecdStart(int q)
         FD_SET(q, &fdset);
 
         /* Adding timeout */
-        if(select(q+1, &fdset, NULL, NULL, &socket_timeout) == 0)
-        {
+        if(select(q + 1, &fdset, NULL, NULL, &socket_timeout) == 0) {
             /* Timeout .. */
             continue;
         }
 
 
         /* Checking for error */
-        if(!FD_ISSET(q, &fdset))
-        {
+        if(!FD_ISSET(q, &fdset)) {
             merror(SELECT_ERROR, ARGV0, errno, strerror(errno));
             continue;
         }
 
 
         /* Receiving the message */
-        if(OS_RecvUnix(q, OS_MAXSTR, buffer) == 0)
-        {
+        if(OS_RecvUnix(q, OS_MAXSTR, buffer) == 0) {
             merror(QUEUE_ERROR, ARGV0, EXECQUEUEPATH, strerror(errno));
             continue;
         }
@@ -401,8 +385,7 @@ static void ExecdStart(int q)
 
         /* Zeroing the name */
         tmp_msg = strchr(buffer, ' ');
-        if(!tmp_msg)
-        {
+        if(!tmp_msg) {
             merror(EXECD_INV_MSG, ARGV0, buffer);
             continue;
         }
@@ -412,12 +395,10 @@ static void ExecdStart(int q)
 
         /* Getting the command to execute (valid name) */
         command = GetCommandbyName(name, &timeout_value);
-        if(!command)
-        {
+        if(!command) {
             ReadExecConfig();
             command = GetCommandbyName(name, &timeout_value);
-            if(!command)
-            {
+            if(!command) {
                 merror(EXEC_INV_NAME, ARGV0, name);
                 continue;
             }
@@ -425,12 +406,13 @@ static void ExecdStart(int q)
 
 
         /* Command not present. */
-        if(command[0] == '\0')
+        if(command[0] == '\0') {
             continue;
+        }
 
 
         /* Allocating memory for the timeout argument */
-        os_calloc(MAX_ARGS+2, sizeof(char *), timeout_args);
+        os_calloc(MAX_ARGS + 2, sizeof(char *), timeout_args);
 
 
         /* Adding initial variables to the cmd_arg and to the timeout cmd */
@@ -445,23 +427,21 @@ static void ExecdStart(int q)
 
         /* Getting the arguments. */
         i = 2;
-        while(i < (MAX_ARGS -1))
-        {
+        while(i < (MAX_ARGS - 1)) {
             cmd_args[i] = tmp_msg;
-            cmd_args[i+1] = NULL;
+            cmd_args[i + 1] = NULL;
 
             tmp_msg = strchr(tmp_msg, ' ');
-            if(!tmp_msg)
-            {
+            if(!tmp_msg) {
                 timeout_args[i] = strdup(cmd_args[i]);
-                timeout_args[i+1] = NULL;
+                timeout_args[i + 1] = NULL;
                 break;
             }
             *tmp_msg = '\0';
             tmp_msg++;
 
             timeout_args[i] = strdup(cmd_args[i]);
-            timeout_args[i+1] = NULL;
+            timeout_args[i + 1] = NULL;
 
             i++;
         }
@@ -473,22 +453,19 @@ static void ExecdStart(int q)
 
 
         /* Checking for the username and ip argument */
-        if(!timeout_args[2] || !timeout_args[3])
-        {
+        if(!timeout_args[2] || !timeout_args[3]) {
             added_before = 1;
             merror("%s: Invalid number of arguments.", ARGV0);
         }
 
 
 
-        while(timeout_node)
-        {
+        while(timeout_node) {
             timeout_data *list_entry;
 
             list_entry = (timeout_data *)timeout_node->data;
             if((strcmp(list_entry->command[3], timeout_args[3]) == 0) &&
-               (strcmp(list_entry->command[0], timeout_args[0]) == 0))
-            {
+                    (strcmp(list_entry->command[0], timeout_args[0]) == 0)) {
                 /* Means we executed this command before
                  * and we don't need to add it again.
                  */
@@ -499,37 +476,31 @@ static void ExecdStart(int q)
                 list_entry->time_of_addition = curr_time;
 
                 if(repeated_offenders_timeout[0] != 0 &&
-                   repeated_hash != NULL &&
-                   strncmp(timeout_args[3],"-", 1) != 0)
-                {
+                        repeated_hash != NULL &&
+                        strncmp(timeout_args[3], "-", 1) != 0) {
                     char *ntimes = NULL;
                     char rkey[256];
                     rkey[255] = '\0';
                     snprintf(rkey, 255, "%s%s", list_entry->command[0],
-                                                timeout_args[3]);
+                             timeout_args[3]);
 
-                    if((ntimes = (char *) OSHash_Get(repeated_hash, rkey)))
-                    {
+                    if((ntimes = (char *) OSHash_Get(repeated_hash, rkey))) {
                         int ntimes_int = 0;
                         int i2 = 0;
                         int new_timeout = 0;
                         ntimes_int = atoi(ntimes);
-                        while(repeated_offenders_timeout[i2] != 0)
-                        {
+                        while(repeated_offenders_timeout[i2] != 0) {
                             i2++;
                         }
-                        if(ntimes_int >= i2)
-                        {
-                            new_timeout = repeated_offenders_timeout[i2 - 1]*60;
-                        }
-                        else
-                        {
+                        if(ntimes_int >= i2) {
+                            new_timeout = repeated_offenders_timeout[i2 - 1] * 60;
+                        } else {
                             free(ntimes);       // In hash_op.c, data belongs to caller
                             os_calloc(10, sizeof(char), ntimes);
-                            new_timeout = repeated_offenders_timeout[ntimes_int]*60;
+                            new_timeout = repeated_offenders_timeout[ntimes_int] * 60;
                             ntimes_int++;
                             snprintf(ntimes, 9, "%d", ntimes_int);
-                            OSHash_Update(repeated_hash,rkey,ntimes);
+                            OSHash_Update(repeated_hash, rkey, ntimes);
                         }
                         list_entry->time_to_block = new_timeout;
                     }
@@ -543,53 +514,43 @@ static void ExecdStart(int q)
 
 
         /* If it wasn't added before, do it now */
-        if(!added_before)
-        {
+        if(!added_before) {
             /* executing command */
             ExecCmd(cmd_args);
 
             /* We don't need to add to the list if the timeout_value == 0 */
-            if(timeout_value)
-            {
+            if(timeout_value) {
                 char *ntimes;
                 char rkey[256];
                 rkey[255] = '\0';
                 snprintf(rkey, 255, "%s%s", timeout_args[0],
-                                            timeout_args[3]);
+                         timeout_args[3]);
 
-                if(repeated_hash != NULL)
-                {
-                  if((ntimes = (char *) OSHash_Get(repeated_hash, rkey)))
-                  {
-                    int ntimes_int = 0;
-                    int i2 = 0;
-                    int new_timeout = 0;
+                if(repeated_hash != NULL) {
+                    if((ntimes = (char *) OSHash_Get(repeated_hash, rkey))) {
+                        int ntimes_int = 0;
+                        int i2 = 0;
+                        int new_timeout = 0;
 
-                    ntimes_int = atoi(ntimes);
-                    while(repeated_offenders_timeout[i2] != 0)
-                    {
-                        i2++;
+                        ntimes_int = atoi(ntimes);
+                        while(repeated_offenders_timeout[i2] != 0) {
+                            i2++;
+                        }
+                        if(ntimes_int >= i2) {
+                            new_timeout = repeated_offenders_timeout[i2 - 1] * 60;
+                        } else {
+                            os_calloc(10, sizeof(char), ntimes);
+                            new_timeout = repeated_offenders_timeout[ntimes_int] * 60;
+                            ntimes_int++;
+                            snprintf(ntimes, 9, "%d", ntimes_int);
+                            OSHash_Update(repeated_hash, rkey, ntimes);
+                        }
+                        timeout_value = new_timeout;
+                    } else {
+                        /* Adding to the repeated offenders list. */
+                        OSHash_Add(repeated_hash,
+                                   rkey, strdup("0"));
                     }
-                    if(ntimes_int >= i2)
-                    {
-                        new_timeout = repeated_offenders_timeout[i2 - 1]*60;
-                    }
-                    else
-                    {
-                        os_calloc(10, sizeof(char), ntimes);
-                        new_timeout = repeated_offenders_timeout[ntimes_int]*60;
-                        ntimes_int++;
-                        snprintf(ntimes, 9, "%d", ntimes_int);
-                        OSHash_Update(repeated_hash, rkey, ntimes);
-                    }
-                    timeout_value = new_timeout;
-                  }
-                  else
-                  {
-                      /* Adding to the repeated offenders list. */
-                      OSHash_Add(repeated_hash,
-                           rkey, strdup("0"));
-                  }
                 }
 
 
@@ -601,19 +562,16 @@ static void ExecdStart(int q)
 
 
                 /* Adding command to the timeout list */
-                if(!OSList_AddData(timeout_list, timeout_entry))
-                {
+                if(!OSList_AddData(timeout_list, timeout_entry)) {
                     merror(LIST_ADD_ERROR, ARGV0);
                     FreeTimeoutEntry(timeout_entry);
                 }
             }
 
             /* If no timeout, we still need to free it in here */
-            else
-            {
+            else {
                 char **ss_ta = timeout_args;
-                while(*timeout_args)
-                {
+                while(*timeout_args) {
                     os_free(*timeout_args);
                     *timeout_args = NULL;
                     timeout_args++;
@@ -625,13 +583,11 @@ static void ExecdStart(int q)
         }
 
         /* We didn't add it to the timeout list */
-        else
-        {
+        else {
             char **ss_ta = timeout_args;
 
             /* Clear the timeout arguments */
-            while(*timeout_args)
-            {
+            while(*timeout_args) {
                 os_free(*timeout_args);
                 *timeout_args = NULL;
                 timeout_args++;
@@ -641,8 +597,7 @@ static void ExecdStart(int q)
         }
 
         /* Some cleanup */
-        while(i > 0)
-        {
+        while(i > 0) {
             cmd_args[i] = NULL;
             i--;
         }

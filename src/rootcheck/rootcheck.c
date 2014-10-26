@@ -27,8 +27,8 @@ rkconfig rootcheck;
 char **rk_sys_file;
 char **rk_sys_name;
 int rk_sys_count;
-char total_ports_udp[65535 +1];
-char total_ports_tcp[65535 +1];
+char total_ports_udp[65535 + 1];
+char total_ports_tcp[65535 + 1];
 
 #ifndef ARGV0
 #define ARGV0 "rootcheck"
@@ -118,8 +118,7 @@ int rootcheck_init(int test_config)
     /* We store up to 255 alerts in there. */
     os_calloc(256, sizeof(char *), rootcheck.alert_msg);
     c = 0;
-    while(c <= 255)
-    {
+    while(c <= 255) {
         rootcheck.alert_msg[c] = NULL;
         c++;
     }
@@ -128,10 +127,8 @@ int rootcheck_init(int test_config)
     #ifndef OSSECHIDS
     rootcheck.notify = SYSLOG;
     rootcheck.daemon = 0;
-    while((c = getopt(argc, argv, "VstrdhD:c:")) != -1)
-    {
-        switch(c)
-        {
+    while((c = getopt(argc, argv, "VstrdhD:c:")) != -1) {
+        switch(c) {
             case 'V':
                 print_version();
                 break;
@@ -142,13 +139,15 @@ int rootcheck_init(int test_config)
                 nowDebug();
                 break;
             case 'D':
-                if(!optarg)
-                    ErrorExit("%s: -D needs an argument",ARGV0);
+                if(!optarg) {
+                    ErrorExit("%s: -D needs an argument", ARGV0);
+                }
                 rootcheck.workdir = optarg;
                 break;
             case 'c':
-                if(!optarg)
-                    ErrorExit("%s: -c needs an argument",ARGV0);
+                if(!optarg) {
+                    ErrorExit("%s: -c needs an argument", ARGV0);
+                }
                 cfg = optarg;
                 break;
             case 's':
@@ -172,8 +171,7 @@ int rootcheck_init(int test_config)
     /* Starting Winsock */
     {
         WSADATA wsaData;
-        if (WSAStartup(MAKEWORD(2, 0), &wsaData) != 0)
-        {
+        if (WSAStartup(MAKEWORD(2, 0), &wsaData) != 0) {
             ErrorExit("%s: WSAStartup() failed", ARGV0);
         }
     }
@@ -184,40 +182,37 @@ int rootcheck_init(int test_config)
 
 
     /* Staring message */
-    debug1(STARTED_MSG,ARGV0);
+    debug1(STARTED_MSG, ARGV0);
 
 
     /* Checking if the configuration is present */
-    if(File_DateofChange(cfg) < 0)
-    {
-        merror("%s: Configuration file '%s' not found",ARGV0,cfg);
+    if(File_DateofChange(cfg) < 0) {
+        merror("%s: Configuration file '%s' not found", ARGV0, cfg);
         return(-1);
     }
 
 
     /* Reading configuration  --function specified twice (check makefile) */
-    if(Read_Rootcheck_Config(cfg) < 0)
-    {
+    if(Read_Rootcheck_Config(cfg) < 0) {
         ErrorExit(CONFIG_ERROR, ARGV0, cfg);
     }
 
 
     /* If testing config, exit here */
-    if(test_config)
+    if(test_config) {
         return(0);
+    }
 
 
     /* Return 1 disables rootcheck */
-    if(rootcheck.disabled == 1)
-    {
+    if(rootcheck.disabled == 1) {
         verbose("%s: Rootcheck disabled. Exiting.", ARGV0);
         return(1);
     }
 
 
     /* Checking if Unix audit file is configured. */
-    if(!rootcheck.unixaudit)
-    {
+    if(!rootcheck.unixaudit) {
         #ifndef WIN32
         log2file("%s: System audit file not configured.", ARGV0);
         #endif
@@ -225,8 +220,9 @@ int rootcheck_init(int test_config)
 
 
     /* Setting default values */
-    if(rootcheck.workdir == NULL)
+    if(rootcheck.workdir == NULL) {
         rootcheck.workdir = DEFAULTDIR;
+    }
 
 
     #ifdef OSSECHIDS
@@ -239,24 +235,22 @@ int rootcheck_init(int test_config)
 
 
     /* Connect to the queue if configured to do so */
-    if(rootcheck.notify == QUEUE)
-    {
-        debug1("%s: Starting queue ...",ARGV0);
+    if(rootcheck.notify == QUEUE) {
+        debug1("%s: Starting queue ...", ARGV0);
 
         /* Starting the queue. */
-        if((rootcheck.queue = StartMQ(DEFAULTQPATH,WRITE)) < 0)
-        {
-            merror(QUEUE_ERROR,ARGV0,DEFAULTQPATH, strerror(errno));
+        if((rootcheck.queue = StartMQ(DEFAULTQPATH, WRITE)) < 0) {
+            merror(QUEUE_ERROR, ARGV0, DEFAULTQPATH, strerror(errno));
 
             /* 5 seconds to see if the agent starts */
             sleep(5);
-            if((rootcheck.queue = StartMQ(DEFAULTQPATH,WRITE)) < 0)
-            {
+            if((rootcheck.queue = StartMQ(DEFAULTQPATH, WRITE)) < 0) {
                 /* more 10 seconds wait.. */
-                merror(QUEUE_ERROR,ARGV0,DEFAULTQPATH, strerror(errno));
+                merror(QUEUE_ERROR, ARGV0, DEFAULTQPATH, strerror(errno));
                 sleep(10);
-                if((rootcheck.queue = StartMQ(DEFAULTQPATH,WRITE)) < 0)
-                    ErrorExit(QUEUE_FATAL,ARGV0,DEFAULTQPATH);
+                if((rootcheck.queue = StartMQ(DEFAULTQPATH, WRITE)) < 0) {
+                    ErrorExit(QUEUE_FATAL, ARGV0, DEFAULTQPATH);
+                }
             }
         }
     }
@@ -267,10 +261,9 @@ int rootcheck_init(int test_config)
 
 
     /* Initializing rk list */
-    rk_sys_name = (char **) calloc(MAX_RK_SYS +2, sizeof(char *));
-    rk_sys_file = (char **) calloc(MAX_RK_SYS +2, sizeof(char *));
-    if(!rk_sys_name || !rk_sys_file)
-    {
+    rk_sys_name = (char **) calloc(MAX_RK_SYS + 2, sizeof(char *));
+    rk_sys_file = (char **) calloc(MAX_RK_SYS + 2, sizeof(char *));
+    if(!rk_sys_name || !rk_sys_file) {
         ErrorExit(MEM_ERROR, ARGV0, errno, strerror(errno));
     }
     rk_sys_name[0] = NULL;
@@ -284,10 +277,10 @@ int rootcheck_init(int test_config)
     StartSIG(ARGV0);
     #endif
 
-    debug1("%s: DEBUG: Running run_rk_check",ARGV0);
+    debug1("%s: DEBUG: Running run_rk_check", ARGV0);
     run_rk_check();
 
-    debug1("%s: DEBUG:  Leaving...",ARGV0);
+    debug1("%s: DEBUG:  Leaving...", ARGV0);
 
     #endif
 

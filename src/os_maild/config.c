@@ -23,7 +23,7 @@ int MailConf(int test_config, const char *cfgfile, MailConfig *Mail)
 {
     int modules = 0;
 
-    modules|= CMAIL;
+    modules |= CMAIL;
 
     Mail->to = NULL;
     Mail->from = NULL;
@@ -42,17 +42,16 @@ int MailConf(int test_config, const char *cfgfile, MailConfig *Mail)
     Mail->gran_format = NULL;
     Mail->groupping = 1;
     Mail->strict_checking = 0;
-#ifdef GEOIP
+    #ifdef GEOIP
     Mail->geoip = 0;
-#endif
+    #endif
 
-    if(ReadConfig(modules, cfgfile, NULL, Mail) < 0)
+    if(ReadConfig(modules, cfgfile, NULL, Mail) < 0) {
         return(OS_INVALID);
+    }
 
-    if(!Mail->mn)
-    {
-        if(!test_config)
-        {
+    if(!Mail->mn) {
+        if(!test_config) {
             verbose(MAIL_DIS, ARGV0);
         }
         exit(0);
