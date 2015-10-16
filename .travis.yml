@@ -71,5 +71,7 @@ deploy:
     secure: DiVPTCt1C8XCmFlzcpmFkqfRmxz85/RCE2euvU/c1EiABjfO20aZARCC9zsepAwAGWWsq3uGRLp0aVuJuh4LvTdGxIJDOqYR8z1pByfY4epgE7zmRCIWjx+nAwBpLlfYalMWFpt7vmPp9mKycFkUR2NFoiEfOgoO9wGN0ZgmwSM=
   file: src/win-pkg/ossec-win32-agent.exe
   skip_cleanup: true
+  on:
+    branch: bintray-release-travis
   key:
     secure: oox4dV8OsQBBS8iQzwXuvzpEkTyy6VuXI7DB4mUIkQVAT5kFv1YLIekZBDeywHtsxWD7B0XdRkszS3GMUk6zXzgsypW5AIt2mCpAq3wz7NKHVo43Y93sYYqBTzOkksb3MEzBbKNIXxtDPRyzk2+sWJ+fMJdDeKwg73T+T+nRQ8A=
