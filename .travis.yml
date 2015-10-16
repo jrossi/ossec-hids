@@ -71,10 +71,5 @@ deploy:
     secure: DiVPTCt1C8XCmFlzcpmFkqfRmxz85/RCE2euvU/c1EiABjfO20aZARCC9zsepAwAGWWsq3uGRLp0aVuJuh4LvTdGxIJDOqYR8z1pByfY4epgE7zmRCIWjx+nAwBpLlfYalMWFpt7vmPp9mKycFkUR2NFoiEfOgoO9wGN0ZgmwSM=
   file: src/win-pkg/ossec-win32-agent.exe
   skip_cleanup: true
-  on:
-    tags: true
-    all_branches: true
-    repo: ossec/ossec-hids
-    condition: $OSSEC_TYPE = winagent
   key:
     secure: RGlYWpB6FPYc3uq5qlUi+WE8TkaqMhcyFd8udgC7th7tZ8enQXopdfHqqfOPlyfICHHrnTpdlK0FaYr5d/XNec9NbLVJBCXvtGrIG9Ua+1pdgtaTIFQnuHh6eQklF0k1cIsutaRObzODOnesLO/QYxa0ojLP2u/BxWtXIlExiLI=
