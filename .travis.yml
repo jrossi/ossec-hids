@@ -72,4 +72,4 @@ deploy:
   file: src/win-pkg/ossec-win32-agent.exe
   skip_cleanup: true
   key:
-    secure: RGlYWpB6FPYc3uq5qlUi+WE8TkaqMhcyFd8udgC7th7tZ8enQXopdfHqqfOPlyfICHHrnTpdlK0FaYr5d/XNec9NbLVJBCXvtGrIG9Ua+1pdgtaTIFQnuHh6eQklF0k1cIsutaRObzODOnesLO/QYxa0ojLP2u/BxWtXIlExiLI=
+    secure: oox4dV8OsQBBS8iQzwXuvzpEkTyy6VuXI7DB4mUIkQVAT5kFv1YLIekZBDeywHtsxWD7B0XdRkszS3GMUk6zXzgsypW5AIt2mCpAq3wz7NKHVo43Y93sYYqBTzOkksb3MEzBbKNIXxtDPRyzk2+sWJ+fMJdDeKwg73T+T+nRQ8A=
