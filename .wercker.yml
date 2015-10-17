@@ -22,6 +22,6 @@ build:
     # http://devcenter.wercker.com/docs/steps/index.html
   steps:
     - script:
-      name: test-rules
+        name: build
         code: |
-          (cd src/ && make --warn-undefined-variables install && make V=1 TARGET=server test-rules )
+          ( cd src/ &&  make V=1 TARGET=server test-rules )
