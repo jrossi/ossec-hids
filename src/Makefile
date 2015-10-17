@@ -630,6 +630,7 @@ winagent:
 external: libcJSON.a ${EXTERNAL_ZLIB}libz.a lua
 
 lua:
+	ls -la ${EXTERNAL_LUA}
 	cd ${EXTERNAL_LUA} && ${MAKE} ${LUA_PLAT}
 
 ${EXTERNAL_ZLIB}libz.a:
