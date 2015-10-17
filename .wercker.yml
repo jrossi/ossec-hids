@@ -24,5 +24,4 @@ build:
     - script:
       name: test-rules
         code: |
-          (cd src/ && sudo make --warn-undefined-variables install)
-          ( cd src/ && make V=1 TARGET=server test-rules )
+          (cd src/ && make --warn-undefined-variables install && make V=1 TARGET=server test-rules )
