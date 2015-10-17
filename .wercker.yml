@@ -24,4 +24,4 @@ build:
     - script:
         name: build
         code: |
-          ( cd src/ && sudo make V=1 TARGET=server test-rules )
+          ( cd src/ && make V=1 TARGET=server test-rules )
