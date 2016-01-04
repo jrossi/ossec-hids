@@ -64,7 +64,7 @@ int OS_Bindport(char *_port, unsigned int _proto, const char *_ip)
     } else if (_proto == IPPROTO_TCP) {
         hints.ai_socktype = SOCK_STREAM;
     } else {
-        printf(">>>>>>>>>>>>>>   error unknonw protocol\n")
+        printf(">>>>>>>>>>>>>>   error unknonw protocol\n");
         return(OS_INVALID);
     }
 
@@ -97,7 +97,7 @@ int OS_Bindport(char *_port, unsigned int _proto, const char *_ip)
         }
     }
     if (ossock == -1) {
-        printf(">>>>>>>>>>>>>>   error fell off the end of the for loop\n")
+        printf(">>>>>>>>>>>>>>   error fell off the end of the for loop\n");
     }
     if (rp == NULL) {               /* No address succeeded */
         OS_CloseSocket(ossock);
