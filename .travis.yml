@@ -60,7 +60,7 @@ script:
   && ( cd src/ && make --warn-undefined-variables ${COMMAND} settings && make --warn-undefined-variables ${COMMAND} -j )
   && if ! [[ "${OSSEC_TYPE}" = "test" || "${OSSEC_TYPE}" = "winagent" ]]; then ( cd src/ && sudo make --warn-undefined-variables ${COMMAND} install ) fi
 
-- if [[ "${OSSEC_TYPE}" == "test" ]]; then ( cat /etc/hosts /etc/resolve.conf /etc/nsswitch.conf &&cd src/ && make --warn-undefined-variables test_valgrind ) fi
+- if [[ "${OSSEC_TYPE}" == "test" ]]; then ( cat /etc/hosts /etc/resolve.conf /etc/nsswitch.conf && host localhost && host 127.0.0.1 && cd src/ && make --warn-undefined-variables test_valgrind ) fi
 - if [[ "${RULES}" == "test" ]]; then ( cd src/ && sudo make V=1 TARGET=server test-rules ) fi
 
 
