@@ -64,12 +64,13 @@ int OS_Bindport(char *_port, unsigned int _proto, const char *_ip)
     } else if (_proto == IPPROTO_TCP) {
         hints.ai_socktype = SOCK_STREAM;
     } else {
+        printf(">>>>>>>>>>>>>>   error unknonw protocol\n")
         return(OS_INVALID);
     }
 
     s = getaddrinfo(_ip, _port, &hints, &result);
     if (s != 0) {
-        verbose("getaddrinfo: %s", gai_strerror(s));
+        printf(">>>>>>>>>>>>>>>  getaddrinfo: %s\n", gai_strerror(s));
         return(OS_INVALID);
     }
 
@@ -94,6 +95,9 @@ int OS_Bindport(char *_port, unsigned int _proto, const char *_ip)
         if (bind(ossock, rp->ai_addr, rp->ai_addrlen) == 0) {
             break;                  /* Success */
         }
+    }
+    if (ossock == -1) {
+        printf(">>>>>>>>>>>>>>   error fell off the end of the for loop\n")
     }
     if (rp == NULL) {               /* No address succeeded */
         OS_CloseSocket(ossock);
